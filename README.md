@@ -74,7 +74,8 @@ classDiagram
     }
 
     class RuleChecker {
-    
+        + checkRuleList()
+        + checkMyRule()
     }
 
     class MoveChecker {
