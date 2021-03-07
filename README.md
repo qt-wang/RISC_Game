@@ -4,26 +4,69 @@
 classDiagram
  
     RuleChecker "1" <-- "1" Server
-    RuleChecker "1" <-- "1" Client
     MoveChecker "1" <|-- "1" RuleChecker
     AttackChecker "1" <|-- "1" RuleChecker
-    Client "1" --> "n" Player
+    InputChecker "1" <|-- "1" RuleChecker
+    Server "1" --> "n" Player
+    Client "1" --> "1" RuleChecker
     Server "1" --> "1" Map
-    Player "1" --> "1" Map
     Map "1" --> "n" Territory
-    Territory "1" --> "n" Unit
+    Player "1" --> "n" Unit
+    TextMapFactory "1" <|-- "1" MapFactory
+    MapFactory -- Map: "Create"
+    Map "1" --> "1" View
+    MoveOrder "1" <|-- "1" Order
+    AttackOrder "1" <|-- "1" Order
+    OrderParser "1" --> "n" Order
+    AddUnitOrder "1" <|-- "1" Order
+    Server "1" --> "1" OrderParser
+    Order "1" --> "n" Dice
 
 
     class Server{
+        - int numUnitPerPlayer
+        - int numTerritoryPerPlayer
         + checkRule()
-        + combat()
+        - combat()
         + readInput()
-        + checkEndGame()
+        - checkEndGame()
+        + assignTerritory()
+        + distributeResults()
+        + issueOrders()
+        + exceuteOrders()
+    }
+
+    class OrderParser {
+
+    }
+
+    class Order {
+
+    }
+
+    class MoveOrder {
+
+    }
+
+    class AttackOrder {
+
+    }
+
+    class AddUnitOrder{
+
+    }
+
+    class Dice{
+
     }
 
     class Client {
+        - int PlayerID
+        - bool couldCommand
+        - bool isDisconnected
         + checkRule()
         + sendOrders()
+        + displyResult()
     }
 
     class RuleChecker {
@@ -38,25 +81,45 @@ classDiagram
 
     }
 
+    class InputChecker {
+
+    }
+
     class Player {
+        - int ID
         + pickTerritory()
         + setUnits()
         + commitOrders()
         + move()
         + attack()
         + checkLost()
+        + addUnit()
+        - moveUnit()
+        + destoryUnit()
     }
 
     class Map {
+        - HashMap~Territory, Player~ ownership
+    }
+
+    class View {
+
+    }
+
+    class MapFactory {
+        + creatMap()
+    }
+
+    class TextMapFactory {
 
     }
 
     class Territory {
-        + addUnit()
-        + removeUnit()
+        - HashSet~Territory~ neighbours
     }
 
     class Unit {
-
+        - Player owner
+        - Territory position 
     }       
 ```
