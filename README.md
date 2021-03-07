@@ -19,8 +19,8 @@ classDiagram
     AttackOrder "1" <|-- "1" Order
     OrderParser "1" --> "n" Order
     AddUnitOrder "1" <|-- "1" Order
-    Server "1" --> "1" OrderParser
-    Order "1" --> "n" Dice
+    Player "1" --> "1" OrderParser
+    Server "1" --> "n" Dice
 
 
     class Server{
@@ -37,7 +37,8 @@ classDiagram
     }
 
     class OrderParser {
-
+        - ArrayList~Order~ orderExcSequence
+        + clearOrders()
     }
 
     class Order {
@@ -45,15 +46,19 @@ classDiagram
     }
 
     class MoveOrder {
+        - Territory source
+        - Territory dest
+        - int unitToMove 
 
     }
 
     class AttackOrder {
-
+        + HashMap~Territory, int~ unitSource
+        + Territory target
     }
 
     class AddUnitOrder{
-
+        - int numUnitToAdd
     }
 
     class Dice{
