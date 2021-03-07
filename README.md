@@ -3,7 +3,7 @@
 ```mermaid
 classDiagram
  
-    RuleChecker "1" <-- "1" Server
+    RuleChecker "1" <-- "1" OrderParser
     MoveChecker "1" <|-- "1" RuleChecker
     AttackChecker "1" <|-- "1" RuleChecker
     InputChecker "1" <|-- "1" RuleChecker
@@ -20,7 +20,7 @@ classDiagram
     OrderParser "1" --> "n" Order
     AddUnitOrder "1" <|-- "1" Order
     Player "1" --> "1" OrderParser
-    Server "1" --> "n" Dice
+    Order "1" --> "n" Dice
 
 
     class Server{
@@ -29,7 +29,7 @@ classDiagram
         + checkRule()
         + readInput()
         - checkEndGame()
-        + assignTerritory()
+        + gameInit()
         + distributeResults()
         + issueOrders()
         + exceuteOrders()
@@ -37,11 +37,12 @@ classDiagram
 
     class OrderParser {
         - ArrayList~Order~ orderExcSequence
+        + addOrders()
         + clearOrders()
     }
 
     class Order {
-
+        + executeOrder()
     }
 
     class MoveOrder {
