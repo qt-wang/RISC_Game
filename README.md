@@ -27,7 +27,6 @@ classDiagram
         - int numUnitPerPlayer
         - int numTerritoryPerPlayer
         + checkRule()
-        - combat()
         + readInput()
         - checkEndGame()
         + assignTerritory()
@@ -92,11 +91,9 @@ classDiagram
 
     class Player {
         - int ID
+        + bool isCommit
         + pickTerritory()
         + setUnits()
-        + commitOrders()
-        + move()
-        + attack()
         + checkLost()
         + addUnit()
         - moveUnit()
