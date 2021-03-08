@@ -3,10 +3,6 @@
 ```mermaid
 classDiagram
  
-    RuleChecker "1" <-- "1" OrderParser
-    MoveChecker "1" <|-- "1" RuleChecker
-    AttackChecker "1" <|-- "1" RuleChecker
-    InputChecker "1" <|-- "1" RuleChecker
     Server "1" --> "n" Player
     Client "1" --> "1" RuleChecker
     Server "1" --> "1" Map
@@ -21,6 +17,13 @@ classDiagram
     AddUnitOrder "1" <|-- "1" Order
     Player "1" --> "1" OrderParser
     Order "1" --> "n" Dice
+    RuleChecker "1" <-- "1" OrderParser
+    RuleChecker "1" --|> "1" SelfTerritoryChecker
+    RuleChecker "1" --|> "1" EnemyTerritoryChecker
+    RuleChecker "1" --|> "1" ConnectedTerritoryChecker
+    RuleChecker "1" --|> "1" AdjacentTerritoryChecker
+    RuleChecker "1" --|> "1" EnoughUnitsChecker
+    InputChecker "1" <|-- "1" RuleChecker
 
 
     class Server{
@@ -78,12 +81,24 @@ classDiagram
         + checkRuleList()
         + checkMyRule()
     }
-
-    class MoveChecker {
+    
+    class SelfTerritoryChecker {
 
     }
 
-    class AttackChecker {
+    class EnemyTerritoryChecker {
+
+    }
+
+    class ConnectedTerritoryChecker {
+
+    }
+
+    class AdjacentTerritoryChecker {
+
+    }
+
+    class EnoughUnitsChecker {
 
     }
 
