@@ -3,6 +3,13 @@
 ```mermaid
 classDiagram
  
+RuleChecker "1" <-- "1" Server
+    SufficientUnitChecker "1" <|-- "1" RuleChecker
+    AdjacentTerritoryChecker "1" <|-- "1" RuleChecker
+    SelfTerritoryChecker "1" <|-- "1" RuleChecker
+    EnemyTerritoryChecker "1" <|-- "1" RuleChecker
+    ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
+    InputChecker "1" <|-- "1" RuleChecker
     Server "1" --> "n" Player
     Client "1" --> "1" RuleChecker
     Server "1" --> "1" Map
@@ -10,84 +17,74 @@ classDiagram
     Player "1" --> "n" Unit
     TextMapFactory "1" <|-- "1" MapFactory
     MapFactory -- Map: "Create"
-    Map "1" --> "1" View
+    Client "1" --> "1" View
     MoveOrder "1" <|-- "1" Order
     AttackOrder "1" <|-- "1" Order
-    OrderParser "1" --> "n" Order
+    OrderProcessor "1" --> "n" Order
     AddUnitOrder "1" <|-- "1" Order
-    Player "1" --> "1" OrderParser
-    Order "1" --> "n" Dice
-    RuleChecker "1" <-- "1" OrderParser
-    RuleChecker "1" --|> "1" SelfTerritoryChecker
-    RuleChecker "1" --|> "1" EnemyTerritoryChecker
-    RuleChecker "1" --|> "1" ConnectedTerritoryChecker
-    RuleChecker "1" --|> "1" AdjacentTerritoryChecker
-    RuleChecker "1" --|> "1" EnoughUnitsChecker
-    InputChecker "1" <|-- "1" RuleChecker
+    Server "1" --> "1" OrderProcessor
+    AttackOrder "1" --> "n" Dice
 
 
     class Server{
-        - int numUnitPerPlayer
-        - int numTerritoryPerPlayer
-        + checkRule()
-        + readInput()
-        - checkEndGame()
-        + gameInit()
-        + distributeResults()
-        + issueOrders()
-        + exceuteOrders()
+        -int numUnitPerPlayer
+        -int numTerritoryPerPlayer
+        +checkRule()
+        -combat()
+        +readInput()
+        -checkEndGame()
+        +assignTerritory()
+        +distributeResults()
     }
 
-    class OrderParser {
-        - ArrayList~Order~ orderExcSequence
-        + addOrders()
-        + clearOrders()
+    class OrderProcessor {
+        -HashMap~Territory,List~Order~~ attackOrders
+        +parseOrder()
+        +mergeOrder()
+        +issueOrders()
+        +executeOrders()
     }
 
     class Order {
-        + executeOrder()
+        +execute()
     }
 
     class MoveOrder {
-        - Territory source
-        - Territory dest
-        - int unitToMove 
-
+        -Territory source
+        -Territory destination
+        -int unitNum
+        -HashSet~Unit~ units
     }
 
     class AttackOrder {
-        + HashMap~Territory, int~ unitSource
-        + Territory target
+        -HashMap~Territory,HashSet~Unit~~ attacker
+        -Territory defender
+        -int unitNumTotal
     }
 
     class AddUnitOrder{
-        - int numUnitToAdd
+        -Territory bornTerritory
+        -int unitNum
     }
 
     class Dice{
-
+        -int sides
+        +roll()
     }
 
     class Client {
-        - int PlayerID
-        - bool couldCommand
-        - bool isDisconnected
-        + checkRule()
-        + sendOrders()
-        + displyResult()
+        -int PlayerID
+        -bool couldCommand
+        -bool isDisconnected
+        +checkRule()
+        +sendOrders()
+        +displyResult()
     }
 
     class RuleChecker {
-        + checkRuleList()
-        + checkMyRule()
-    }
-    
-    class SelfTerritoryChecker {
-
-    }
-
-    class EnemyTerritoryChecker {
-
+        -RuleChecker nextRule
+        -checkMyRule()
+        +checkOrder()
     }
 
     class ConnectedTerritoryChecker {
@@ -98,7 +95,15 @@ classDiagram
 
     }
 
-    class EnoughUnitsChecker {
+    class SufficientUnitChecker {
+
+    }
+
+    class SelfTerritoryChecker {
+
+    }
+
+    class EnemyTerritoryChecker {
 
     }
 
@@ -107,18 +112,15 @@ classDiagram
     }
 
     class Player {
-        - int ID
-        + bool isCommit
-        + pickTerritory()
-        + setUnits()
-        + checkLost()
-        + addUnit()
-        - moveUnit()
-        + destoryUnit()
+        -int ID
+        +pickTerritory()
+        +setUnits()
+        +commitOrders()
+        +destoryUnit()
     }
 
     class Map {
-        - HashMap~Territory, Player~ ownership
+        -HashMap~Territory, Player~ ownership
     }
 
     class View {
@@ -126,7 +128,7 @@ classDiagram
     }
 
     class MapFactory {
-        + creatMap()
+        +creatMap()
     }
 
     class TextMapFactory {
@@ -134,11 +136,12 @@ classDiagram
     }
 
     class Territory {
-        - HashSet~Territory~ neighbours
+        -HashSet~Territory~ neighbours
+        -HashMap~Player,List~Unit~~ units 
     }
 
     class Unit {
-        - Player owner
-        - Territory position 
+        -Player owner
+        -Territory position 
     }       
 ```
