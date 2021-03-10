@@ -36,6 +36,22 @@ subprojects{
         // Use junit platform for unit tests
         useJUnitPlatform()
     }
+
+    configurations {
+        testPkg {
+            extendsFrom(testRuntime)
+        }
+    }
+    
+    task testCode(type: Jar) {
+        classifier = 'test'
+        from sourceSets.test.output
+    }
+    
+    
+    artifacts {
+        testPkg testCode
+    }
 }
 
 // Project specific stuff
@@ -44,11 +60,13 @@ project (':shared'){
 project (':server'){
     dependencies {
         implementation project(':shared')
+        testImplementation project(path: ':shared', configuration: "testPkg")
     }
 }
 project (':client'){
     dependencies {
         implementation project(':shared')
+        testImplementation project(path: ':shared', configuration: "testPkg")
     } 
 }
 
