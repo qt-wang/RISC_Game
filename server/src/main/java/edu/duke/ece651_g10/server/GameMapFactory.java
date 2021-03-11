@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.server;
 
 /**
  * This class will be a factory used to create maps based on the arguments given.
+ * Maintained by Guancheng Fu
  */
 public interface GameMapFactory {
     /**

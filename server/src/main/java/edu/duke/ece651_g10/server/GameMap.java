@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 /**
  * Map indicates the play board of the game.
+ * Maintained by Guancheng Fu
  */
 public interface GameMap {
     /**

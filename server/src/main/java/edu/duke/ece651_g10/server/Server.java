@@ -13,6 +13,7 @@ import java.util.HashMap;
  * 2. At each turn: accept the commands from the players.
  * 3. Execute the attack command at the end of the turn.
  * 4. After the game has end, end the connections and close.
+ * Maintained by Guancheng Fu
  */
 public class Server {
     // The number of units belong to each person.
@@ -32,7 +33,11 @@ public class Server {
     // The game map of the game.
     private GameMap playMap;
 
-    // private OrderProcessor processor;
+    // The factory used to create the map.
+    private GameMapFactory mapFactory;
+
+    // The rule checker used to check the rules of the game.
+    private RuleChecker ruleChecker;
 
     /**
      * Setup the server socket.
@@ -64,6 +69,9 @@ public class Server {
         setServerSocket(port);
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
+        this.maximumNumberPlayersAllowed = maximumNumberPlayersAllowed;
+        this.ruleChecker = ruleChecker;
+        this.mapFactory = factory;
         players = new HashMap<>();
     }
 
