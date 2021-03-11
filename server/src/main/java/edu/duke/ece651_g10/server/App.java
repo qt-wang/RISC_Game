@@ -4,6 +4,7 @@
 package edu.duke.ece651_g10.server;
 
 public class App {
+
     public String getGreeting() {
         return "Hello world.";
     }
