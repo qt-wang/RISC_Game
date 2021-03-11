@@ -9,5 +9,6 @@ public class Territory {
     private Player owner;
     private HashMap<Player, List<Unit>> units;
     private HashSet<Territory> neighbours;
+    // This units are all owned by the owner of the territory.
     private List<Unit> ownedUnits;
 }

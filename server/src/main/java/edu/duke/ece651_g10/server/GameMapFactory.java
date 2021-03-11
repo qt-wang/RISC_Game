@@ -6,7 +6,8 @@ package edu.duke.ece651_g10.server;
 public interface GameMapFactory {
     /**
      * Create the map for the game.
-     *
+     * A map should contain a list of territories.
+     * Each territory should have its neighbors, and form a connected graph.
      * @param numberOfPlayers      The number of Players within the game.
      * @param territoriesPerPlayer The territories belong to each player.
      * @return The map generated for this game.

@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import edu.duke.ece651_g10.shared.RuleChecker;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ public class Server {
     // The game map of the game.
     private GameMap playMap;
 
+    // private OrderProcessor processor;
+
     /**
      * Setup the server socket.
      *
@@ -41,7 +45,6 @@ public class Server {
         // This operation will cause the read from the socket block forever if there are
         // no content within the socket.
         serverSocket.setSoTimeout(0);
-        //TODO: Create the GameMap of the game.
     }
 
     /**
@@ -52,9 +55,12 @@ public class Server {
      * @param numUnitPerPlayer            Number of units per player has when the game begin.
      * @param numTerritoryPerPlayer       Number of territories per player has when the game begin.
      * @param maximumNumberPlayersAllowed The maximum number of players allowed in the game.
+     * @param factory                     The factory used to generate the map.
+     * @param ruleChecker                 The ruleChecker is used to check the validness of the orders.
+     *                                    Assume that the ruleChecker can check any commands by entering ruleCheck.checkOrder(order);
      * @throws IOException If the port is unavailable.
      */
-    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed) throws IOException {
+    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker ruleChecker) throws IOException {
         setServerSocket(port);
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
