@@ -1,7 +1,8 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The abstract class to check whether the order follows the rules in the RISK game
+ * The abstract class to check whether the order follows the rules in the RISK
+ * game
  */
 public abstract class RuleChecker {
   private final RuleChecker next;
@@ -18,10 +19,10 @@ public abstract class RuleChecker {
   /**
    * Check whether the Order is following the rules in the game
    *
-   * @param  order   the order frome the player
-   * @param  gameMap the game map of the game
-   * @return if the rule is not violated, return null. 
-   *         Otherwise, return the reason casuing the invalid placement
+   * @param order   the order frome the player
+   * @param gameMap the game map of the game
+   * @return if the rule is not violated, return null. Otherwise, return the
+   *         reason casuing the invalid placement
    */
   public String checkOrder(Order order, GameMap gameMap) {
     if (checkMyRule(order, gameMap) != null) {
@@ -36,12 +37,26 @@ public abstract class RuleChecker {
   }
 
   /**
-   * Check whether the order is following the rule defined 
-   * in the following method.
-   * @param  order   the order frome the player
-   * @param  gameMap the game map of the game
-   * @return if the rule is not violated, return null. 
-   *         Otherwise, return the reason casuing the invalid placement
+   * Check whether the order is following the rule defined in the following
+   * method.
+   * 
+   * @param order   the order frome the player
+   * @param gameMap the game map of the game
+   * @return if the rule is not violated, return null. Otherwise, return the
+   *         reason casuing the invalid placement
    */
   protected abstract String checkMyRule(Order order, GameMap gameMap);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
