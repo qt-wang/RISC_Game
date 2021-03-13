@@ -28,6 +28,7 @@ public class SufficientUnitChecker extends RuleChecker {
     if (order.getNumUnit() < order.getSourceTerritory().getNumUnit()) {
       return "The territory does not have enough units.";
     }
+    return null;
   }
 }
 
