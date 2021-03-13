@@ -1,16 +1,15 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChekcer to check whether the target Territory belongs to the player
+ * The RuleChekcer to check whether the target Territory belongs to the enemy
  */
-public class SelfTerritoryChecker extends RuleChecker {
-
+public class EnemyTerritoryChecker extends RuleChecker {
   /**
-   * The constructor of the the SelfTerritoryChecker
+   * The constructor of the the EnemyTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public SelfTerritoryChecker(RuleChecker next) {
+  public EnemyTerritoryChecker(RuleChecker next) {
     super(next);
   }
 
@@ -25,9 +24,10 @@ public class SelfTerritoryChecker extends RuleChecker {
    */
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
-    if (gameMap.getOwnership().get(order.getTargetTerritory()).getPlayerID() != order.getPlayerID()) {
-      return "The target territory does not belong to the player.";
+    if (gameMap.getOwnership().get(order.getTargetTerritory()).getPlayerID() == order.getPlayerID()) {
+      return "The target territory does not belong to the enemy.";
     }
     return null;
   }
+
 }
