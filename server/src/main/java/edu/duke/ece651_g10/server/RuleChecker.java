@@ -47,16 +47,3 @@ public abstract class RuleChecker {
    */
   protected abstract String checkMyRule(Order order, GameMap gameMap);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

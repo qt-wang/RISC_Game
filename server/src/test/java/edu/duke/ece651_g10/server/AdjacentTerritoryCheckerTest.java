@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 public class AdjacentTerritoryCheckerTest {
   @Test
-  public void test_check_my_rule() {
+  public void test_check_order() {
     // Mock
     Order mockOrder1 = mock(Order.class);
     Order mockOrder2 = mock(Order.class);
@@ -27,10 +27,15 @@ public class AdjacentTerritoryCheckerTest {
     when(mockTerritory1.getNeighbours()).thenReturn(mockTerritorySet);
     when(mockTerritory2.getNeighbours()).thenReturn(mockTerritorySet);
 
-    RuleChecker checker = new AdjacentTerritoryChecker(null);
+    when(mockOrder1.getNumUnit()).thenReturn(3);
+    when(mockOrder1.getSourceTerritory()).thenReturn(mockTerritory1);
+    when(mockTerritory1.getNumUnit()).thenReturn(4);
+
+    RuleChecker checker1 = new SufficientUnitChecker(null);
+    RuleChecker checker2 = new AdjacentTerritoryChecker(checker1);
     String res = "The territories are not adjacent to each other.";
-    assertEquals(res, checker.checkMyRule(mockOrder2, null));
-    assertEquals(null, checker.checkMyRule(mockOrder1, null));
+    assertEquals(res, checker2.checkOrder(mockOrder2, null));
+    assertEquals(null, checker2.checkOrder(mockOrder1, null));
   }
 
 }
