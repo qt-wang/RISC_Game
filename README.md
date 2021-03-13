@@ -7,6 +7,7 @@ RuleChecker "1" <-- "1" Server
     SufficientUnitChecker "1" <|-- "1" RuleChecker
     AdjacentTerritoryChecker "1" <|-- "1" RuleChecker
     SelfTerritoryChecker "1" <|-- "1" RuleChecker
+    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
     EnemyTerritoryChecker "1" <|-- "1" RuleChecker
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
     InputChecker "1" <-- "1" Client
@@ -99,6 +100,10 @@ RuleChecker "1" <-- "1" Server
     }
 
     class SufficientUnitChecker {
+
+    }
+    
+    class PlayerSelfOrderChecker {
 
     }
 
