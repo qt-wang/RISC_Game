@@ -17,8 +17,9 @@ public class AdjacentTerritoryCheckerTest {
     Territory mockTerritory1 = mock(Territory.class);
     Territory mockTerritory2 = mock(Territory.class);
     Territory mockTerritory3 = mock(Territory.class);
+    Territory mockTerritory4 = mock(Territory.class);
     HashSet<Territory> mockTerritorySet = new HashSet<Territory>();
-    mockTerritorySet.add(mockTerritory1);
+    mockTerritorySet.add(mockTerritory4);
     mockTerritorySet.add(mockTerritory2);
     when(mockOrder1.getSourceTerritory()).thenReturn(mockTerritory1);
     when(mockOrder2.getSourceTerritory()).thenReturn(mockTerritory2);
