@@ -10,4 +10,21 @@ public class Territory {
     private HashMap<Player, List<Unit>> units;
     private HashSet<Territory> neighbours;
     private List<Unit> ownedUnits;
+
+  public int getNumUnit(){
+    return 0;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
