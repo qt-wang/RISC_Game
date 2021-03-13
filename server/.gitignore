@@ -6,6 +6,3 @@ build
 
 # Ignore bin directory
 bin
-share/bin
-server/bin
-client/bin

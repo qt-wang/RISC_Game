@@ -35,6 +35,7 @@ public class ConnectedTerritoryChecker extends RuleChecker {
     } else {
       waypoints.add(current);
       for (Territory t : current.getNeighbours()) {
+        // Also needs to check whether the player own the neighbours
         if (gameMap.getOwnership().get(t).getPlayerID() == selfID && !waypoints.contains(t)) {
           if (searchConnection(t, target, selfID, gameMap)) {
             return true;
