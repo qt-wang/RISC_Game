@@ -13,6 +13,25 @@ public class Territory {
     private Player owner;
     private HashMap<Player, Army> units;
     private HashSet<Territory> neighbours;
+
     // This units are all owned by the owner of the territory.
     private Army ownedUnits;
+
+  public int getNumUnit(){
+    return 0;
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
