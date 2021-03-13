@@ -1,16 +1,17 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChecker to check whether it has sufficient unit
+ * The RuleChekcer to check whether the source Territory and target Territory
+ * are adjacent to each other
  */
-public class SufficientUnitChecker extends RuleChecker {
+public class AdjacentTerritoryChecker extends RuleChecker {
 
   /**
-   * The constructor of the the SufficientUnitChecker
+   * The constructor of the the AdjacentTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public SufficientUnitChecker(RuleChecker next) {
+  public AdjacentTerritoryChecker(RuleChecker next) {
     super(next);
   }
 
@@ -25,13 +26,12 @@ public class SufficientUnitChecker extends RuleChecker {
    */
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
-    if (order.getNumUnit() > order.getSourceTerritory().getNumUnit()) {
-      return "The territory does not have enough units.";
+    if (!order.getSourceTerritory().getNeighbours().contains(order.getTargetTerritory())) {
+      return "The territories are not adjacent to each other.";
     }
     return null;
   }
 }
-
 
 
 

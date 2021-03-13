@@ -21,6 +21,10 @@ public class Territory {
      return 0;
     }
 
+  public HashSet<Territory> getNeighbours() {
+    return neighbours;
+  }
+
 }
 
 

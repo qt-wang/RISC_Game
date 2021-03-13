@@ -20,8 +20,8 @@ public class SufficientUnitCheckerTest {
 
     RuleChecker checker = new SufficientUnitChecker(null);
     String res = "The territory does not have enough units.";
-    assertEquals(null, checker.checkOrder(mockOrder1, null));
-    assertEquals(res, checker.checkOrder(mockOrder2, null));
+    assertEquals(null, checker.checkMyRule(mockOrder1, null));
+    assertEquals(res, checker.checkMyRule(mockOrder2, null));
   }
 
 }
