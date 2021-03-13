@@ -1,16 +1,15 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChecker to check whether it has sufficient unit
+ * The RuleChekcer to check whether the target Territory belongs to the enemy
  */
-public class SufficientUnitChecker extends RuleChecker {
-
+public class EnemyTerritoryChecker extends RuleChecker {
   /**
-   * The constructor of the the SufficientUnitChecker
+   * The constructor of the the EnemyTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public SufficientUnitChecker(RuleChecker next) {
+  public EnemyTerritoryChecker(RuleChecker next) {
     super(next);
   }
 
@@ -25,21 +24,10 @@ public class SufficientUnitChecker extends RuleChecker {
    */
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
-    if (order.getNumUnit() > order.getSourceTerritory().getNumUnit()) {
-      return "The territory does not have enough units.";
+    if (gameMap.getOwnership().get(order.getTargetTerritory()).getPlayerID() == order.getPlayerID()) {
+      return "The target territory does not belong to the enemy.";
     }
     return null;
   }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

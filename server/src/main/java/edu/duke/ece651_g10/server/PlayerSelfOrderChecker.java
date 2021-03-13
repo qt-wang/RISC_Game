@@ -1,16 +1,15 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChecker to check whether it has sufficient unit
+ * The RuleChekcer to check whether the source Territory belongs to the Player
  */
-public class SufficientUnitChecker extends RuleChecker {
-
+public class PlayerSelfOrderChecker extends RuleChecker {
   /**
-   * The constructor of the the SufficientUnitChecker
+   * The constructor of the the PlayerSelfOrderChecker
    *
    * @param next The next RuleChecker
    */
-  public SufficientUnitChecker(RuleChecker next) {
+  public PlayerSelfOrderChecker(RuleChecker next) {
     super(next);
   }
 
@@ -25,21 +24,10 @@ public class SufficientUnitChecker extends RuleChecker {
    */
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
-    if (order.getNumUnit() > order.getSourceTerritory().getNumUnit()) {
-      return "The territory does not have enough units.";
+    if (gameMap.getOwnership().get(order.getSourceTerritory()).getPlayerID() != order.getPlayerID()) {
+      return "The source territory does not belong to the player.";
     }
     return null;
   }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

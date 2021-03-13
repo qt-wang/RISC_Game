@@ -17,8 +17,12 @@ public class Territory {
     // This units are all owned by the owner of the territory.
     private Army ownedUnits;
 
-  public int getNumUnit(){
-    return 0;
+    public int getNumUnit(){
+     return 0;
+    }
+
+  public HashSet<Territory> getNeighbours() {
+    return neighbours;
   }
 
 }
