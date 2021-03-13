@@ -8,6 +8,7 @@ import java.util.HashSet;
  * Maintained by Guancheng Fu
  */
 public interface GameMap {
+
     /**
      * If there are 3 players, this should return:
      * 3 groups of territories for each player to select.
