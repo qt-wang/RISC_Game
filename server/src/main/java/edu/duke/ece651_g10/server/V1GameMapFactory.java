@@ -38,7 +38,8 @@ public class V1GameMapFactory implements GameMapFactory {
         Random rand = new Random();
         Territory beginPoint = allTerritories.remove(rand.nextInt(allTerritories.size()));
         group.add(beginPoint);
-
+        //TODO:Fix this.
+        return null;
     }
 
 
@@ -60,6 +61,7 @@ public class V1GameMapFactory implements GameMapFactory {
             // Verify if it is still available (ie. not occupied by other groups)
             // If it is still available
         }
+        // TODO:Fix this.
         return null;
     }
 
