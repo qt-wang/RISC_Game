@@ -12,7 +12,6 @@ RuleChecker "1" <-- "1" Server
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
     InputChecker "1" <-- "1" Client
     Server "1" --> "n" Player
-    Client "1" --> "1" RuleChecker
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
     Player "1" --> "n" Unit
