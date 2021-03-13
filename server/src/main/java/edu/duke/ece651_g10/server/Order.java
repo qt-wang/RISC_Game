@@ -5,6 +5,8 @@ public interface Order {
   public Territory getSourceTerritory();
 
   public Territory getTargetTerritory();
+
+  public int getPlayerID();
 }
 
 
