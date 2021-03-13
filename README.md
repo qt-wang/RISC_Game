@@ -48,6 +48,8 @@ RuleChecker "1" <-- "1" Server
 
     class Order {
         +execute()
+        +getNumUnit()
+        +getSourceTerritory()
     }
 
     class MoveOrder {
@@ -139,6 +141,7 @@ RuleChecker "1" <-- "1" Server
     class Territory {
         -HashSet~Territory~ neighbours
         -HashMap~Player,List~Unit~~ units 
+        +getNumUnit()
     }
 
     class Unit {
