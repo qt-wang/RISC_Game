@@ -27,14 +27,14 @@ public class V1OrderProcessor implements OrderProcessor{
         }
 
         else if(order instanceof AttackOrder){
-            if(attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory()) == null){
+            if(attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory()) == null) {
                 Vector<Order> vector = new Vector<Order>();
                 vector.addElement(order);
                 attacksInOneTurn.put(((AttackOrder) order).getSourceTerritory(), vector);
             }
             else {
                 Vector<Order> vector = attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory());
-                vector.addElement(order);
+                vector.addElement((AttackOrder) order);
                 merge(vector);
                 attacksInOneTurn.put(((AttackOrder) order).getSourceTerritory(), vector);
             }

@@ -34,6 +34,7 @@ public class AttackOrder implements Order{
      * If the defender wins, unit number in both territory decrease.
      */
     public void execute(){
+
     }
 
     public Territory getSourceTerritory(){
