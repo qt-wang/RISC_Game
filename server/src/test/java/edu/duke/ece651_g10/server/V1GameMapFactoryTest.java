@@ -32,8 +32,6 @@ class V1GameMapFactoryTest {
                 }
             }
         }
-
-
         if (reached.size() == territories.size()) {
             return true;
         } else {

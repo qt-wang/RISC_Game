@@ -1,10 +1,11 @@
 package edu.duke.ece651_g10.server;
 
 
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.concurrent.*;
 
 /**
  * This class implements the server of the client-server model.
@@ -81,12 +82,20 @@ public class Server {
      * 1. If There are 5 players (The maximum number of players allowed).
      * 2. If there are at least 2 players and there are no connections in wait seconds.
      * This method should also setup the players field of the class.
-     *
+     * This method should fill the hashmap (called players)
+     * For each player, it should has a number associated with him, starts from 0.
+     * This should also setup the socket of the player.
      * @param waitSeconds The maximum time the server will wait if no other players try to wait.
      */
     private void acceptConnections(int waitSeconds) {
 
     }
+
+    private void setUpMap() {
+        int numberOfPlayers = players.size();
+        this.playMap = mapFactory.createGameMap(numberOfPlayers, numTerritoryPerPlayer);
+    }
+
 
     /**
      * Run this game, this should be the only method posted to the outer world.
@@ -94,7 +103,33 @@ public class Server {
      * newServer.run() will automatically start the game until the game is over.
      */
     public void run() {
-
+        // Create the map used in this game.
+        setUpMap();
+        assignInitialTerritories();
+        CyclicBarrier unitsDistributionBarrier = new CyclicBarrier(players.size());
+        for (int i = 0; i < players.size(); i ++) {
+            //Create a thread to run.
+            int port = players.get(i).getSocketNumber();
+            Thread t = new Thread() {
+                @Override
+                public void run() {
+                    //TODO: Change this later to add arguments.
+                    setupInitialUnitsDistribution(port);
+                    try {
+                        unitsDistributionBarrier.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            t.start();
+        }
+        // All threads has finished the execution of the units distribution.
+        while (checkGameEnds() == null) {
+            playOneTurn(30);
+        }
     }
 
 
@@ -103,7 +138,14 @@ public class Server {
      * Each player shall pick (or be assigned) one such group as her starting territories.
      */
     private void assignInitialTerritories() {
-
+        HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
+        for (int i = 0; i < players.size(); i++) {
+            // Get the player.
+            Player p = players.get(i);
+            for (Territory t : groups.get(i)) {
+                t.setOwner(p);
+            }
+        }
     }
 
     /**
@@ -112,8 +154,11 @@ public class Server {
      * This phase should occur simultaneously.
      * Consider using a ThreadPool for this, and waiting all the threads to be done.
      */
-    private void setupInitialUnitsDistribution() {
-
+    private void setupInitialUnitsDistribution(int port) {
+        // Assume we can receive orders from the client.
+        synchronized (this) {
+            // The execution of the orders need to be synchronized.
+        }
     }
 
     /**
