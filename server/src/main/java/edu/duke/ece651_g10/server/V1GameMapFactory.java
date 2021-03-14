@@ -39,7 +39,27 @@ public class V1GameMapFactory implements GameMapFactory {
         Territory beginPoint = allTerritories.remove(rand.nextInt(allTerritories.size()));
         group.add(beginPoint);
         //TODO:Fix this.
-        return null;
+        while (group.size() != territoriesPerPlayer) {
+            Territory ref = null;
+            for (Territory t: beginPoint.getNeighbours()) {
+                // If t is still available and t is not in the group, then this territory is able to be added into the group.
+                if ((!group.contains(t)) && allTerritories.contains(t)) {
+                    ref = t;
+                    group.add(t);
+                    allTerritories.remove(ref);
+                    break;
+                }
+            }
+            if (ref == null) {
+                // We need to get a random node from the list and make it the neighbour of the home.
+                Territory newNeighbour = allTerritories.remove(rand.nextInt(allTerritories.size()));
+                newNeighbour.addNeighbour(beginPoint);
+                group.add(newNeighbour);
+                beginPoint.addNeighbour(newNeighbour);
+                beginPoint = newNeighbour;
+            }
+        }
+        return group;
     }
 
 
@@ -52,17 +72,16 @@ public class V1GameMapFactory implements GameMapFactory {
      */
     @Override
     public GameMap createGameMap(int numberOfPlayers, int territoriesPerPlayer) {
-        Set<Territory> allTerritories = createRandomTerritoryGraph(numberOfPlayers, territoriesPerPlayer);
+        HashSet<Territory> allTerritories = (HashSet<Territory>) createRandomTerritoryGraph(numberOfPlayers, territoriesPerPlayer);
         // We need to divide it into numberOfPlayers group, each will has territoriesPerPlayer.
         HashMap<Integer, HashSet<Territory>> groups = new HashMap<>();
         List<Territory> copied = new LinkedList<>(allTerritories);
         for (int i = 0; i < numberOfPlayers; i ++) {
-            // Get an element from its neighbours.
-            // Verify if it is still available (ie. not occupied by other groups)
-            // If it is still available
+            HashSet<Territory> group = (HashSet<Territory>) getPlayerTerritoryGroup(copied, territoriesPerPlayer);
+            groups.put(i, group);
         }
-        // TODO:Fix this.
-        return null;
+        GameMap map = new V1GameMap(allTerritories, groups);
+        return map;
     }
 
 
