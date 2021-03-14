@@ -37,7 +37,9 @@ public interface Territory {
 
     /**
      * Get the name of the territory
+     *
      * @return The name of the territory.
      */
     public String getName();
+
 }

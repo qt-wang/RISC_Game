@@ -5,5 +5,10 @@ package edu.duke.ece651_g10.server;
  * Maintained by Guancheng Fu
  */
 public class Player {
-    private boolean isLost;
+  private boolean isLost;
+
+  // TODO:Don't forget to modify this function
+  public int getPlayerID() {
+    return 0;
+  }
 }

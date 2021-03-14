@@ -7,11 +7,11 @@ RuleChecker "1" <-- "1" Server
     SufficientUnitChecker "1" <|-- "1" RuleChecker
     AdjacentTerritoryChecker "1" <|-- "1" RuleChecker
     SelfTerritoryChecker "1" <|-- "1" RuleChecker
+    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
     EnemyTerritoryChecker "1" <|-- "1" RuleChecker
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
     InputChecker "1" <-- "1" Client
     Server "1" --> "n" Player
-    Client "1" --> "1" RuleChecker
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
     Player "1" --> "n" Unit
@@ -48,6 +48,8 @@ RuleChecker "1" <-- "1" Server
 
     class Order {
         +execute()
+        +getNumUnit()
+        +getSourceTerritory()
     }
 
     class MoveOrder {
@@ -99,6 +101,10 @@ RuleChecker "1" <-- "1" Server
     class SufficientUnitChecker {
 
     }
+    
+    class PlayerSelfOrderChecker {
+
+    }
 
     class SelfTerritoryChecker {
 
@@ -139,6 +145,7 @@ RuleChecker "1" <-- "1" Server
     class Territory {
         -HashSet~Territory~ neighbours
         -HashMap~Player,List~Unit~~ units 
+        +getNumUnit()
     }
 
     class Unit {

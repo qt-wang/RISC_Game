@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * An implementation of the game map.
- * Maintained by Guancheng Fu.
+ * An implementation of the game map. Maintained by Guancheng Fu.
  */
 public class V1GameMap implements GameMap {
 
@@ -30,4 +29,23 @@ public class V1GameMap implements GameMap {
     public HashMap<Integer, HashSet<Territory>> getInitialGroups() {
         return initialGroups;
     }
+
+
+  // TODO: Implement
+  @Override
+  public HashMap<Territory, Player> getOwnership() {
+    return null;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
