@@ -1,41 +1,45 @@
 package edu.duke.ece651_g10.server;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 /**
- * This class represents one territory of the map.
- * Maintained by Guancheng Fu.
+ * The Territory interface.
  */
-public class Territory {
-    private String name;
-    private Player owner;
-    private HashMap<Player, Army> units;
-    private HashSet<Territory> neighbours;
+public interface Territory {
+    /**
+     * Return the number of units owned in the territory (by the owner).
+     *
+     * @return The number of units currently in the territory.
+     */
+    public int getNumUnit();
 
-    // This units are all owned by the owner of the territory.
-    private Army ownedUnits;
+    /**
+     * Add neighbour as its neighbours.
+     *
+     * @param neighbour The territory to be added as current territory's neighbour.
+     *                  If neighbour is already its neighbour, do nothing.
+     */
+    public void addNeighbour(Territory neighbour);
 
-    public int getNumUnit(){
-     return 0;
-    }
+    /**
+     * Get all the neighbours of the territory.
+     *
+     * @return A Set contains all the neighbour territories.
+     */
+    public Set<Territory> getNeighbours();
 
-  public HashSet<Territory> getNeighbours() {
-    return neighbours;
-  }
+    /**
+     * Set the owner of the territory to player.
+     *
+     * @param player The player who will own this land.
+     */
+    public void setOwner(Player player);
+
+    /**
+     * Get the name of the territory
+     *
+     * @return The name of the territory.
+     */
+    public String getName();
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

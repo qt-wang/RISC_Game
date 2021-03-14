@@ -90,7 +90,7 @@ public class Server {
 
     /**
      * Run this game, this should be the only method posted to the outer world.
-     * ie. Server newServer(port)l
+     * ie. Server newServer(port)
      * newServer.run() will automatically start the game until the game is over.
      */
     public void run() {
