@@ -17,7 +17,7 @@ public class Territory {
     // This units are all owned by the owner of the territory.
     private Army ownedUnits;
 
-    public int getNumUnit(){
+    public int getUnitNum(){
      return 0;
     }
 

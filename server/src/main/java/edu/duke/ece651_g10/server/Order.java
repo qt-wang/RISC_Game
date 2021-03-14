@@ -1,18 +1,22 @@
 package edu.duke.ece651_g10.server;
 public abstract class Order {
-    int playerId;
+    int playerID;
 
-  public abstract int getUnitNum();
+    public Order(int playerID) {
+        this.playerID = playerID;
+    }
 
-  public abstract Territory getSourceTerritory();
+    public abstract int getUnitNum();
 
-  public abstract Territory getTargetTerritory();
+    public abstract Territory getSourceTerritory();
 
-  public abstract void execute();
+    public abstract Territory getTargetTerritory();
 
-  public int getPlayerID(){
-      return playerId;
-  }
+    public abstract void execute();
+
+    public int getPlayerID(){
+      return playerID;
+    }
 }
 
 

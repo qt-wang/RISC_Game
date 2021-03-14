@@ -13,7 +13,7 @@ public class V1OrderProcessor implements OrderProcessor{
     private HashMap<Territory, Vector<Order>> attacksInOneTurn;
 
     public V1OrderProcessor(){
-        HashMap<Territory, Vector<Order>> attacksInOneTurn = new HashMap<Territory, Vector<Order>>();
+        HashMap<Territory, Vector<Order>> attacksInOneTurn = new HashMap<>();
     }
 
     /**
@@ -28,10 +28,12 @@ public class V1OrderProcessor implements OrderProcessor{
 
         else if(order instanceof AttackOrder){
             if(attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory()) == null) {
-                Vector<Order> vector = new Vector<Order>();
+                Vector<Order> vector = new Vector<>();
                 vector.addElement(order);
                 attacksInOneTurn.put(((AttackOrder) order).getSourceTerritory(), vector);
             }
+            //if the order's source is same with other orders' source, then we need to
+            //check if this order can be merged with others.
             else {
                 Vector<Order> vector = attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory());
                 vector.addElement((AttackOrder) order);
@@ -41,11 +43,17 @@ public class V1OrderProcessor implements OrderProcessor{
         }
     }
 
+    /**
+     * This method merges all attack orders with same source and same target.
+     * @param vector is a vector of orders in which the source is same.
+     */
     private void merge(Vector<Order> vector){
         int length = vector.capacity();
         int index = -1;
         for(int i = 0; i < length - 1; i++){
             for(int j = i + 1; j < length; j++){
+                //if destination is same, change the unit number of the ith order. we
+                //need to remove the jth order later.
                 if(vector.get(i).getDestination() == vector.get(j).getDestination()){
                     vector.get(i).changeUnitNum(vector.get(j).getUnitNum());
                     index = j;
@@ -66,16 +74,21 @@ public class V1OrderProcessor implements OrderProcessor{
         while(allAttacks.capacity() != 0){
             int length = allAttacks.capacity();
             int index = rand.nextInt(length);
-            allAttacks.get(index).execute();
-            allAttacks.remove(allAttacks.get(index));
+            allAttacks.get(index).execute();   //the execution sequence is random.
+            allAttacks.remove(allAttacks.get(index));  //after execution, remove this order.
         }
     }
 
+    /**
+     * This method obatin all orders that have been merged.
+     * @return a vector of merged orders.
+     */
     private Vector<Order> obtainAllAttackOrders(){
-        Vector<Order> allAttacks = new Vector<Order>();
+        Vector<Order> allAttacks = new Vector<>();
         for(Territory territory : attacksInOneTurn.keySet()){
             Vector<Order> v = attacksInOneTurn.get(territory);
             for(Order order : v){
+                order.getSourceTerritory().decreaseUnit(order.getUnitNum());
                 allAttacks.addElement(order);
             }
         }

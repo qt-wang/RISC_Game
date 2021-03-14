@@ -1,12 +1,13 @@
 package edu.duke.ece651_g10.server;
 
-public class MoveOrder implements Order{
+public class MoveOrder extends Order{
     private Territory source;
     private Territory dest;
     private int unitNum;
     // HashSet<Unit> units;
 
-    public MoveOrder(Territory source, Territory dest, int unitNum){
+    public MoveOrder(int playerID, Territory source, Territory dest, int unitNum){
+        super(playerID);
         this.source = source;
         this.dest = dest;
         this.unitNum = unitNum;
@@ -17,15 +18,21 @@ public class MoveOrder implements Order{
      *source territory, and increases the number of units in the army of destination territory.
      */
     public void execute(){
+        checkValidMove();
         source.decreaseUnit(unitNum);
         dest.increaseUnit(unitNum);
+    }
+
+    private void checkValidMove(){
+        RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
+        rule.checkOrder(this, gameMap);
     }
 
     public Territory getSourceTerritory(){
         return source;
     }
 
-    public Territory getDestinationTerritory(){
+    public Territory getTargetTerritory(){
         return dest;
     }
 
