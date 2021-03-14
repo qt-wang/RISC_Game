@@ -47,9 +47,11 @@ RuleChecker "1" <-- "1" Server
     }
 
     class Order {
+        -int playerID
         +execute()
         +getNumUnit()
         +getSourceTerritory()
+        +getTargetTerritory()
     }
 
     class MoveOrder {
@@ -143,8 +145,9 @@ RuleChecker "1" <-- "1" Server
     }
 
     class Territory {
+        -String name
         -HashSet~Territory~ neighbours
-        -HashMap~Player,List~Unit~~ units 
+        -HashMap~String,List~Unit~~ units 
         +getNumUnit()
     }
 
