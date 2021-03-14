@@ -1,9 +1,11 @@
 package edu.duke.ece651_g10.server;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import java.util.*;
 
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class V1GameMapFactoryTest {
@@ -42,7 +44,8 @@ class V1GameMapFactoryTest {
     //TODO: Need more tests (ie. test the if the graph is connected or not).
     @Test
     public void test_create_random_territory_graph() {
-        V1GameMapFactory factory = new V1GameMapFactory(0.8);
+        PseudoNumberGenerator rand = new PseudoNumberGenerator();
+        V1GameMapFactory factory = new V1GameMapFactory(rand);
         Set<Territory> territories = factory.createRandomTerritoryGraph(3, 5);
         assertEquals(territories.size(), 15);
         assertEquals(true, checkConnected(territories));
@@ -69,4 +72,17 @@ class V1GameMapFactoryTest {
         notConnected.add(t3);
         assertEquals(false, checkConnected(notConnected));
     }
+
+
+
+//    @Test
+//    public void test_with_not_random_number() {
+//        // Use mock to create a random number generator.
+//        RandomNumberGenerator rand = mock(RandomNumberGenerator.class);
+//        when(rand.nextInt()).thenReturn(5);
+//
+//        V1GameMapFactory factory = new V1GameMapFactory(rand);
+//        GameMap map = factory.createGameMap(3, 4);
+//
+//    }
 }
