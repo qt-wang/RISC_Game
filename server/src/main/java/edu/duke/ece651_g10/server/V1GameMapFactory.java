@@ -4,6 +4,7 @@ import java.util.*;
 
 /**
  * This is the game map factory used in version one.
+ * TODO: Need more tests on this class.
  */
 public class V1GameMapFactory implements GameMapFactory {
 
