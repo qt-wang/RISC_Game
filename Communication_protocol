@@ -1,0 +1,58 @@
+（All message in the brackets can be ignored）
+
+(Connection phase)
+
+(After the connection)
+(Server send to client:)
+Connected, you are player x
+
+
+
+(Initial soldiers distribution:)
+
+First phase, soldiers distribution
+Player x:
+A
+----------------
+Info ... ignored
+
+
+
+(Clients send move orders to server)
+
+(server handle the orders and execute it and send the information again)
+First phase, soldiers distribution
+Player x:
+A
+----------------
+Info ... ignored
+
+
+(client send the commit order to the server)
+
+
+(server waits all the clients to commit)
+
+
+(Begin of the round)
+(Server sends the message)
+Second phase, attack territories
+Player x:
+A
+----------------
+Info ... ignored
+
+(If player has lost)
+Second phase, attack territories
+Player x:
+L
+----------------
+Info ... ignored
+
+
+
+(server waits all the clients to commit)
+
+
+
+(until the game ends.)
