@@ -11,6 +11,23 @@ import java.util.Set;
  */
 public class V1Territory implements Territory {
 
+    //TODO: Implement
+    @Override
+    public void setUnitNumber(int unit) {
+
+    }
+
+    //TODO: Implement
+    @Override
+    public void decreaseUnit(int unit) {
+
+    }
+
+    //TODO: Implement
+    @Override
+    public void increaseUnit(int unit) {
+
+    }
 
     private String name;
     private Player owner;

@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.server;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Map indicates the play board of the game. Maintained by Guancheng Fu
@@ -23,6 +24,19 @@ public interface GameMap {
      */
     public HashMap<Territory, Player> getOwnership();
 
+    /**
+     *
+     * @param name The territory's name
+     * @return The territory with this name.
+     */
+    public Territory getTerritory(String name);
+
+    /**
+     * Give the player, return a set of territories belong to this player.
+     * @param p The player for looking up.
+     * @return A set of territories belong to this user.
+     */
+    public Set<Territory> getTerritoriesForPlayer(Player p);
 }
 
 

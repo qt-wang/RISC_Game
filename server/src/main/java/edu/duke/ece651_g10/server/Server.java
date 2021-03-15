@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.*;
@@ -38,7 +39,9 @@ public class Server {
     private GameMapFactory mapFactory;
 
     // The rule checker used to check the rules of the game.
-    private RuleChecker ruleChecker;
+    private RuleChecker moveOrderChecker;
+
+    private RuleChecker attackOrderChecker;
 
     /**
      * Setup the server socket.
@@ -62,16 +65,18 @@ public class Server {
      * @param numTerritoryPerPlayer       Number of territories per player has when the game begin.
      * @param maximumNumberPlayersAllowed The maximum number of players allowed in the game.
      * @param factory                     The factory used to generate the map.
-     * @param ruleChecker                 The ruleChecker is used to check the validness of the orders.
+     * @param moveOrderChecker            The moveOrderChecker is used to check the validness of the move Orders.
+     * @param attackOrderChecker          The attackOrderChecker is used to check the validness of the attack orders.
      *                                    Assume that the ruleChecker can check any commands by entering ruleCheck.checkOrder(order);
      * @throws IOException If the port is unavailable.
      */
-    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker ruleChecker) throws IOException {
+    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker moveOrderChecker, RuleChecker attackOrderChecker) throws IOException {
         setServerSocket(port);
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
         this.maximumNumberPlayersAllowed = maximumNumberPlayersAllowed;
-        this.ruleChecker = ruleChecker;
+        this.moveOrderChecker = moveOrderChecker;
+        this.attackOrderChecker = attackOrderChecker;
         this.mapFactory = factory;
         players = new HashMap<>();
     }
@@ -110,11 +115,12 @@ public class Server {
         for (int i = 0; i < players.size(); i ++) {
             //Create a thread to run.
             int port = players.get(i).getSocketNumber();
+            int currentPlayerId = i;
             Thread t = new Thread() {
                 @Override
                 public void run() {
                     //TODO: Change this later to add arguments.
-                    setupInitialUnitsDistribution(port);
+                    setupInitialUnitsDistribution(currentPlayerId, port);
                     try {
                         unitsDistributionBarrier.await();
                     } catch (InterruptedException e) {
@@ -132,6 +138,10 @@ public class Server {
         }
     }
 
+    //TODO:Implement.
+    private void sendToClient(Socket sock, String message) {
+
+    }
 
     /**
      * Assign territories to each player, changed the attributes for the territories.
@@ -142,10 +152,41 @@ public class Server {
         for (int i = 0; i < players.size(); i++) {
             // Get the player.
             Player p = players.get(i);
+            Territory end = null;
             for (Territory t : groups.get(i)) {
                 t.setOwner(p);
+                end = t;
             }
+            end.setUnitNumber(numUnitPerPlayer);
         }
+    }
+
+    //TODO: Change this later.
+    private Order receiveOrder(int port) {
+        return null;
+    }
+
+
+
+    /**
+     * Get the player info about the specific player, construct a message like:
+     * Player playerId:
+     * A (for alive) or L (for lose)
+     * @param playerId The player id of the player.
+     * @return The string to represent the information about the player.
+     */
+    String getPlayerInfo(int playerId) {
+        boolean isLost = players.get(playerId).getIsLost();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Player ");
+        sb.append(playerId);
+        sb.append(":\n");
+        if (isLost) {
+            sb.append("L");
+        } else {
+            sb.append("A");
+        }
+        return sb.toString();
     }
 
     /**
@@ -154,10 +195,15 @@ public class Server {
      * This phase should occur simultaneously.
      * Consider using a ThreadPool for this, and waiting all the threads to be done.
      */
-    private void setupInitialUnitsDistribution(int port) {
+    private void setupInitialUnitsDistribution(int playerId, int port) {
         // Assume we can receive orders from the client.
-        synchronized (this) {
-            // The execution of the orders need to be synchronized.
+        // Send the view to the user.
+        // The player should not see the units distributions of other players.
+        boolean receiveCommit = false;
+        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
+        sb.append(getPlayerInfo(playerId));
+        while (!receiveCommit) {
+
         }
     }
 

@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.server;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An implementation of the game map. Maintained by Guancheng Fu.
@@ -31,11 +32,23 @@ public class V1GameMap implements GameMap {
     }
 
 
-  // TODO: Implement
-  @Override
-  public HashMap<Territory, Player> getOwnership() {
-    return null;
-  }
+    // TODO: Implement
+    @Override
+    public HashMap<Territory, Player> getOwnership() {
+        return null;
+    }
+
+    //TODO: Implement
+    @Override
+    public Territory getTerritory(String name) {
+        return null;
+    }
+
+    //TODO: Implement
+    @Override
+    public Set<Territory> getTerritoriesForPlayer(Player p) {
+        return null;
+    }
 }
 
 

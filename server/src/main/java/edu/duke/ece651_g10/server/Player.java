@@ -17,4 +17,8 @@ public class Player {
   public int getSocketNumber() {
     return this.socketNumber;
   }
+
+  public boolean getIsLost() {
+    return isLost;
+  }
 }

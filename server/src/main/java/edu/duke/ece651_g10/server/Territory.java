@@ -22,6 +22,27 @@ public interface Territory {
     public void addNeighbour(Territory neighbour);
 
     /**
+     * Set the territory's unit number to unit.
+     * @param unit
+     */
+    public void setUnitNumber(int unit);
+
+    /**
+     * Increase the owner's soldier number by unit.
+     *
+     * @param unit The number of units to increase.
+     */
+    public void increaseUnit(int unit);
+
+
+    /**
+     * Decrease the owner's soldier number by unit.
+     *
+     * @param unit The number of units to decrease.
+     */
+    public void decreaseUnit(int unit);
+
+    /**
      * Get all the neighbours of the territory.
      *
      * @return A Set contains all the neighbour territories.
