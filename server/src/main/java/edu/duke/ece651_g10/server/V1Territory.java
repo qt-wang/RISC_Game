@@ -14,19 +14,19 @@ public class V1Territory implements Territory {
     //TODO: Implement
     @Override
     public void setUnitNumber(int unit) {
-
+        this.ownedUnits = unit;
     }
 
     //TODO: Implement
     @Override
     public void decreaseUnit(int unit) {
-
+        this.ownedUnits -= unit;
     }
 
     //TODO: Implement
     @Override
     public void increaseUnit(int unit) {
-
+        this.ownedUnits += unit;
     }
 
 
@@ -36,7 +36,7 @@ public class V1Territory implements Territory {
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
-    private Integer ownedUnits;
+    private int ownedUnits;
 
     @Override
     public void setOwner(Player player) {
@@ -58,7 +58,7 @@ public class V1Territory implements Territory {
 
     @Override
     public int getNumUnit() {
-        return 0;
+        return ownedUnits;
     }
 
     @Override

@@ -49,7 +49,13 @@ class GameBoardTextViewTest {
         map.getTerritory("Roshar").setUnitNumber(3);
         map.getTerritory("Scadrial").setUnitNumber(5);
 
-        System.out.println(view.territoryForUser(mockPlayer1));
+        //System.out.println(view.territoryForUser(mockPlayer1));
+
+        String str = "6 units in Elantris (next to: Midkemia, Narnia, Roshar, Scadrial)\n" +
+                "3 units in Roshar (next to: Elantris, Hogwarts, Scadrial)\n" +
+                "5 units in Scadrial (next to: Midkemia, Oz, Elantris, Hogwarts, Roshar, Mordor)\n";
+        assertEquals(str, view.territoryForUser(mockPlayer1));
+
     }
 
 }

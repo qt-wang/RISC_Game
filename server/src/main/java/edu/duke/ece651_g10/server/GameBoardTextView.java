@@ -35,6 +35,7 @@ public class GameBoardTextView implements GameBoardView{
                 } else {
                     temp.append(")\n");
                 }
+                i += 1;
             }
             result.append(temp.toString());
         }

@@ -70,5 +70,4 @@ public interface Territory {
      * @return The owner of the territory.
      */
     public Player getOwner();
-
 }
