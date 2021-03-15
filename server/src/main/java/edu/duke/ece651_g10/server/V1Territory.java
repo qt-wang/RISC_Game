@@ -32,11 +32,11 @@ public class V1Territory implements Territory {
 
     private String name;
     private Player owner;
-    private HashMap<Player, Army> units;
+    private HashMap<Player, Integer> units;
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
-    private Army ownedUnits;
+    private Integer ownedUnits;
 
     @Override
     public void setOwner(Player player) {

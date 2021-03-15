@@ -63,10 +63,7 @@ public interface Territory {
      */
     public String getName();
 
-<<<<<<< HEAD
 
-    public Player getOwner();
-=======
     /**
      * Get the owner of the territory.
      *
@@ -74,5 +71,4 @@ public interface Territory {
      */
     public Player getOwner();
 
->>>>>>> 67d1a89f792e63ca36f5ccc225258af4d8812e09
 }
