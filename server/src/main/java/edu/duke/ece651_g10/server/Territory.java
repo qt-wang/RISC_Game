@@ -63,4 +63,6 @@ public interface Territory {
      */
     public String getName();
 
+
+    public Player getOwner();
 }

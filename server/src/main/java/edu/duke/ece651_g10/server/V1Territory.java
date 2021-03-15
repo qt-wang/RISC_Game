@@ -29,6 +29,11 @@ public class V1Territory implements Territory {
 
     }
 
+    @Override
+    public Player getOwner() {
+        return owner;
+    }
+
     private String name;
     private Player owner;
     private HashMap<Player, Army> units;
