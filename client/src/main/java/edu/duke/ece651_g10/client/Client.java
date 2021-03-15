@@ -103,6 +103,7 @@ public class Client {
    * @param prompt        The String will print in the terminal before the user
    *                      inputs data
    * @param legalInputSet The set of legal input
+   * @return the valid action
    */
   public String readAction(String prompt, HashSet<String> legalInputSet) throws IOException {
     String action = readString(prompt);
@@ -112,4 +113,33 @@ public class Client {
     }
     return action.toUpperCase();
   }
+
+  /**
+   * Read the number from the user
+   * 
+   * @param prompt The String will print in the terminal before the user inputs
+   *               data
+   * @return A number
+   */
+  public int readInteger(String prompt) throws IOException {
+    try {
+      int number = Integer.parseInt(readString(prompt));
+      return number;
+    } catch (NumberFormatException e) {
+      out.println("Please input valid integer.");
+      return readInteger(prompt);
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+

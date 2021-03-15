@@ -20,7 +20,6 @@ public class ClientTest {
     return client;
   }
 
-  
   @Test
   public void test_read_string() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -49,15 +48,15 @@ public class ClientTest {
     bytes.reset();
   }
 
+  @Test
+  public void test_read_integer() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    Client client = create_client("1.23\nb\n55\n", bytes, 2);
+    String prompt = "Please input your number.";
+    String error = "Please input valid integer.";
+    assertEquals(55, client.readInteger(prompt));
+    assertEquals(prompt + "\n" + error + "\n" + prompt + "\n" + error + "\n" + prompt + "\n", bytes.toString());
+    bytes.reset();
+  }
+
 }
-
-
-
-
-
-
-
-
-
-
-
