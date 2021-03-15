@@ -4,12 +4,13 @@ public class MoveOrder extends Order{
     private Territory source;
     private Territory dest;
     private int unitNum;
+    GameMap gMap;
     // HashSet<Unit> units;
 
-    public MoveOrder(int playerID, Territory source, Territory dest, int unitNum){
+    public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap){  //need to change Territory to string
         super(playerID);
-        this.source = source;
-        this.dest = dest;
+        this.source = gMap.getTerritory(source);
+        this.dest = gMap.getTerritory(dest);
         this.unitNum = unitNum;
     }
 

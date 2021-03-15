@@ -54,7 +54,7 @@ public class V1OrderProcessor implements OrderProcessor{
             for(int j = i + 1; j < length; j++){
                 //if destination is same, change the unit number of the ith order. we
                 //need to remove the jth order later.
-                if(vector.get(i).getDestination() == vector.get(j).getDestination()){
+                if(vector.get(i).getTargetTerritory().equals(vector.get(j).getTargetTerritory())){
                     vector.get(i).changeUnitNum(vector.get(j).getUnitNum());
                     index = j;
                 }

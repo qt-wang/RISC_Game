@@ -13,6 +13,7 @@ public class AttackOrder extends Order{
     private Territory attacker;
     private Territory defender;
     private  int unitNum;
+    private GameMap gMap;
 
     /**
      * @param playerID identifies the player who initiates this order.
@@ -20,11 +21,12 @@ public class AttackOrder extends Order{
      * @param def is the defender territory
      * @param num is the unit number that the attacker sends to the defender.
      */
-    public AttackOrder(int playerID, Territory att, Territory def, int num){
+    public AttackOrder(int playerID, String att, String def, int num, GameMap gMap){
         super(playerID);
-        this.attacker = att;
-        this.defender = def;
+        this.attacker = gMap.getTerritory(att);
+        this.defender = gMap.getTerritory(def);
         this.unitNum = num;
+        this.gMap = gMap;
     }
 
     /**
@@ -37,7 +39,7 @@ public class AttackOrder extends Order{
         Dice dice = new TwentySidesDice();
         boolean attackerWin = false;
         boolean defenderWin = false;
-        attacker.decreaseUnit(unitNum);
+        //attacker.decreaseUnit(unitNum);
         while(!attackerWin && !defenderWin){
             int attDice = dice.roll();
             int defDice = dice.roll();
@@ -51,7 +53,7 @@ public class AttackOrder extends Order{
                 defenderWin = true;
             }
             if(defender.getUnitNum() == 0){
-                defender.setPlayerID(playerID);
+                defender.setOwner(playerID);
                 defender.setUnitNum(unitNum);
                 attackerWin = true;
             }
