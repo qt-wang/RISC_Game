@@ -25,15 +25,18 @@ public class Client {
   /**
    * The constructor of the Client
    */
-  public Client(int playerID, PrintStream out, BufferedReader input, String hostname, int port) {
-    this.playerID = playerID;
+  public Client(PrintStream out, BufferedReader input, String hostname, int port) throws IOException{
+    this.serverHostname = hostname;
+    this.serverPort = port;
+    initSocket(hostname, port);
+
+    // Don't know how to use Mockito to set playerID at the beginning, just set 0 for now.
+    // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
+    this.playerID = 0; 
     this.out = out;
     this.inputReader = input;
     couldCommand = true;
     isDisconnected = false;
-    this.serverHostname = hostname;
-    this.serverPort = port;
-    initSocket(hostname, port);
   }
 
   /**
