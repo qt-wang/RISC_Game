@@ -1,10 +1,12 @@
 package edu.duke.ece651_g10.server;
 
 
-
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.concurrent.*;
 
 /**
  * This class implements the server of the client-server model.
@@ -37,7 +39,9 @@ public class Server {
     private GameMapFactory mapFactory;
 
     // The rule checker used to check the rules of the game.
-    private RuleChecker ruleChecker;
+    private RuleChecker moveOrderChecker;
+
+    private RuleChecker attackOrderChecker;
 
     /**
      * Setup the server socket.
@@ -61,16 +65,18 @@ public class Server {
      * @param numTerritoryPerPlayer       Number of territories per player has when the game begin.
      * @param maximumNumberPlayersAllowed The maximum number of players allowed in the game.
      * @param factory                     The factory used to generate the map.
-     * @param ruleChecker                 The ruleChecker is used to check the validness of the orders.
+     * @param moveOrderChecker            The moveOrderChecker is used to check the validness of the move Orders.
+     * @param attackOrderChecker          The attackOrderChecker is used to check the validness of the attack orders.
      *                                    Assume that the ruleChecker can check any commands by entering ruleCheck.checkOrder(order);
      * @throws IOException If the port is unavailable.
      */
-    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker ruleChecker) throws IOException {
+    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker moveOrderChecker, RuleChecker attackOrderChecker) throws IOException {
         setServerSocket(port);
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
         this.maximumNumberPlayersAllowed = maximumNumberPlayersAllowed;
-        this.ruleChecker = ruleChecker;
+        this.moveOrderChecker = moveOrderChecker;
+        this.attackOrderChecker = attackOrderChecker;
         this.mapFactory = factory;
         players = new HashMap<>();
     }
@@ -81,29 +87,106 @@ public class Server {
      * 1. If There are 5 players (The maximum number of players allowed).
      * 2. If there are at least 2 players and there are no connections in wait seconds.
      * This method should also setup the players field of the class.
-     *
+     * This method should fill the hashmap (called players)
+     * For each player, it should has a number associated with him, starts from 0.
+     * This should also setup the socket of the player.
      * @param waitSeconds The maximum time the server will wait if no other players try to wait.
      */
     private void acceptConnections(int waitSeconds) {
 
     }
 
+    private void setUpMap() {
+        int numberOfPlayers = players.size();
+        this.playMap = mapFactory.createGameMap(numberOfPlayers, numTerritoryPerPlayer);
+    }
+
+
     /**
      * Run this game, this should be the only method posted to the outer world.
-     * ie. Server newServer(port)l
+     * ie. Server newServer(port)
      * newServer.run() will automatically start the game until the game is over.
      */
     public void run() {
-
+        // Create the map used in this game.
+        setUpMap();
+        assignInitialTerritories();
+        CyclicBarrier unitsDistributionBarrier = new CyclicBarrier(players.size());
+        for (int i = 0; i < players.size(); i ++) {
+            //Create a thread to run.
+            int port = players.get(i).getSocketNumber();
+            int currentPlayerId = i;
+            Thread t = new Thread() {
+                @Override
+                public void run() {
+                    //TODO: Change this later to add arguments.
+                    setupInitialUnitsDistribution(currentPlayerId, port);
+                    try {
+                        unitsDistributionBarrier.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            t.start();
+        }
+        // All threads has finished the execution of the units distribution.
+        while (checkGameEnds() == null) {
+            playOneTurn(30);
+        }
     }
 
+    //TODO:Implement.
+    private void sendToClient(Socket sock, String message) {
+
+    }
 
     /**
      * Assign territories to each player, changed the attributes for the territories.
      * Each player shall pick (or be assigned) one such group as her starting territories.
      */
     private void assignInitialTerritories() {
+        HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
+        for (int i = 0; i < players.size(); i++) {
+            // Get the player.
+            Player p = players.get(i);
+            Territory end = null;
+            for (Territory t : groups.get(i)) {
+                t.setOwner(p);
+                end = t;
+            }
+            end.setUnitNumber(numUnitPerPlayer);
+        }
+    }
 
+    //TODO: Change this later.
+    private Order receiveOrder(int port) {
+        return null;
+    }
+
+
+
+    /**
+     * Get the player info about the specific player, construct a message like:
+     * Player playerId:
+     * A (for alive) or L (for lose)
+     * @param playerId The player id of the player.
+     * @return The string to represent the information about the player.
+     */
+    String getPlayerInfo(int playerId) {
+        boolean isLost = players.get(playerId).getIsLost();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Player ");
+        sb.append(playerId);
+        sb.append(":\n");
+        if (isLost) {
+            sb.append("L");
+        } else {
+            sb.append("A");
+        }
+        return sb.toString();
     }
 
     /**
@@ -112,8 +195,16 @@ public class Server {
      * This phase should occur simultaneously.
      * Consider using a ThreadPool for this, and waiting all the threads to be done.
      */
-    private void setupInitialUnitsDistribution() {
+    private void setupInitialUnitsDistribution(int playerId, int port) {
+        // Assume we can receive orders from the client.
+        // Send the view to the user.
+        // The player should not see the units distributions of other players.
+        boolean receiveCommit = false;
+        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
+        sb.append(getPlayerInfo(playerId));
+        while (!receiveCommit) {
 
+        }
     }
 
     /**

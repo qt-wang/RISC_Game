@@ -52,12 +52,16 @@ public class AttackOrder extends Order{
             if(unitNum  == 0){
                 defenderWin = true;
             }
-            if(defender.getUnitNum() == 0){
-                defender.setOwner(playerID);
-                defender.setUnitNum(unitNum);
+            if(defender.getNumUnit() == 0){
+                defender.setOwner(attacker.getOwner());
+                defender.increaseUnit(unitNum);
                 attackerWin = true;
             }
         }
+    }
+
+    public void addUnits(int numbers){
+        this.unitNum += numbers;
     }
 
     public Territory getSourceTerritory(){
@@ -68,7 +72,7 @@ public class AttackOrder extends Order{
         return defender;
     }
 
-    public int getUnitNum(){
+    public int getNumUnit(){
         return unitNum;
     }
 }

@@ -55,7 +55,7 @@ public class V1OrderProcessor implements OrderProcessor{
                 //if destination is same, change the unit number of the ith order. we
                 //need to remove the jth order later.
                 if(vector.get(i).getTargetTerritory().equals(vector.get(j).getTargetTerritory())){
-                    vector.get(i).changeUnitNum(vector.get(j).getUnitNum());
+                    vector.get(i).addUnits(vector.get(j).getNumUnit());
                     index = j;
                 }
             }
@@ -88,7 +88,7 @@ public class V1OrderProcessor implements OrderProcessor{
         for(Territory territory : attacksInOneTurn.keySet()){
             Vector<Order> v = attacksInOneTurn.get(territory);
             for(Order order : v){
-                order.getSourceTerritory().decreaseUnit(order.getUnitNum());
+                order.getSourceTerritory().decreaseUnit(order.getNumUnit());
                 allAttacks.addElement(order);
             }
         }

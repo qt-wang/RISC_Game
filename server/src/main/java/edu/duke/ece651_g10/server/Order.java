@@ -6,13 +6,15 @@ public abstract class Order {
         this.playerID = playerID;
     }
 
-    public abstract int getUnitNum();
+    public abstract int getNumUnit();
 
     public abstract Territory getSourceTerritory();
 
     public abstract Territory getTargetTerritory();
 
     public abstract void execute();
+
+    public abstract void addUnits(int number);
 
     public int getPlayerID(){
       return playerID;

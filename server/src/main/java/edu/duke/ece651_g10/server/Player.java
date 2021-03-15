@@ -7,8 +7,18 @@ package edu.duke.ece651_g10.server;
 public class Player {
   private boolean isLost;
 
-  // Don't forget to modify this function
+  // This should record the socket related to this user.
+  private int socketNumber;
+  // TODO:Don't forget to modify this function
   public int getPlayerID() {
     return 0;
+  }
+
+  public int getSocketNumber() {
+    return this.socketNumber;
+  }
+
+  public boolean getIsLost() {
+    return isLost;
   }
 }

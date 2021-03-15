@@ -26,7 +26,11 @@ public class MoveOrder extends Order{
 
     private void checkValidMove(){
         RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
-        rule.checkOrder(this, gameMap);
+        rule.checkOrder(this, gMap);
+    }
+
+    public void addUnits(int numbers){
+
     }
 
     public Territory getSourceTerritory(){
@@ -37,7 +41,7 @@ public class MoveOrder extends Order{
         return dest;
     }
 
-    public int getUnitNum(){
+    public int getNumUnit(){
         return unitNum;
     }
 }

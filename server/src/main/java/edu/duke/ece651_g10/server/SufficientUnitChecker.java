@@ -21,11 +21,11 @@ public class SufficientUnitChecker extends RuleChecker {
    * @param order   the order frome the player
    * @param gameMap the game map of the game
    * @return if the rule is not violated, return null. Otherwise, return the
-   *         reason casuing the invalid placement
+   *         reason causing the invalid placement
    */
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
-    if (order.getUnitNum() > order.getSourceTerritory().getUnitNum()) {
+    if (order.getNumUnit() > order.getSourceTerritory().getNumUnit()) {
       return "The territory does not have enough units.";
     }
     return null;
