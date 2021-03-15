@@ -29,10 +29,6 @@ public class V1Territory implements Territory {
 
     }
 
-    @Override
-    public Player getOwner() {
-        return owner;
-    }
 
     private String name;
     private Player owner;
@@ -75,6 +71,11 @@ public class V1Territory implements Territory {
         if (!neighbours.contains(neighbour)) {
             neighbours.add(neighbour);
         }
+    }
+
+    @Override
+    public Player getOwner(){
+        return owner;
     }
 }
 
