@@ -1,7 +1,16 @@
 package edu.duke.ece651_g10.client;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.Socket;
+import java.util.HashSet;
 
 /**
  * The client of the game
@@ -25,14 +34,15 @@ public class Client {
   /**
    * The constructor of the Client
    */
-  public Client(PrintStream out, BufferedReader input, String hostname, int port) throws IOException{
+  public Client(PrintStream out, BufferedReader input, String hostname, int port) throws IOException {
     this.serverHostname = hostname;
     this.serverPort = port;
     initSocket(hostname, port);
 
-    // Don't know how to use Mockito to set playerID at the beginning, just set 0 for now.
+    // Don't know how to use Mockito to set playerID at the beginning, just set 0
+    // for now.
     // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
-    this.playerID = 0; 
+    this.playerID = 0;
     this.out = out;
     this.inputReader = input;
     couldCommand = true;
@@ -85,5 +95,21 @@ public class Client {
   public String readString(String prompt) throws IOException {
     out.println(prompt);
     return inputReader.readLine();
+  }
+
+  /**
+   * Read the action from the user
+   * 
+   * @param prompt        The String will print in the terminal before the user
+   *                      inputs data
+   * @param legalInputSet The set of legal input
+   */
+  public String readAction(String prompt, HashSet<String> legalInputSet) throws IOException {
+    String action = readString(prompt);
+    if (!legalInputSet.contains(action.toUpperCase())) {
+      out.println("Please input valid actions.");
+      return readAction(prompt, legalInputSet);
+    }
+    return action.toUpperCase();
   }
 }
