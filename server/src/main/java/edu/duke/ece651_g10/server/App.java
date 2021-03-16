@@ -3,13 +3,19 @@
  */
 package edu.duke.ece651_g10.server;
 
+import java.io.IOException;
+
 public class App {
 
     public String getGreeting() {
         return "Hello world.";
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public static void main(String[] args) throws IOException, InterruptedException {
+        //TODO: Test remote connection.
+        FixedGameMapFactory factory = new FixedGameMapFactory();
+        Server server = new Server(12345, 3, 12, 3, factory);
+        //server.acceptConnections();
+        server.run();
     }
 }

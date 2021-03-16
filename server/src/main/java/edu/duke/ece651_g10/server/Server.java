@@ -1,7 +1,7 @@
 package edu.duke.ece651_g10.server;
 
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -45,6 +45,8 @@ public class Server {
 
     private GameBoardView view;
 
+    private int numPlayer;
+
     /**
      * Setup the server socket.
      *
@@ -55,8 +57,9 @@ public class Server {
         serverSocket = new ServerSocket(port);
         // This operation will cause the read from the socket block forever if there are
         // no content within the socket.
-        serverSocket.setSoTimeout(0);
+        //serverSocket.setSoTimeout(0);
     }
+
 
     /**
      * Begin a server.
@@ -70,9 +73,10 @@ public class Server {
      * @param moveOrderChecker            The moveOrderChecker is used to check the validness of the move Orders.
      * @param attackOrderChecker          The attackOrderChecker is used to check the validness of the attack orders.
      *                                    Assume that the ruleChecker can check any commands by entering ruleCheck.checkOrder(order);
+     * @param numPlayer                   The number of players allowed in this class.
      * @throws IOException If the port is unavailable.
      */
-    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker moveOrderChecker, RuleChecker attackOrderChecker) throws IOException {
+    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker moveOrderChecker, RuleChecker attackOrderChecker, int numPlayer) throws IOException {
         setServerSocket(port);
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -80,8 +84,29 @@ public class Server {
         this.moveOrderChecker = moveOrderChecker;
         this.attackOrderChecker = attackOrderChecker;
         this.mapFactory = factory;
+        this.numPlayer = numPlayer;
         players = new HashMap<>();
+        setServerSocket(port);
     }
+
+
+    // This constructor is for test uses.
+    public Server(HashMap<Integer, Player> players) {
+        this.players = players;
+    }
+
+    /**
+     * only for tests.
+     */
+    public Server(int port, int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, GameMapFactory factory) throws IOException {
+        this.numPlayer = numPlayer;
+        this.numTerritoryPerPlayer = numTerritoryPerPlayer;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        players = new HashMap<>();
+        setServerSocket(port);
+        this.mapFactory = factory;
+    }
+
 
     /**
      * This method begins listen to the socket and accept connections from the client.
@@ -92,16 +117,37 @@ public class Server {
      * This method should fill the hashmap (called players)
      * For each player, it should has a number associated with him, starts from 0.
      * This should also setup the socket of the player.
-     * @param waitSeconds The maximum time the server will wait if no other players try to wait.
      */
-    private void acceptConnections(int waitSeconds) {
-
+    //TODO: Change to private later and put it into the run function.
+    public void acceptConnections() throws InterruptedException, IOException {
+        int connectedPlayer = 0;
+        //accept connections from the clients
+        while (connectedPlayer < this.numPlayer) {
+            System.out.println("Waiting for client to connect");
+            Socket s = this.serverSocket.accept();
+            System.out.println("Connected with client");
+            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            String msg = br.readLine();
+            System.out.println("Client：" + msg);
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+            Player player = new Player(s, bw);
+            players.put(player.getPlayerID(), player);
+            String response = Integer.toString(player.getPlayerID());
+            response += "\n";
+            bw.write(response);
+            bw.flush();
+            connectedPlayer += 1;
+        }
     }
 
+
     private void setUpMap() {
+        System.out.println("Setup map!");
         int numberOfPlayers = players.size();
-        this.playMap = mapFactory.createGameMap(numberOfPlayers, numTerritoryPerPlayer);
+        this.playMap = mapFactory.createGameMap(this.numPlayer, numTerritoryPerPlayer);
         // TODO: Setup the view to be used in this class.
+        view = new GameBoardTextView(playMap);
+        System.out.println("Finish setup");
     }
 
 
@@ -110,12 +156,13 @@ public class Server {
      * ie. Server newServer(port)
      * newServer.run() will automatically start the game until the game is over.
      */
-    public void run() {
+    public void run() throws IOException, InterruptedException {
         // Create the map used in this game.
+        acceptConnections();
         setUpMap();
         assignInitialTerritories();
         CyclicBarrier unitsDistributionBarrier = new CyclicBarrier(players.size());
-        for (int i = 0; i < players.size(); i ++) {
+        for (int i = 1; i <= players.size(); i++) {
             //Create a thread to run.
             int port = players.get(i).getSocketNumber();
             int currentPlayerId = i;
@@ -123,12 +170,14 @@ public class Server {
                 @Override
                 public void run() {
                     //TODO: Change this later to add arguments.
-                    setupInitialUnitsDistribution(currentPlayerId, port);
                     try {
+                        setupInitialUnitsDistribution(currentPlayerId);
                         unitsDistributionBarrier.await();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -142,8 +191,13 @@ public class Server {
     }
 
     //TODO:Implement.
-    private void sendToClient(Socket sock, String message) {
-
+    private void sendToPlayer(int playerId, String message) throws IOException {
+        Player p = players.get(playerId);
+        if (message.charAt(message.length() - 1) != '\n') {
+            message += "\n";
+        }
+        p.getBufferedWriter().write(message);
+        p.getBufferedWriter().flush();
     }
 
     /**
@@ -152,7 +206,7 @@ public class Server {
      */
     private void assignInitialTerritories() {
         HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
-        for (int i = 0; i < players.size(); i++) {
+        for (int i = 1; i <= players.size(); i++) {
             // Get the player.
             Player p = players.get(i);
             Territory end = null;
@@ -170,11 +224,11 @@ public class Server {
     }
 
 
-
     /**
      * Get the player info about the specific player, construct a message like:
      * Player playerId:
      * A (for alive) or L (for lose)
+     *
      * @param playerId The player id of the player.
      * @return The string to represent the information about the player.
      */
@@ -185,10 +239,23 @@ public class Server {
         sb.append(playerId);
         sb.append(":\n");
         if (isLost) {
-            sb.append("L");
+            sb.append("L\n");
         } else {
-            sb.append("A");
+            sb.append("A\n");
         }
+        return sb.toString();
+    }
+
+    /**
+     * Generate the first phase information for every player.
+     *
+     * @param playerId The player's id.
+     * @return The information string for first phase distribution.
+     */
+    public String firstPhaseInformation(int playerId) {
+        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
+        sb.append(getPlayerInfo(playerId));
+        sb.append(view.territoryForUser(players.get(playerId)));
         return sb.toString();
     }
 
@@ -198,17 +265,16 @@ public class Server {
      * This phase should occur simultaneously.
      * Consider using a ThreadPool for this, and waiting all the threads to be done.
      */
-    private void setupInitialUnitsDistribution(int playerId, int port) {
+    private void setupInitialUnitsDistribution(int playerId) throws IOException {
         // Assume we can receive orders from the client.
         // Send the view to the user.
         // The player should not see the units distributions of other players.
         boolean receiveCommit = false;
-        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
-        sb.append(getPlayerInfo(playerId));
+        sendToPlayer(playerId, firstPhaseInformation(playerId));
         // also append the information.
-        while (!receiveCommit) {
-
-        }
+//        while (!receiveCommit) {
+//
+//        }
     }
 
     /**
