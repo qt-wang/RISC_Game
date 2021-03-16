@@ -205,7 +205,6 @@ public class Client {
   /**
    * Play the game after the placement phase
    */
-  /*
   public void playGame() throws IOException {
     String receivedString = readLinesFromServer(br);
     out.println(receivedString.substring(0, receivedString.length() - 2));
@@ -232,5 +231,17 @@ public class Client {
       }
     }
   }
-  */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
