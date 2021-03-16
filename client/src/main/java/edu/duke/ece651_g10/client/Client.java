@@ -201,4 +201,34 @@ public class Client {
       orderString = sendOrder(prompt, legalOrderSet);
     }
   }
+
+  /**
+   * Play the game after the placement phase
+   */
+  public void playGame() throws IOException {
+    String receivedString = readLinesFromServer(br);
+    out.println(receivedString.substring(0, receivedString.length() - 2));
+    if (receivedString.substring(receivedString.length() - 2, receivedString.length() - 1) == "L") {
+      ArrayList<String> commit = new ArrayList<String>();
+      commit.add("D");
+      commit.add("");
+      commit.add("");
+      commit.add("");
+      sendOrderToServer(commit);
+      // Should receive valid?
+      readLinesFromServer(br);
+    } else {
+      String prompt = "You are the Player " + String.valueOf(playerID)
+          + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
+      out.println(prompt);
+      HashSet<String> legalOrderSet = new HashSet<String>();
+      legalOrderSet.add("M");
+      legalOrderSet.add("A");
+      legalOrderSet.add("D");
+      ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
+      while (orderString.get(0) != "D") {
+        orderString = sendOrder(prompt, legalOrderSet);
+      }
+    }
+  }
 }
