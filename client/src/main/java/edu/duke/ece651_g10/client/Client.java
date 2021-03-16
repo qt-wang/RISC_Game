@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -28,8 +29,9 @@ public class Client {
   private ObjectOutputStream objectOut;
   private BufferedReader br;
 
-  boolean couldCommand;
-  boolean isDisconnected;
+  private boolean couldCommand;
+  private boolean isDisconnected;
+  final HashSet<String> normalOrderSet;
 
   /**
    * The constructor of the Client
@@ -47,6 +49,10 @@ public class Client {
     this.inputReader = input;
     couldCommand = true;
     isDisconnected = false;
+
+    this.normalOrderSet = new HashSet<String>();
+    normalOrderSet.add("M");
+    normalOrderSet.add("A");
   }
 
   /**
@@ -121,25 +127,62 @@ public class Client {
    *               data
    * @return A number
    */
-  public int readInteger(String prompt) throws IOException {
+  public String readInteger(String prompt) throws IOException {
     try {
       int number = Integer.parseInt(readString(prompt));
-      return number;
+      return String.valueOf(number);
     } catch (NumberFormatException e) {
       out.println("Please input valid integer.");
       return readInteger(prompt);
     }
   }
+
+  /**
+   * Generate the order string based on the user input
+   *
+   * @param prompt        The String will print in the terminal before the user
+   *                      inputs data
+   * @param legalOrderSet The order set
+   * @return the ArrayList of the String describes the order
+   */
+  public ArrayList<String> generateOrderString(String prompt, HashSet<String> legalOrderSet) throws IOException {
+    ArrayList<String> orderStringList = new ArrayList<String>();
+    String orderType = readAction(prompt, legalOrderSet);
+    orderStringList.add(orderType);
+    if (normalOrderSet.contains(orderType)) {
+      orderStringList.add(readString("Please input your source territory name:"));
+      orderStringList.add(readString("Please input your target territory name:"));
+      orderStringList.add(readInteger("Please input the number of nuit:"));
+    } else {
+      for (int i = 0; i < 3; i++) {
+        orderStringList.add("");
+      }
+    }
+    return orderStringList;
+  }
+
+  /**
+   * send order to server
+   */
+  public void sendOrder(ArrayList<String> orderString) {
+    // TODO
+  }
+
+  /**
+   * Place the units at beginning of the game
+   */
+  public void doPlacement() throws IOException {
+    out.println(readLinesFromServer(br));
+    String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
+    out.println(prompt);
+    HashSet<String> legalOrderSet = new HashSet<String>();
+    legalOrderSet.add("M");
+    legalOrderSet.add("D");
+    ArrayList<String> orderString = generateOrderString(prompt, legalOrderSet);
+    sendOrder(orderString);
+    while (orderString.get(0) != "D") {
+      orderString = generateOrderString(prompt, legalOrderSet);
+      sendOrder(orderString);
+    }
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
