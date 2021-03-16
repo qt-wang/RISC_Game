@@ -15,7 +15,6 @@ public class ConnectedTerritoryCheckerTest {
     // Mock
     GameMap mockGameMap = mock(GameMap.class);
     Order mockOrder1 = mock(Order.class);
-    // Order mockOrder2 = mock(Order.class);
     Player mockPlayer1 = mock(Player.class);
     Player mockPlayer2 = mock(Player.class);
 
@@ -60,12 +59,10 @@ public class ConnectedTerritoryCheckerTest {
 
     when(mockOrder1.getSourceTerritory()).thenReturn(mockTerritory1);
     when(mockOrder1.getTargetTerritory()).thenReturn(mockTerritory5);
-    // when(mockOrder2.getSourceTerritory()).thenReturn(mockTerritory1);
     when(mockGameMap.getOwnership()).thenReturn(ownership);
     when(mockPlayer1.getPlayerID()).thenReturn(1);
     when(mockPlayer2.getPlayerID()).thenReturn(2);
     when(mockOrder1.getPlayerID()).thenReturn(1);
-    // when(mockOrder2.getPlayerID()).thenReturn(2);
 
     RuleChecker checker = new ConnectedTerritoryChecker(null);
     String res = "The source territory and target territory are not connected.";
