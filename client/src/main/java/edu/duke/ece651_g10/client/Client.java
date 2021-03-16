@@ -162,10 +162,28 @@ public class Client {
   }
 
   /**
-   * send order to server
+   * Send order to server
+   *
+   * @param orderString The order string describes the Order
    */
-  public void sendOrder(ArrayList<String> orderString) {
+  public void sendOrderToServer(ArrayList<String> orderString) {
     // TODO
+  }
+
+  /**
+   * Send order
+   *
+   * @param prompt the information will print in the terminal before user input
+   * @return the ArrayList of the String describes the order
+   */
+  public ArrayList<String> sendOrder(String prompt, HashSet<String> legalOrderSet) throws IOException {
+    ArrayList<String> orderString = generateOrderString(prompt, legalOrderSet);
+    sendOrderToServer(orderString);
+    if (readLinesFromServer(br) == "invalid\n") {
+      out.println("Your last order is invalid, please input your order again");
+      orderString = sendOrder(prompt, legalOrderSet);
+    }
+    return orderString;
   }
 
   /**
@@ -178,11 +196,9 @@ public class Client {
     HashSet<String> legalOrderSet = new HashSet<String>();
     legalOrderSet.add("M");
     legalOrderSet.add("D");
-    ArrayList<String> orderString = generateOrderString(prompt, legalOrderSet);
-    sendOrder(orderString);
+    ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
     while (orderString.get(0) != "D") {
-      orderString = generateOrderString(prompt, legalOrderSet);
-      sendOrder(orderString);
+      orderString = sendOrder(prompt, legalOrderSet);
     }
   }
 }
