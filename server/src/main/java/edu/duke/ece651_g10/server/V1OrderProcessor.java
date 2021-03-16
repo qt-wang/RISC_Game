@@ -73,7 +73,7 @@ public class V1OrderProcessor implements OrderProcessor{
     }
 
     /**
-     * execute all attack orders.
+     * execute all attack orders randomly.
      */
     public void executeEndTurnOrders(){
         Vector<Order> allAttacks = obtainAllAttackOrders();
