@@ -9,9 +9,11 @@ public class Player {
 
   // This should record the socket related to this user.
   private int socketNumber;
+
+  private int playerId;
   // TODO:Don't forget to modify this function
   public int getPlayerID() {
-    return 0;
+    return playerId;
   }
 
   public int getSocketNumber() {

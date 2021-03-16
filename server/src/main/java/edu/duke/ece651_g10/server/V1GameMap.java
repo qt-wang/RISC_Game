@@ -41,13 +41,24 @@ public class V1GameMap implements GameMap {
     //TODO: Implement
     @Override
     public Territory getTerritory(String name) {
+        for (Territory t: territories) {
+            if (t.getName().equals(name)) {
+                return t;
+            }
+        }
         return null;
     }
 
-    //TODO: Implement
+
     @Override
     public Set<Territory> getTerritoriesForPlayer(Player p) {
-        return null;
+        Set<Territory> result = new HashSet<>();
+        for (Territory t: territories) {
+            if (t.getOwner()==p) {
+                result.add(t);
+            }
+        }
+        return result;
     }
 }
 

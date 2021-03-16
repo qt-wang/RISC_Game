@@ -43,6 +43,8 @@ public class Server {
 
     private RuleChecker attackOrderChecker;
 
+    private GameBoardView view;
+
     /**
      * Setup the server socket.
      *
@@ -99,6 +101,7 @@ public class Server {
     private void setUpMap() {
         int numberOfPlayers = players.size();
         this.playMap = mapFactory.createGameMap(numberOfPlayers, numTerritoryPerPlayer);
+        // TODO: Setup the view to be used in this class.
     }
 
 
@@ -202,6 +205,7 @@ public class Server {
         boolean receiveCommit = false;
         StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
         sb.append(getPlayerInfo(playerId));
+        // also append the information.
         while (!receiveCommit) {
 
         }

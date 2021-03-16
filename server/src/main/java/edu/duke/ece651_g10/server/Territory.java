@@ -63,11 +63,11 @@ public interface Territory {
      */
     public String getName();
 
+
     /**
      * Get the owner of the territory.
      *
      * @return The owner of the territory.
      */
     public Player getOwner();
-
 }

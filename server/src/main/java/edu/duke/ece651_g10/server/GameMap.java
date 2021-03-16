@@ -28,6 +28,7 @@ public interface GameMap {
      *
      * @param name The territory's name
      * @return The territory with this name.
+     * @return null If the territory is not existed.
      */
     public Territory getTerritory(String name);
 
