@@ -10,10 +10,10 @@ import java.util.Vector;
  * an attack order, it stores the order in a hashmap temporarily and executes them at last.
  */
 public class V1OrderProcessor implements OrderProcessor{
-    private HashMap<Territory, Vector<Order>> attacksInOneTurn;
+    private HashMap<Player, Vector<Order>> attacksInOneTurn;
 
     public V1OrderProcessor(){
-        HashMap<Territory, Vector<Order>> attacksInOneTurn = new HashMap<>();
+        attacksInOneTurn = new HashMap<>();
     }
 
     /**
@@ -27,25 +27,30 @@ public class V1OrderProcessor implements OrderProcessor{
         }
 
         else if(order instanceof AttackOrder){
-            if(attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory()) == null) {
+            //If this order is an attack order, decrease the unit number in the source territory at
+            //very beginning.
+            order.getSourceTerritory().decreaseUnit(order.getNumUnit());
+            //If the owner of source territory did not attack others before, then create a new item
+            //for the hashmap.
+            if(attacksInOneTurn.get(order.getSourceTerritory().getOwner()) == null) {
                 Vector<Order> vector = new Vector<>();
                 vector.addElement(order);
-                attacksInOneTurn.put(((AttackOrder) order).getSourceTerritory(), vector);
+                attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
             }
-            //if the order's source is same with other orders' source, then we need to
-            //check if this order can be merged with others.
+            //If the owner of source territory attacked others before, then put this order to his
+            //vector of orders and then merge with other orders if necessary.
             else {
-                Vector<Order> vector = attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory());
-                vector.addElement((AttackOrder) order);
+                Vector<Order> vector = attacksInOneTurn.get(order.getSourceTerritory().getOwner());
+                vector.addElement(order);
                 merge(vector);
-                attacksInOneTurn.put(((AttackOrder) order).getSourceTerritory(), vector);
+                attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
             }
         }
     }
 
     /**
-     * This method merges all attack orders with same source and same target.
-     * @param vector is a vector of orders in which the source is same.
+     * This method merges all attack orders with same territories' owner and same destination.
+     * @param vector is a vector of orders in which the owner of territories is same.
      */
     private void merge(Vector<Order> vector){
         int length = vector.capacity();
@@ -60,6 +65,8 @@ public class V1OrderProcessor implements OrderProcessor{
                 }
             }
         }
+        //Remove this order, because we have added the unit number of this order to another order.
+        //And more importantly, we have decreased the unit number of the source territory of this order.
         if(index != -1){
             vector.remove(vector.get(index));
         }
@@ -80,13 +87,13 @@ public class V1OrderProcessor implements OrderProcessor{
     }
 
     /**
-     * This method obatin all orders that have been merged.
+     * This method obtain all orders that have been merged.
      * @return a vector of merged orders.
      */
     private Vector<Order> obtainAllAttackOrders(){
         Vector<Order> allAttacks = new Vector<>();
-        for(Territory territory : attacksInOneTurn.keySet()){
-            Vector<Order> v = attacksInOneTurn.get(territory);
+        for(Player player : attacksInOneTurn.keySet()){
+            Vector<Order> v = attacksInOneTurn.get(player);
             for(Order order : v){
                 order.getSourceTerritory().decreaseUnit(order.getNumUnit());
                 allAttacks.addElement(order);
