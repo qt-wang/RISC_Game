@@ -61,10 +61,11 @@ class ServerTest {
 
 
         String secondPhaseBeginMessage = "Second phase, attack territories\n" +
-                "Player 1:\n" + "A\n" + "-----------------------\n" +
+                "Player 1:\n" + "-----------------------\n" +
                 "10 units in Narnia (next to: Elantris, Midkemia)\n" + expected;
 
-        assertEquals(secondPhaseBeginMessage, server.secondPhaseInformation(mockPlayer1.getPlayerID(), server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID())));
+        test = server.secondPhaseInformation(mockPlayer1.getPlayerID(), server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()));
+        assertEquals(secondPhaseBeginMessage, test.get("prompt"));
 
 
         when(mockPlayer3.getIsLost()).thenReturn(false);
@@ -76,7 +77,8 @@ class ServerTest {
                 "4 units in Test (next to: Eltris, Mida)\n";
 
         secondPhaseBeginMessage += expectedPlayer3;
-        assertEquals(secondPhaseBeginMessage, server.secondPhaseInformation(mockPlayer1.getPlayerID(), server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID())));
+        test = server.secondPhaseInformation(mockPlayer1.getPlayerID(), server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()));
+        assertEquals(secondPhaseBeginMessage, test.get("prompt"));
         System.out.println(secondPhaseBeginMessage);
         //Server server = new Server(container);
     }
