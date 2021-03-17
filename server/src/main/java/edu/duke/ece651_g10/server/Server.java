@@ -371,7 +371,10 @@ public class Server {
      */
     String phaseInformation(String phaseInfo, int playerId) {
         StringBuilder sb = new StringBuilder(phaseInfo);
-        sb.append(getPlayerInfo(playerId));
+        //sb.append(getPlayerInfo(playerId));
+        sb.append("Player ");
+        sb.append(playerId);
+        sb.append(":\n");
         sb.append("-----------------------\n");
         sb.append(view.territoryForUser(players.get(playerId)));
         return sb.toString();
@@ -383,22 +386,31 @@ public class Server {
         return generateInfoJSON(playerId, sb.toString());
     }
 
-    /**
-     * This message is sent to the player at the beginning of the round.
-     * And after the player send a command back to the server (so that they can see the effect
-     * of their moves.).
-     *
-     * @param playerId              The id number of the player, starts from 1.
-     * @param otherTerritoryMessage The other players' territory information, this should not changed
-     *                              during this round (player should not get other players' information
-     *                              during the round).
-     * @return A String represents the message that was sent to the user.
-     */
-    public String secondPhaseInformation(int playerId, String otherTerritoryMessage) {
-        String str = new String("Second phase, attack territories\n");
+//    /**
+//     * This message is sent to the player at the beginning of the round.
+//     * And after the player send a command back to the server (so that they can see the effect
+//     * of their moves.).
+//     *
+//     * @param playerId              The id number of the player, starts from 1.
+//     * @param otherTerritoryMessage The other players' territory information, this should not changed
+//     *                              during this round (player should not get other players' information
+//     *                              during the round).
+//     * @return A String represents the message that was sent to the user.
+//     */
+//    public String secondPhaseInformation(int playerId, String otherTerritoryMessage) {
+//        String str = new String("Second phase, attack territories\n");
+//        str = phaseInformation(str, playerId);
+//        str += otherTerritoryMessage;
+//        return str;
+//    }
+
+    public JSONObject secondPhaseInformation(int playerId, String otherTerritoryMessage) {
+        //StringBuilder sb = new StringBuilder("Second phase, attack territories\n");
+        String str = "Second phase, attack territories\n";
         str = phaseInformation(str, playerId);
+        //sb.append(phaseInformation(sb.toString()))
         str += otherTerritoryMessage;
-        return str;
+        return generateInfoJSON(playerId, str);
     }
 
     /**
@@ -480,8 +492,8 @@ public class Server {
     private void playOneTurn(int playerId) throws IOException {
         // Record other player's information, this should not change while this turn.
         String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
-        String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
-        sendToPlayer(playerId, generateInfoJSON(playerId, information));
+        //String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
+        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
         boolean receiveCommit = false;
         while (!receiveCommit) {
             Order order = receiveOrder(playerId);
@@ -494,7 +506,7 @@ public class Server {
                     if (message == null) {
                         sendValidResponse(playerId);
                         orderProcessor.acceptOrder(order);
-                        sendToPlayer(playerId, generateInfoJSON(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation)));
+                        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
                     } else {
                         sendInvalidResponse(playerId);
                     }
