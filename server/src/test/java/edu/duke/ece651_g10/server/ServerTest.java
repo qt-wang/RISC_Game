@@ -1,5 +1,6 @@
 package edu.duke.ece651_g10.server;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.text.View;
@@ -46,16 +47,18 @@ class ServerTest {
 
         server.setView(mockView);
         expected = "First phase, soldiers distribution\n" +
-                "Player 1:\n" + "A\n" + "-----------------------\n" +
+                //"Player 1:\n" + "A\n" + "-----------------------\n" +
         "10 units in Narnia (next to: Elantris, Midkemia)\n";
+        JSONObject test = server.firstPhaseInformation(mockPlayer1.getPlayerID());
+        assertEquals(test.getString("prompt"), expected);
 
-        assertEquals(server.firstPhaseInformation(mockPlayer1.getPlayerID()), expected);
+
 
         expected = "Player 2:\n" +
                 "-----------------------\n" +
                 "12 units in Test (next to: Eltris, Mida)\n";
-
         assertEquals(server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()), expected);
+
 
         String secondPhaseBeginMessage = "Second phase, attack territories\n" +
                 "Player 1:\n" + "A\n" + "-----------------------\n" +
@@ -75,5 +78,7 @@ class ServerTest {
         secondPhaseBeginMessage += expectedPlayer3;
         assertEquals(secondPhaseBeginMessage, server.secondPhaseInformation(mockPlayer1.getPlayerID(), server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID())));
         System.out.println(secondPhaseBeginMessage);
+        //Server server = new Server(container);
+        //String expected =
     }
 }
