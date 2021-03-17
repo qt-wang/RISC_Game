@@ -51,6 +51,21 @@ public class V1GameMap implements GameMap {
 
 
     @Override
+    public Player allBelongsToSamePlayer() {
+        Player player = null;
+        for (Territory t: territories) {
+            if (player == null) {
+                player = t.getOwner();
+            } else {
+                if (player != t.getOwner()) {
+                    return null;
+                }
+            }
+        }
+        return player;
+    }
+
+    @Override
     public Set<Territory> getTerritoriesForPlayer(Player p) {
         Set<Territory> result = new HashSet<>();
         for (Territory t: territories) {

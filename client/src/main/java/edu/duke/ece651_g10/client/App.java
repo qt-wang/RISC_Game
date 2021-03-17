@@ -26,6 +26,11 @@ public class App {
 
   public static void main(String[] args) throws IOException {
     BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-    App app = new App(input, "0.0.0.0", 1111);
+    App app = new App(input, "127.0.0.1", 12345);
+    while (true) {
+      String str = app.client.readLinesFromServer();
+      System.out.println(str);
+    }
+    //app.client
   }
 }

@@ -71,7 +71,28 @@ class V1GameMapFactoryTest {
         assertEquals(false, checkConnected(notConnected));
     }
 
+    @Test
+    public void test_all_belong_to_same_user() {
+        HashSet<Territory> territories = new HashSet<>();
+        Territory t = mock(Territory.class);
+        Territory t2 = mock(Territory.class);
 
+        territories.add(t);
+        territories.add(t2);
+        HashMap<Integer, HashSet<Territory>> groups = new HashMap<>();
+
+        GameMap map = new V1GameMap(territories, groups);
+
+        Player p1 = mock(Player.class);
+        Player p2 = mock(Player.class);
+        when(t.getOwner()).thenReturn(p1);
+        when(t2.getOwner()).thenReturn(p2);
+
+        assertEquals(null, map.allBelongsToSamePlayer());
+
+        when(t2.getOwner()).thenReturn(p1);
+        assertEquals(p1, map.allBelongsToSamePlayer());
+    }
 
 //    @Test
 //    public void test_with_not_random_number() {
