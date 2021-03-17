@@ -1,6 +1,9 @@
 package edu.duke.ece651_g10.server;
 
 
+import edu.duke.ece651_g10.shared.JSONCommunicator;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -124,15 +127,13 @@ public class Server {
             Socket s = this.serverSocket.accept();
             System.out.println("Connected with client");
             BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            String msg = br.readLine();
-            System.out.println("Client：" + msg);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-            Player player = new Player(s, bw);
+            JSONCommunicator jc = new JSONCommunicator(br, bw);
+            String msg = jc.receive().getString("prompt");
+            System.out.println("Client：" + msg);
+            Player player = new Player(s, jc);
             players.put(player.getPlayerID(), player);
-            String response = Integer.toString(player.getPlayerID());
-            response += "\n";
-            bw.write(response);
-            bw.flush();
+            jc.send(generateInfoJSON(player.getPlayerID(), "You've connected to the server.\n"));
             connectedPlayer += 1;
         }
     }
@@ -210,7 +211,6 @@ public class Server {
     }
 
 
-
     /**
      * Run this game, this should be the only method posted to the outer world.
      * ie. Server newServer(port)
@@ -251,7 +251,7 @@ public class Server {
      */
     String getWholeGameInformation() {
         StringBuilder sb = new StringBuilder();
-        for (Player p: players.values()) {
+        for (Player p : players.values()) {
             if (!p.getIsLost()) {
                 sb.append("Player ");
                 sb.append(p.getPlayerID());
@@ -264,28 +264,26 @@ public class Server {
     }
 
     private void sendValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, "valid\n");
+        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n"));
+        //TODO: Change this later to send a inform message.
     }
 
     private void sendInvalidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, "invalid\n");
+        // TODO: Change this later to send a inform message.
+        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n"));
     }
 
 
     private void sendToAllPlayer(String message) throws IOException {
-        for (Player p: players.values()) {
-            sendToPlayer(p.getPlayerID(), message);
+        for (Player p : players.values()) {
+            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message));
         }
     }
 
     //TODO:Implement.
-    private void sendToPlayer(int playerId, String message) throws IOException {
+    private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
-        if (message.charAt(message.length() - 1) != '\n') {
-            message += "\n";
-        }
-        p.getBufferedWriter().write(message);
-        p.getBufferedWriter().flush();
+        p.getJCommunicator().send(obj);
     }
 
     /**
@@ -334,6 +332,20 @@ public class Server {
         return sb.toString();
     }
 
+    /**
+     * generate a JSONObject of type: inform
+     *
+     * @param content the information
+     * @return the constructed JSONObject
+     */
+    private JSONObject generateInfoJSON(int playerId, String content) {
+        JSONObject info = new JSONObject().put("type", "inform");
+        info = info.put("prompt", content).put("playerID", playerId);
+        boolean isLost = players.get(playerId).getIsLost();
+        info = isLost ? info.put("playerStatus", "L") : info.put("playerStatus", "A");
+        return info;
+    }
+
     void setView(GameBoardTextView view) {
         this.view = view;
     }
@@ -344,10 +356,11 @@ public class Server {
      * @param playerId The player's id.
      * @return The information string for first phase distribution.
      */
-    public String firstPhaseInformation(int playerId) {
-        String str = new String("First phase, soldiers distribution\n");
-        return phaseInformation(str, playerId);
-    }
+
+//    public String firstPhaseInformation(int playerId) {
+//        String str = new String("First phase, soldiers distribution\n");
+//        return phaseInformation(str, playerId);
+//    }
 
     /**
      * Provide the phase information used to send to the users.
@@ -362,6 +375,12 @@ public class Server {
         sb.append("-----------------------\n");
         sb.append(view.territoryForUser(players.get(playerId)));
         return sb.toString();
+    }
+
+    public JSONObject firstPhaseInformation(int playerId) {
+        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
+        sb.append(view.territoryForUser(players.get(playerId)));
+        return generateInfoJSON(playerId, sb.toString());
     }
 
     /**
@@ -393,6 +412,7 @@ public class Server {
         // Send the view to the user.
         // The player should not see the units distributions of other players.
         boolean receiveCommit = false;
+
         sendToPlayer(playerId, firstPhaseInformation(playerId));
         while (!receiveCommit) {
             Order order = receiveOrder(playerId);
@@ -461,7 +481,7 @@ public class Server {
         // Record other player's information, this should not change while this turn.
         String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
         String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
-        sendToPlayer(playerId, information);
+        sendToPlayer(playerId, generateInfoJSON(playerId, information));
         boolean receiveCommit = false;
         while (!receiveCommit) {
             Order order = receiveOrder(playerId);
@@ -474,7 +494,7 @@ public class Server {
                     if (message == null) {
                         sendValidResponse(playerId);
                         orderProcessor.acceptOrder(order);
-                        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+                        sendToPlayer(playerId, generateInfoJSON(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation)));
                     } else {
                         sendInvalidResponse(playerId);
                     }

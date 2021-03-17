@@ -1,6 +1,7 @@
 package edu.duke.ece651_g10.server;
 
-import java.io.BufferedWriter;
+import edu.duke.ece651_g10.shared.JSONCommunicator;
+
 import java.net.Socket;
 
 /**
@@ -12,7 +13,9 @@ public class Player {
   //The next available playerId.
   static int availableId;
 
-  BufferedWriter bw;
+//  BufferedWriter bw;
+
+  private JSONCommunicator jCommunicate;
 
   static {
     availableId = 1;
@@ -43,17 +46,21 @@ public class Player {
     return isLost;
   }
 
-  public BufferedWriter getBufferedWriter() {
-    return this.bw;
+  public JSONCommunicator getJCommunicator(){
+    return this.jCommunicate;
   }
+
+//  public BufferedWriter getBufferedWriter() {
+//    return this.bw;
+//  }
   /**
    * Construct a Player class.
    * @param socket   The socket which can be used to read/write to it.
    */
-  Player(Socket socket, BufferedWriter bw) {
+  Player(Socket socket, JSONCommunicator jc) {
     this.playerId = availableId++;
     this.connectedSocket = socket;
-    this.bw = bw;
+    this.jCommunicate = jc;
   }
 
 
