@@ -1,6 +1,7 @@
 package edu.duke.ece651_g10.client;
 
 import edu.duke.ece651_g10.shared.JSONCommunicator;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -21,6 +22,7 @@ public class Client {
     private Socket socket;
     private BufferedReader br;
     private BufferedWriter bw;
+    public String playerStatus;
     public JSONCommunicator jCommunicate;
 
     private boolean couldCommand;
@@ -39,6 +41,7 @@ public class Client {
         // for now.
         // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
         this.playerID = 0;
+        this.playerStatus = "A";
         this.out = out;
         this.inputReader = input;
         couldCommand = true;
@@ -73,11 +76,34 @@ public class Client {
 
     /**
      * generate a JSONObject of type: inform
-     * @param content the information
+     * @param prompt the information
      * @return the constructed JSONObject
      */
-    private JSONObject generateInfoJSON(String content){
-        return new JSONObject().put("type","inform").put("prompt",content);
+    public JSONObject generateInfoJSON(String prompt){
+        return new JSONObject().put("type","inform").put("prompt",prompt);
+    }
+
+    /**
+     * generate a commit JSONObject
+     * used to let the server end the receiving order phase
+     * @return a newly constructed JSONObject with only one field "type" to be "commit"
+     */
+    public JSONObject generateCommitJSON(){
+        return new JSONObject().put("type","commit");
+    }
+
+    /**
+     * generate a JSONObject that contains order info
+     * @param orderType the type of the order, currently only attack and move
+     * @param sourceT the source territory name
+     * @param destT the destination territory name
+     * @param unitNum the number of units
+     * @return the constructed JSONObject
+     */
+    public JSONObject generateOrderJSON(String orderType,String sourceT, String destT,int unitNum){
+        assert(orderType.equals("attack")||orderType.equals("move"));
+        return new JSONObject().put("type","order").put("orderType",orderType)
+                .put("sourceTerritory",sourceT).put("destTerritory",destT).put("unitNumber",unitNum);
     }
 
     /**
@@ -85,17 +111,78 @@ public class Client {
      * @param obj a JSONObject
      * @return the content or null if not exists
      */
-    private String messageType(JSONObject obj){
+    public String getMessageType(JSONObject obj){
         try{
             String ans = obj.getString("type");
             return ans;
-        }catch(NullPointerException e){
+        }catch(JSONException e){
             e.printStackTrace();
             return null;
         }
     }
 
+    /**
+     * get the player's id from the JSONObject
+     * @param obj a JSONObject
+     * @return the player's id or null if not exists
+     */
+    public Integer getPlayerId(JSONObject obj){
+        try{
+            int ans = obj.getInt("playerID");
+            return ans;
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
+    /**
+     * get the player status field from the json object
+     * @param obj the json object
+     * @return the string representing the player's status
+     */
+    public String getPlayerStatus(JSONObject obj){
+        try{
+            String ans = obj.getString("playerStatus");
+            return ans;
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * get the Prompt field from the json object
+     * @param obj the json object
+     * @return the prompt string
+     */
+    public String getPrompt(JSONObject obj){
+        try{
+            String ans = obj.getString("prompt");
+            return ans;
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * get the asking field from the json object
+     * @param obj the json object
+     * @return "initial" where the player is in the initialization part of the game and
+     *          whose order should be restricted to move and commit
+     *          "regular" where the player is in the game and can input any order type and commit
+     */
+    public String getAskingType(JSONObject obj){
+        assert(getMessageType(obj)!=null && getMessageType(obj).equals("ask"));
+        try{
+            String ans = obj.getString("asking");
+            return ans;
+        }catch(NullPointerException e){
+            //e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Read a bunch of lines and combine them into one String

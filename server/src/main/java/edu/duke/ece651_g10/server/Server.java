@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.server;
 
 
 import edu.duke.ece651_g10.shared.JSONCommunicator;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -334,17 +335,93 @@ public class Server {
 
     /**
      * generate a JSONObject of type: inform
-     *
-     * @param content the information
+     * @param playerId the player's id
+     * @param prompt the information
      * @return the constructed JSONObject
      */
-    private JSONObject generateInfoJSON(int playerId, String content) {
+    public JSONObject generateInfoJSON(int playerId, String prompt) {
         JSONObject info = new JSONObject().put("type", "inform");
-        info = info.put("prompt", content).put("playerID", playerId);
+        info = info.put("prompt", prompt).put("playerID", playerId);
         boolean isLost = players.get(playerId).getIsLost();
         info = isLost ? info.put("playerStatus", "L") : info.put("playerStatus", "A");
         return info;
     }
+
+    /**
+     * generate a JSONObject of type: inform
+     * @param playerId the player's id
+     * @param prompt the information
+     * @param askingType the type of asking
+     * @return the constructed JSONObject
+     */
+    public JSONObject generateAskJSON(int playerId, String prompt, String askingType){
+        assert(askingType.equals("initial")||askingType.equals("regular"));
+        JSONObject ask = new JSONObject().put("type", "ask").put("asking",askingType);
+        ask = ask.put("prompt", prompt).put("playerID", playerId);
+        boolean isLost = players.get(playerId).getIsLost();
+        ask = isLost ? ask.put("playerStatus", "L") : ask.put("playerStatus", "A");
+        return ask;
+    }
+
+    /**
+     * get the String mapped to "type" in the JSONObject
+     * call this first when you receive any JSONObject before parsing!
+     * @param obj a JSONObject
+     * @return the content or null if not exists
+     */
+    public String getMessageType(JSONObject obj){
+        try{
+            String ans = obj.getString("type");
+            return ans;
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * get the information in a inform JSONObject
+     * @param obj the obj received
+     * @return the prompt field or null if not exists
+     */
+    public String getPrompt(JSONObject obj){
+        assert(getMessageType(obj)!=null && getMessageType(obj).equals("inform"));
+        try{
+            String ans = obj.getString("prompt");
+            return ans;
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * parse order JSONObject into order object
+     * @param playerId the id of the player where the obj from
+     * @param obj the JSONObject
+     * @return an order object or null if the obj is not a parsable one
+     */
+    public Order toOrder(int playerId, JSONObject obj){
+        try{
+            String orderType = obj.getString("orderType"),
+                    sourceT = obj.getString("sourceTerritory"),
+                    destT = obj.getString("destTerritory");
+            int unitNum = obj.getInt("unitNumber");
+            if(orderType.equals("move")){
+                Order order = new MoveOrder(playerId,sourceT,destT,unitNum,this.playMap);
+                return order;
+            }else if(orderType.equals("attack")){
+                Order order = new AttackOrder(playerId,sourceT,destT,unitNum,this.playMap);
+                return order;
+            }else {
+                return null;
+            }
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     void setView(GameBoardTextView view) {
         this.view = view;

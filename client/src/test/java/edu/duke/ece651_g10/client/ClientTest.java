@@ -1,7 +1,5 @@
 package edu.duke.ece651_g10.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +9,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientTest {
   private Client create_client(String inputData, OutputStream bytes, int port) throws IOException {
@@ -81,6 +82,48 @@ public class ClientTest {
     String prompt = "Input order:";
     assertEquals(res1, client1.generateOrderString(prompt, legalOrderSet));
     assertEquals(res2, client2.generateOrderString(prompt, legalOrderSet));
+  }
+
+  @Test
+  public void test_JSONObject_generator_getter() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    Client c = create_client("", bytes, 1);
+    JSONObject commit = c.generateCommitJSON();
+    assertEquals(commit.getString("type"),"commit");
+    String[] prompts = {"a","1","*","\n"};
+    JSONObject[] promptJs = new JSONObject[4];
+    for(int i = 0;i<prompts.length;i++){
+      promptJs[i] = c.generateInfoJSON(prompts[i]);
+    }
+    for(int i = 0;i<prompts.length;i++){
+      assertEquals(promptJs[i].getString("type"),"inform");
+      assertEquals(promptJs[i].getString("prompt"),prompts[i]);
+    }
+    JSONObject order1 = c.generateOrderJSON("attack","durham","shanghai",5);
+    JSONObject order2 = c.generateOrderJSON("move","beijing","chicago",9);
+    orderJSON_test_helper(order1,"attack","durham","shanghai",5);
+    orderJSON_test_helper(order2,"move","beijing","chicago",9);
+    JSONObject testNullGetter = new JSONObject();
+    assertNull(c.getMessageType(testNullGetter));
+    assertThrows(AssertionError.class,()->c.getAskingType(testNullGetter));
+    assertNull(c.getPlayerId(testNullGetter));
+    assertNull(c.getPrompt(testNullGetter));
+    assertNull(c.getPlayerStatus(testNullGetter));
+    JSONObject testGetter = new JSONObject().put("type","ask").put("playerID",3)
+            .put("playerStatus","L").put("prompt","aaa").put("asking","regular");
+    assertEquals(c.getMessageType(testGetter),"ask");
+    assertEquals(c.getAskingType(testGetter),"regular");
+    assertEquals(c.getPlayerId(testGetter),3);
+    assertEquals(c.getPrompt(testGetter),"aaa");
+    assertEquals(c.getPlayerStatus(testGetter),"L");
+  }
+
+  private void orderJSON_test_helper(JSONObject order, String orderType,String sourceT, String destT,int unitNum){
+    assertEquals(order.getString("type"),"order");
+    assertEquals(order.getString("orderType"),orderType);
+    assertEquals(order.getString("sourceTerritory"),sourceT);
+    assertEquals(order.getString("destTerritory"),destT);
+    assertEquals(order.getInt("unitNumber"),unitNum);
   }
 
 }

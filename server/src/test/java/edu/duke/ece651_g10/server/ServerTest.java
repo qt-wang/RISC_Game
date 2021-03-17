@@ -79,6 +79,26 @@ class ServerTest {
         assertEquals(secondPhaseBeginMessage, server.secondPhaseInformation(mockPlayer1.getPlayerID(), server.getEnemyTerritoryInformation(mockPlayer1.getPlayerID())));
         System.out.println(secondPhaseBeginMessage);
         //Server server = new Server(container);
-        //String expected =
+    }
+
+    private Server creatTestServer(){
+        Player mockPlayer1 = mock(Player.class);
+        Player mockPlayer2 = mock(Player.class);
+        Player mockPlayer3 = mock(Player.class);
+        HashMap<Integer, Player> container = new HashMap<>();
+        container.put(1, mockPlayer1);
+        container.put(2, mockPlayer2);
+        container.put(3, mockPlayer3);
+        return new Server(container);
+    }
+
+    @Test
+    public void test_JSON_related(){
+        Server server = creatTestServer();
+//        server.generateAskJSON();
+//        server.generateInfoJSON();
+//        server.getPrompt();
+//        server.getMessageType();
+//        server.toOrder();
     }
 }
