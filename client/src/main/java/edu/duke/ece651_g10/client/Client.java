@@ -26,7 +26,6 @@ public class Client {
   public String playerStatus;
   public JSONCommunicator jCommunicate;
 
-  private boolean couldCommand;
   private boolean isDisconnected;
   final HashSet<String> normalOrderSet;
   final HashMap<String, String> orderKeyValue;
@@ -46,7 +45,6 @@ public class Client {
     this.playerStatus = "A";
     this.out = out;
     this.inputReader = input;
-    couldCommand = true;
     isDisconnected = false;
 
     this.normalOrderSet = new HashSet<String>();
@@ -341,12 +339,13 @@ public class Client {
    * Play the game after the placement phase
    */
   public void playGame() throws IOException {
-    String receivedString = readLinesFromServer();
-    out.println(receivedString.substring(0, receivedString.length() - 2));
-    if (receivedString.substring(receivedString.length() - 2, receivedString.length() - 1) == "L") {
+    // Where to get the JSONObj from
+    JSONObject tempJSONObj = new JSONObject();
+    out.println(getPrompt(tempJSONObj));
+    if (getPlayerStatus(tempJSONObj) == "L") {
       sendOrderToServer(generateCommitJSON());
-      // Should receive valid?
-      readLinesFromServer();
+      //Got feedback from server?
+      
     } else {
       String prompt = "You are the Player " + String.valueOf(playerID)
           + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
