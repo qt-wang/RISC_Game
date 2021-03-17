@@ -199,21 +199,6 @@ public class Client {
     }
   }
 
-  /**
-   * Read a bunch of lines and combine them into one String
-   */
-  public String readLinesFromServer() throws IOException {
-    String msg = br.readLine();
-    msg += "\n";
-    StringBuilder ans = new StringBuilder(msg);
-    while (br.ready()) {
-      String temp = br.readLine();
-      ans.append(temp);
-      ans.append("\n");
-    }
-    return ans.toString();
-  }
-
   public void run() {
 
   }
@@ -291,10 +276,10 @@ public class Client {
   /**
    * Send order to server
    *
-   * @param orderString The order string describes the Order
+   * @param orderJSON The order JSON describes the Order
    */
-  public void sendOrderToServer(JSONObject orderJSON) {
-    // TODO
+  public void sendOrderToServer(JSONObject orderJSON) throws IOException {
+    jCommunicate.send(orderJSON);
   }
 
   /**
@@ -306,13 +291,15 @@ public class Client {
   public ArrayList<String> sendOrder(String prompt, HashSet<String> legalOrderSet) throws IOException {
     ArrayList<String> orderString = generateOrderString(prompt, legalOrderSet);
     if (normalOrderSet.contains(orderString.get(0))) {
-      JSONObject orderJSON = generateOrderJSON(orderKeyValue.get(orderString.get(0)), orderString.get(1), orderString.get(2), Integer.parseInt(orderString.get(3)));
+      JSONObject orderJSON = generateOrderJSON(orderKeyValue.get(orderString.get(0)), orderString.get(1),
+          orderString.get(2), Integer.parseInt(orderString.get(3)));
       sendOrderToServer(orderJSON);
     } else {
       JSONObject orderJSON = generateCommitJSON();
       sendOrderToServer(orderJSON);
     }
-    if (readLinesFromServer() == "invalid\n") {
+    // Is that correct
+    if (getPrompt(jCommunicate.receive()) == "invalid") {
       out.println("Your last order is invalid, please input your order again");
       orderString = sendOrder(prompt, legalOrderSet);
     }
@@ -323,7 +310,7 @@ public class Client {
    * Place the units at beginning of the game
    */
   public void doPlacement() throws IOException {
-    out.println(readLinesFromServer());
+    out.println(getPrompt(jCommunicate.receive()));
     String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
     out.println(prompt);
     HashSet<String> legalOrderSet = new HashSet<String>();
@@ -339,13 +326,11 @@ public class Client {
    * Play the game after the placement phase
    */
   public void playGame() throws IOException {
-    // Where to get the JSONObj from
-    JSONObject tempJSONObj = new JSONObject();
-    out.println(getPrompt(tempJSONObj));
-    if (getPlayerStatus(tempJSONObj) == "L") {
+    JSONObject receivedJSON = jCommunicate.receive();
+    out.println(getPrompt(receivedJSON));
+    if (getPlayerStatus(receivedJSON) == "L") {
       sendOrderToServer(generateCommitJSON());
-      //Got feedback from server?
-      
+      // Should receive valid?
     } else {
       String prompt = "You are the Player " + String.valueOf(playerID)
           + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
