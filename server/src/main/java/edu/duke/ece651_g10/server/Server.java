@@ -1,6 +1,9 @@
 package edu.duke.ece651_g10.server;
 
 
+import edu.duke.ece651_g10.shared.JSONCommunicator;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -127,15 +130,13 @@ public class Server {
             Socket s = this.serverSocket.accept();
             System.out.println("Connected with client");
             BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            String msg = br.readLine();
-            System.out.println("Client：" + msg);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-            Player player = new Player(s, bw);
+            JSONCommunicator jc = new JSONCommunicator(br,bw);
+            String msg = jc.receive().getString("prompt");
+            System.out.println("Client：" + msg);
+            Player player = new Player(s, jc);
             players.put(player.getPlayerID(), player);
-            String response = Integer.toString(player.getPlayerID());
-            response += "\n";
-            bw.write(response);
-            bw.flush();
+            jc.send(generateInfoJSON(player.getPlayerID(),"You've connected to the server.\n"));
             connectedPlayer += 1;
         }
     }
@@ -191,13 +192,9 @@ public class Server {
     }
 
     //TODO:Implement.
-    private void sendToPlayer(int playerId, String message) throws IOException {
+    private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
-        if (message.charAt(message.length() - 1) != '\n') {
-            message += "\n";
-        }
-        p.getBufferedWriter().write(message);
-        p.getBufferedWriter().flush();
+        p.getJCommunicator().send(obj);
     }
 
     /**
@@ -224,26 +221,39 @@ public class Server {
     }
 
 
+//    /**
+//     * Get the player info about the specific player, construct a message like:
+//     * Player playerId:
+//     * A (for alive) or L (for lose)
+//     *
+//     * @param playerId The player id of the player.
+//     * @return The string to represent the information about the player.
+//     */
+//    String getPlayerInfo(int playerId) {
+//        boolean isLost = players.get(playerId).getIsLost();
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("Player ");
+//        sb.append(playerId);
+//        sb.append(":\n");
+//        if (isLost) {
+//            sb.append("L\n");
+//        } else {
+//            sb.append("A\n");
+//        }
+//        return sb.toString();
+//    }
+
     /**
-     * Get the player info about the specific player, construct a message like:
-     * Player playerId:
-     * A (for alive) or L (for lose)
-     *
-     * @param playerId The player id of the player.
-     * @return The string to represent the information about the player.
+     * generate a JSONObject of type: inform
+     * @param content the information
+     * @return the constructed JSONObject
      */
-    String getPlayerInfo(int playerId) {
+    private JSONObject generateInfoJSON(int playerId, String content){
+        JSONObject info = new JSONObject().put("type","inform");
+        info = info.put("prompt",content).put("playerID",playerId);
         boolean isLost = players.get(playerId).getIsLost();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Player ");
-        sb.append(playerId);
-        sb.append(":\n");
-        if (isLost) {
-            sb.append("L\n");
-        } else {
-            sb.append("A\n");
-        }
-        return sb.toString();
+        info = isLost ? info.put("playerStatus","L") : info.put("playerStatus","A");
+        return info;
     }
 
     /**
@@ -252,11 +262,10 @@ public class Server {
      * @param playerId The player's id.
      * @return The information string for first phase distribution.
      */
-    public String firstPhaseInformation(int playerId) {
+    public JSONObject firstPhaseInformation(int playerId) {
         StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
-        sb.append(getPlayerInfo(playerId));
         sb.append(view.territoryForUser(players.get(playerId)));
-        return sb.toString();
+        return generateInfoJSON(playerId,sb.toString());
     }
 
     /**
@@ -270,6 +279,7 @@ public class Server {
         // Send the view to the user.
         // The player should not see the units distributions of other players.
         boolean receiveCommit = false;
+
         sendToPlayer(playerId, firstPhaseInformation(playerId));
         // also append the information.
 //        while (!receiveCommit) {

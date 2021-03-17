@@ -1,14 +1,9 @@
 package edu.duke.ece651_g10.client;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
+import edu.duke.ece651_g10.shared.JSONCommunicator;
+import org.json.JSONObject;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,10 +19,9 @@ public class Client {
     final String serverHostname;
     final int serverPort;
     private Socket socket;
-    private InputStream is;
-    private OutputStream os;
-    private ObjectOutputStream objectOut;
     private BufferedReader br;
+    private BufferedWriter bw;
+    public JSONCommunicator jCommunicate;
 
     private boolean couldCommand;
     private boolean isDisconnected;
@@ -61,24 +55,47 @@ public class Client {
     private void initSocket(String hostname, int port) {
         try {
             this.socket = new Socket(hostname, port);
-            this.is = this.socket.getInputStream();
-            this.os = this.socket.getOutputStream();
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(this.os));
-            this.br = new BufferedReader(new InputStreamReader(this.is));
-            this.objectOut = new ObjectOutputStream(this.os);
-
-            bw.write("Testing, server, can you hear me?\n");
-            bw.flush();
+            this.bw = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+            this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.jCommunicate = new JSONCommunicator(br,bw);
+            jCommunicate.send(generateInfoJSON("Testing, server, can you hear me?\n"));
             //Thread.sleep(5000);
             //String ans = readLinesFromServer(this.br);
             //String ans = this.br.readLine();
-            String ans = readLinesFromServer();
-            System.out.println("Server：" + ans.toString());
+            //String ans = readLinesFromServer();
+            JSONObject ans = jCommunicate.receive();
+            String prompt = ans.getString("prompt");
+            System.out.println(prompt);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * generate a JSONObject of type: inform
+     * @param content the information
+     * @return the constructed JSONObject
+     */
+    private JSONObject generateInfoJSON(String content){
+        return new JSONObject().put("type","inform").put("prompt",content);
+    }
+
+    /**
+     * get the String mapped to "type" in the JSONObject
+     * @param obj a JSONObject
+     * @return the content or null if not exists
+     */
+    private String messageType(JSONObject obj){
+        try{
+            String ans = obj.getString("type");
+            return ans;
+        }catch(NullPointerException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
     /**
      * Read a bunch of lines and combine them into one String
@@ -94,7 +111,6 @@ public class Client {
         }
         return ans.toString();
     }
-
 
 
     public void run() {

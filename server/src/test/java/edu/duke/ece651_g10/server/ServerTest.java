@@ -14,8 +14,7 @@ class ServerTest {
         HashMap<Integer, Player> container = new HashMap<>();
         container.put(1, mockPlayer1);
         when(mockPlayer1.getIsLost()).thenReturn(false);
-        Server server = new Server(container);
-        String result = server.getPlayerInfo(1);
+        //Server server = new Server(container);
         //String expected =
     }
 }
