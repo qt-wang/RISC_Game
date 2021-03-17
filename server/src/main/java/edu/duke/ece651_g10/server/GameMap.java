@@ -20,20 +20,28 @@ public interface GameMap {
 
     /**
      * For each territory, record its ownership within the HashMap.
+     *
      * @return A HashMap contains the ownership of the territories.
      */
     public HashMap<Territory, Player> getOwnership();
 
     /**
+     * Check if all the territories in the map all belong to the same player.
      *
+     * @return The player if all the territory belong to the same player.
+     * @return null Otherwise.
+     */
+    public Player allBelongsToSamePlayer();
+
+    /**
      * @param name The territory's name
-     * @return The territory with this name.
      * @return null If the territory is not existed.
      */
     public Territory getTerritory(String name);
 
     /**
      * Give the player, return a set of territories belong to this player.
+     *
      * @param p The player for looking up.
      * @return A set of territories belong to this user.
      */
