@@ -311,12 +311,12 @@ public class Client {
     public boolean playGame() throws IOException {
         JSONObject receivedJSON = socketClient.receive();
         out.println(getPrompt(receivedJSON));
-        if (getPlayerStatus(receivedJSON).equals("L")) {
+        if (getPlayerStatus(receivedJSON).equals("L\n")) {
             sendOrderToServer(generateCommitJSON());
             if (getPrompt(socketClient.receive()).equals("invalid\n")) {
                 sendOrderToServer(generateCommitJSON());
             }
-        } else if (getPlayerStatus(receivedJSON).equals("E")) {
+        } else if (getPlayerStatus(receivedJSON).equals("E\n")) {
             endGame = true;
         } else {
             String prompt = "You are the Player " + String.valueOf(playerID)

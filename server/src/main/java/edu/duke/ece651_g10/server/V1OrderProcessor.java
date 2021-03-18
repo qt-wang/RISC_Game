@@ -84,6 +84,7 @@ public class V1OrderProcessor implements OrderProcessor{
             allAttacks.get(index).execute();   //the execution sequence is random.
             allAttacks.remove(allAttacks.get(index));  //after execution, remove this order.
         }
+        attacksInOneTurn.clear();
     }
 
     /**

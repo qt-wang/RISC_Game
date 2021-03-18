@@ -41,6 +41,7 @@ public class AttackOrder extends Order{
         Dice dice = new TwentySidesDice();
         boolean attackerWin = false;
         boolean defenderWin = false;
+        //System.out.println(defender.getNumUnit());
         if(defender.getNumUnit() == 0){
             attackerWin = true;
             defender.setOwner(owner);
