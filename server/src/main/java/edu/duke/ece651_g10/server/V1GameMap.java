@@ -25,20 +25,21 @@ public class V1GameMap implements GameMap {
         this.initialGroups = initialGroups;
     }
 
-    //TODO: Implement
     @Override
     public HashMap<Integer, HashSet<Territory>> getInitialGroups() {
         return initialGroups;
     }
 
 
-    // TODO: Implement
     @Override
     public HashMap<Territory, Player> getOwnership() {
-        return null;
+        HashMap<Territory, Player> result = new HashMap<>();
+        for (Territory t: territories) {
+            result.put(t, t.getOwner());
+        }
+        return result;
     }
 
-    //TODO: Implement
     @Override
     public Territory getTerritory(String name) {
         for (Territory t: territories) {
@@ -63,6 +64,13 @@ public class V1GameMap implements GameMap {
             }
         }
         return player;
+    }
+
+    @Override
+    public void addUnitToEachTerritory() {
+        for (Territory t: territories) {
+            t.increaseUnit(1);
+        }
     }
 
     @Override

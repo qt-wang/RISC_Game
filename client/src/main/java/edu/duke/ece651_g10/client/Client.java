@@ -276,7 +276,7 @@ public class Client {
             JSONObject orderJSON = generateCommitJSON();
             sendOrderToServer(orderJSON);
         }
-        if (getPrompt(socketClient.receive()) == "invalid\n") {
+        if (getPrompt(socketClient.receive()).equals("invalid\n")) {
             out.println("Your last order is invalid, please input your order again");
             orderString = sendOrder(prompt, legalOrderSet);
         }
@@ -311,12 +311,12 @@ public class Client {
     public boolean playGame() throws IOException {
         JSONObject receivedJSON = socketClient.receive();
         out.println(getPrompt(receivedJSON));
-        if (getPlayerStatus(receivedJSON) == "L") {
+        if (getPlayerStatus(receivedJSON).equals("L")) {
             sendOrderToServer(generateCommitJSON());
-            if (getPrompt(socketClient.receive()) == "invalid\n") {
+            if (getPrompt(socketClient.receive()).equals("invalid\n")) {
                 sendOrderToServer(generateCommitJSON());
             }
-        } else if (getPlayerStatus(receivedJSON) == "E") {
+        } else if (getPlayerStatus(receivedJSON).equals("E")) {
             endGame = true;
         } else {
             String prompt = "You are the Player " + String.valueOf(playerID)

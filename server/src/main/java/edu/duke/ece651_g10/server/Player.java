@@ -46,6 +46,10 @@ public class Player {
     return isLost;
   }
 
+  public void setIsLost() {
+    this.isLost = true;
+  }
+
   public JSONCommunicator getJCommunicator(){
     return this.jCommunicate;
   }
