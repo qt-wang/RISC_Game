@@ -1,5 +1,4 @@
 package edu.duke.ece651_g10.server;
-
 /**
  * The RuleChecker to check whether the source Territory and target Territory
  * are adjacent to each other

@@ -7,7 +7,6 @@ import java.util.Random;
 */
 public class TwentySidesDice implements Dice{
 
-    //TODO: Implement
     @Override
     public int roll() {
         Random random = new Random();

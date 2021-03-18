@@ -11,19 +11,19 @@ import java.util.Set;
  */
 public class V1Territory implements Territory {
 
-    //TODO: Implement
+
     @Override
     public void setUnitNumber(int unit) {
         this.ownedUnits = unit;
     }
 
-    //TODO: Implement
+
     @Override
     public void decreaseUnit(int unit) {
         this.ownedUnits -= unit;
     }
 
-    //TODO: Implement
+
     @Override
     public void increaseUnit(int unit) {
         this.ownedUnits += unit;

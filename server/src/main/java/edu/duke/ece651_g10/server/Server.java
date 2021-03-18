@@ -44,7 +44,11 @@ public class Server {
     private GameMapFactory mapFactory;
 
     // The rule checker used to check the rules of the game.
-    private RuleChecker ruleChecker;
+    //private RuleChecker ruleChecker;
+
+    private RuleChecker moveRuleChecker;
+
+    private RuleChecker attackRuleChecker;
 
     private GameBoardView view;
 
@@ -84,7 +88,8 @@ public class Server {
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
         this.maximumNumberPlayersAllowed = maximumNumberPlayersAllowed;
-        this.ruleChecker = ruleChecker;
+        //TODO: delete this.
+        //this.ruleChecker = ruleChecker;
         this.mapFactory = factory;
         this.numPlayer = numPlayer;
         players = new HashMap<>();
@@ -103,7 +108,7 @@ public class Server {
     /**
      * only for tests.
      */
-    public Server(int port, int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, GameMapFactory factory, RuleChecker ruleChecker, OrderProcessor orderProcessor) throws IOException {
+    public Server(int port, int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, GameMapFactory factory, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor) throws IOException {
         this.numPlayer = numPlayer;
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -113,7 +118,8 @@ public class Server {
         gameEnds = false;
 
 
-        this.ruleChecker = ruleChecker;
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
         this.mapFactory = factory;
         this.numPlayer = numPlayer;
         players = new HashMap<>();
@@ -350,7 +356,7 @@ public class Server {
         }
     }
 
-    //TODO:Implement.
+
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
         p.getJCommunicator().send(obj);
@@ -445,7 +451,7 @@ public class Server {
      */
     private boolean isOrderMessage(JSONObject obj) {
         String type = getMessageType(obj);
-        if (type == "order") {
+        if (type.equals("order")) {
             return true;
         } else {
             return false;
@@ -460,7 +466,7 @@ public class Server {
      */
     private boolean isCommitMessage(JSONObject obj) {
         String type = getMessageType(obj);
-        if (type == "commit") {
+        if (type.equals("commit")) {
             return true;
         }
         return false;
@@ -521,7 +527,7 @@ public class Server {
                 Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap);
                 return order;
             } else if (orderType.equals("attack")) {
-                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap);
+                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
                 return order;
             } else {
                 return null;
@@ -637,7 +643,7 @@ public class Server {
 //                sendValidResponse(playerId);
 //                orderProcessor.acceptOrder(order);
                 //String message = ruleChecker.checkOrder(order, this.playMap);
-                String message = null;
+                String message = moveRuleChecker.checkOrder(order, this.playMap);
                 // If valid, then send valid to user.
                 if (message == null) {
                     sendValidResponse(playerId);
@@ -699,12 +705,21 @@ public class Server {
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
+                sendValidResponse(playerId);
                 receiveCommit = true;
                 continue;
             }
             Order order = toOrder(playerId, obj);
             synchronized (this) {
-                String message = ruleChecker.checkMyRule(order, playMap);
+                String message = null;
+                if (order instanceof MoveOrder) {
+                    message = moveRuleChecker.checkOrder(order, playMap);
+                } else if (order instanceof AttackOrder) {
+                    message = attackRuleChecker.checkOrder(order, playMap);
+                } else {
+                    //TODO: fail fast
+                    assert(false);
+                }
                 if (message == null) {
                     sendValidResponse(playerId);
                     orderProcessor.acceptOrder(order);
