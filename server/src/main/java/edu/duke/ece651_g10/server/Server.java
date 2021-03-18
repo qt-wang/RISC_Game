@@ -52,6 +52,7 @@ public class Server {
 
     private OrderProcessor orderProcessor;
 
+    private boolean gameEnds;
     /**
      * Setup the server socket.
      *
@@ -89,12 +90,14 @@ public class Server {
         players = new HashMap<>();
         setServerSocket(port);
         this.orderProcessor = orderProcessor;
+        gameEnds = false;
     }
 
 
     // This constructor is for test uses.
     public Server(HashMap<Integer, Player> players) {
         this.players = players;
+        gameEnds = false;
     }
 
     /**
@@ -107,6 +110,7 @@ public class Server {
         players = new HashMap<>();
         setServerSocket(port);
         this.mapFactory = factory;
+        gameEnds = false;
     }
 
 
@@ -152,22 +156,18 @@ public class Server {
 
     private class UnitsDistributionTask implements Runnable {
         int playerId;
-        CyclicBarrier barrier;
+        //CyclicBarrier barrier;
 
-        UnitsDistributionTask(int playerId, CyclicBarrier barrier) {
+        UnitsDistributionTask(int playerId) {
             this.playerId = playerId;
-            this.barrier = barrier;
+            //this.barrier = barrier;
         }
 
         @Override
         public void run() {
             try {
                 setupInitialUnitsDistribution(playerId);
-                barrier.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (BrokenBarrierException e) {
-                e.printStackTrace();
+                //barrier.await();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -177,11 +177,11 @@ public class Server {
     private class PlayOneTurnTask implements Runnable {
 
         int playerId;
-        CyclicBarrier barrier;
+        //CyclicBarrier barrier;
 
-        PlayOneTurnTask(int playerId, CyclicBarrier barrier) {
+        PlayOneTurnTask(int playerId) {
             this.playerId = playerId;
-            this.barrier = barrier;
+            //this.barrier = barrier;
         }
 
         @Override
@@ -203,10 +203,29 @@ public class Server {
 //        }
 //    }
 
-    private void runTasksForAllPlayer(Function<Integer,Runnable> toDo) throws BrokenBarrierException, InterruptedException {
-        CyclicBarrier barrier = new CyclicBarrier(players.size()+1);
+
+    private Function<Integer, Runnable> getUnitsDistributionTask() {
+        return new Function<Integer, Runnable>() {
+            @Override
+            public Runnable apply(Integer integer) {
+                return new UnitsDistributionTask(integer);
+            }
+        };
+    }
+
+    private Function<Integer, Runnable> getPlayOneTurnTask() {
+        return new Function<Integer, Runnable>() {
+            @Override
+            public Runnable apply(Integer integer) {
+                return new PlayOneTurnTask(integer);
+            }
+        };
+    }
+
+
+    private void runTasksForAllPlayer(Function<Integer, Runnable> toDo) {
+        CyclicBarrier barrier = new CyclicBarrier(players.size() + 1);
         for (int i = 1; i <= players.size(); i++) {
-            int currentPlayerId = i;
             // We create multiple tasks here.
             Runnable task = toDo.apply(i);
             Thread t = new Thread(new Runnable() {
@@ -224,26 +243,33 @@ public class Server {
             });
             t.start();
         }
-        barrier.await();
-    }
-
-    private void runTasksForAllPlayer(int taskNumber) {
-        CyclicBarrier barrier = new CyclicBarrier(players.size());
-        for (int i = 1; i <= players.size(); i++) {
-            int currentPlayerId = i;
-            // We create multiple tasks here.
-            Runnable task;
-            switch (taskNumber) {
-                case 2:
-                    task = new PlayOneTurnTask(i, barrier);
-                    break;
-                default:
-                    task = new UnitsDistributionTask(i, barrier);
-            }
-            Thread t = new Thread(task);
-            t.start();
+        try {
+            barrier.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
         }
     }
+
+//
+//    private void runTasksForAllPlayer(int taskNumber) {
+//        CyclicBarrier barrier = new CyclicBarrier(players.size());
+//        for (int i = 1; i <= players.size(); i++) {
+//            int currentPlayerId = i;
+//            // We create multiple tasks here.
+//            Runnable task;
+//            switch (taskNumber) {
+//                case 2:
+//                    task = new PlayOneTurnTask(i, barrier);
+//                    break;
+//                default:
+//                    task = new UnitsDistributionTask(i, barrier);
+//            }
+//            Thread t = new Thread(task);
+//            t.start();
+//        }
+//    }
 
 
     /**
@@ -256,17 +282,18 @@ public class Server {
         acceptConnections();
         setUpMap();
         assignInitialTerritories();
-        runTasksForAllPlayer(1);
+        runTasksForAllPlayer(getUnitsDistributionTask());
         Player winner = null;
         // All threads has finished the execution of the units distribution.
         while ((winner = checkGameEnds()) == null) {
             // We create multiple threads to tell the user what to do.
-            runTasksForAllPlayer(2);
+            runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
             // Send the updated information to all players.
-            sendToAllPlayer(getWholeGameInformation());
+            //sendToAllPlayer(getWholeGameInformation());
         }
+        gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
         message += "\n";
         sendToAllPlayer(message);
@@ -381,6 +408,7 @@ public class Server {
         info = info.put("prompt", prompt).put("playerID", playerId);
         boolean isLost = players.get(playerId).getIsLost();
         info = isLost ? info.put("playerStatus", "L") : info.put("playerStatus", "A");
+        info = gameEnds ? info.put("playerStatus", "E") : info.put("playerStatus", info.get("playerStatus"));
         return info;
     }
 
@@ -564,6 +592,11 @@ public class Server {
         return generateInfoJSON(playerId, str);
     }
 
+    private JSONObject receiveJSONObject(int playerId) throws IOException {
+        JSONObject obj = players.get(playerId).getJCommunicator().receive();
+        return obj;
+    }
+
     /**
      * Setup the units distribution of the territories for each player.
      * Each player shall have the same number of initial units, which she may place in her territories as she wishes.
@@ -578,23 +611,28 @@ public class Server {
 
         sendToPlayer(playerId, firstPhaseInformation(playerId));
         while (!receiveCommit) {
-            Order order = receiveOrder(playerId);
-            if (order instanceof CommitOrder) {
+            JSONObject obj = receiveJSONObject(playerId);
+            if (isCommitMessage(obj)) {
                 receiveCommit = true;
-                sendValidResponse(playerId);
-            } else {
-                // TODO: Remove this later.
-                synchronized (this) {
-                    assert (order instanceof MoveOrder);
-                    String message = ruleChecker.checkOrder(order, this.playMap);
-                    // If valid, then send valid to user.
-                    if (message == null) {
-                        sendValidResponse(playerId);
-                        orderProcessor.acceptOrder(order);
-                        sendToPlayer(playerId, firstPhaseInformation(playerId));
-                    } else {
-                        sendInvalidResponse(playerId);
-                    }
+                continue;
+            }
+            Order order = toOrder(playerId, obj);
+            if (order == null) {
+                sendInvalidResponse(playerId);
+                continue;
+            }
+
+            // TODO: Remove this later.
+            synchronized (this) {
+                assert (order instanceof MoveOrder);
+                String message = ruleChecker.checkOrder(order, this.playMap);
+                // If valid, then send valid to user.
+                if (message == null) {
+                    sendValidResponse(playerId);
+                    orderProcessor.acceptOrder(order);
+                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
+                } else {
+                    sendInvalidResponse(playerId);
                 }
             }
         }
@@ -647,22 +685,23 @@ public class Server {
         sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
         boolean receiveCommit = false;
         while (!receiveCommit) {
-            Order order = receiveOrder(playerId);
-            if (order instanceof CommitOrder) {
+            JSONObject obj = receiveJSONObject(playerId);
+            if (isCommitMessage(obj)) {
                 receiveCommit = true;
-                sendValidResponse(playerId);
-            } else {
-                synchronized (this) {
-                    String message = ruleChecker.checkMyRule(order, playMap);
-                    if (message == null) {
-                        sendValidResponse(playerId);
-                        orderProcessor.acceptOrder(order);
-                        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
-                    } else {
-                        sendInvalidResponse(playerId);
-                    }
+                continue;
+            }
+            Order order = toOrder(playerId, obj);
+            synchronized (this) {
+                String message = ruleChecker.checkMyRule(order, playMap);
+                if (message == null) {
+                    sendValidResponse(playerId);
+                    orderProcessor.acceptOrder(order);
+                    //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+                } else {
+                    sendInvalidResponse(playerId);
                 }
             }
+            
         }
     }
 
