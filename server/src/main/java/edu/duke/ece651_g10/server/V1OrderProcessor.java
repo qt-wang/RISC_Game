@@ -42,7 +42,7 @@ public class V1OrderProcessor implements OrderProcessor{
             else {
                 Vector<Order> vector = attacksInOneTurn.get(order.getSourceTerritory().getOwner());
                 vector.addElement(order);
-                if(vector.capacity() > 1) {
+                if(vector.size() > 1) {
                     merge(vector);
                 }
                 attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
@@ -55,7 +55,7 @@ public class V1OrderProcessor implements OrderProcessor{
      * @param vector is a vector of orders in which the owner of territories is same.
      */
     private void merge(Vector<Order> vector){
-        int length = vector.capacity();
+        int length = vector.size();
         int index = -1;
         for(int i = 0; i < length - 1; i++){
             for(int j = i + 1; j < length; j++){
@@ -80,8 +80,8 @@ public class V1OrderProcessor implements OrderProcessor{
     public void executeEndTurnOrders(){
         Vector<Order> allAttacks = obtainAllAttackOrders();
         Random rand = new Random();
-        while(allAttacks.capacity() != 0){
-            int length = allAttacks.capacity();
+        while(allAttacks.size() != 0){
+            int length = allAttacks.size();
             int index = rand.nextInt(length);
             allAttacks.get(index).execute();   //the execution sequence is random.
             allAttacks.remove(allAttacks.get(index));  //after execution, remove this order.
@@ -97,7 +97,7 @@ public class V1OrderProcessor implements OrderProcessor{
         for(Player player : attacksInOneTurn.keySet()){
             Vector<Order> v = attacksInOneTurn.get(player);
             for(Order order : v){
-                order.getSourceTerritory().decreaseUnit(order.getNumUnit());
+                //order.getSourceTerritory().decreaseUnit(order.getNumUnit());
                 allAttacks.addElement(order);
             }
         }

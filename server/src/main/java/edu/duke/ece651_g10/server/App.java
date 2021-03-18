@@ -18,7 +18,7 @@ public class App {
         RuleChecker V1RuleChecker = new V1RuleChecker(moveRuleChecker, attackRuleChecker);
         //GameMapFactory factory = new V1GameMapFactory(new PseudoNumberGenerator());
         GameMapFactory factory = new FixedGameMapFactory();
-        Server server = new Server(12345, 3, 12, 3, factory, V1RuleChecker, new V1OrderProcessor());
+        Server server = new Server(12345, 3, 12, 3, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
         //server.acceptConnections();
         server.run();
     }
