@@ -527,7 +527,7 @@ public class Server {
                 Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap);
                 return order;
             } else if (orderType.equals("attack")) {
-                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap);
+                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
                 return order;
             } else {
                 return null;

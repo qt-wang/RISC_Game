@@ -24,9 +24,7 @@ public class V1OrderProcessor implements OrderProcessor{
     public void acceptOrder(Order order){
         if(order instanceof MoveOrder){
             order.execute();
-        }
-
-        else if(order instanceof AttackOrder){
+        } else if(order instanceof AttackOrder){
             //If this order is an attack order, decrease the unit number in the source territory at
             //very beginning.
             order.getSourceTerritory().decreaseUnit(order.getNumUnit());
