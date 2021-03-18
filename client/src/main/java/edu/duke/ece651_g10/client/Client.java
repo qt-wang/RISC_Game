@@ -14,7 +14,6 @@ import java.util.HashSet;
  * The client of the game
  */
 public class Client {
-  final int playerID;
   final PrintStream out;
   final BufferedReader inputReader;
 
@@ -26,7 +25,8 @@ public class Client {
   public String playerStatus;
   public JSONCommunicator jCommunicate;
 
-  private boolean isDisconnected;
+  private boolean endGame;
+  private int playerID;
   final HashSet<String> normalOrderSet;
   final HashMap<String, String> orderKeyValue;
 
@@ -41,11 +41,11 @@ public class Client {
     // Don't know how to use Mockito to set playerID at the beginning, just set 0
     // for now.
     // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
-    this.playerID = 0;
+    this.playerID = -1;
     this.playerStatus = "A";
     this.out = out;
     this.inputReader = input;
-    isDisconnected = false;
+    endGame = false;
 
     this.normalOrderSet = new HashSet<String>();
     normalOrderSet.add("M");
@@ -55,6 +55,16 @@ public class Client {
     orderKeyValue.put("M", "move");
     orderKeyValue.put("A", "attack");
     orderKeyValue.put("D", "commit");
+  }
+
+  /**
+   * Set the player ID 
+   *
+   * @return the player ID
+*/
+  public int getPlayerIDFromServer() throws IOException{
+    playerID = getPlayerId(jCommunicate.receive());
+    return playerID;
   }
 
   /**
@@ -299,7 +309,7 @@ public class Client {
       sendOrderToServer(orderJSON);
     }
     // Is that correct
-    if (getPrompt(jCommunicate.receive()) == "invalid") {
+    if (getPrompt(jCommunicate.receive()) == "invalid\n") {
       out.println("Your last order is invalid, please input your order again");
       orderString = sendOrder(prompt, legalOrderSet);
     }
@@ -330,7 +340,9 @@ public class Client {
     out.println(getPrompt(receivedJSON));
     if (getPlayerStatus(receivedJSON) == "L") {
       sendOrderToServer(generateCommitJSON());
-      // Should receive valid?
+      // if (getPrompt(jCommunicate.receive()) == "invalid\n") {
+      // sendOrderToServer(generateCommitJSON());
+      // }
     } else {
       String prompt = "You are the Player " + String.valueOf(playerID)
           + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
