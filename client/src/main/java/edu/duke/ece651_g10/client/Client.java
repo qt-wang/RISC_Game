@@ -1,51 +1,44 @@
 package edu.duke.ece651_g10.client;
 
-import edu.duke.ece651_g10.shared.JSONCommunicator;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.*;
-import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * The client of the game
  */
 public class Client {
-  final int playerID;
   final PrintStream out;
   final BufferedReader inputReader;
 
-  final String serverHostname;
-  final int serverPort;
-  private Socket socket;
-  private BufferedReader br;
-  private BufferedWriter bw;
   public String playerStatus;
-  public JSONCommunicator jCommunicate;
 
-  private boolean isDisconnected;
+  private boolean endGame;
+  final int playerID;
   final HashSet<String> normalOrderSet;
   final HashMap<String, String> orderKeyValue;
+  public SocketClient socketClient;
 
   /**
    * The constructor of the Client
    */
-  public Client(PrintStream out, BufferedReader input, String hostname, int port) throws IOException {
-    this.serverHostname = hostname;
-    this.serverPort = port;
-    initSocket(hostname, port);
-
-    // Don't know how to use Mockito to set playerID at the beginning, just set 0
-    // for now.
-    // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
-    this.playerID = 0;
+  public Client(PrintStream out, BufferedReader input, SocketClient socketClient) throws IOException {
+    this.socketClient = socketClient;
+    socketClient.send(generateInfoJSON("Testing, server, can you hear me?\n"));
+    JSONObject ans = socketClient.receive();
+    String prompt = ans.getString("prompt");
+    System.out.println(prompt);
+    this.playerID = getPlayerId(ans);
     this.playerStatus = "A";
     this.out = out;
     this.inputReader = input;
-    isDisconnected = false;
+    endGame = false;
 
     this.normalOrderSet = new HashSet<String>();
     normalOrderSet.add("M");
@@ -55,28 +48,6 @@ public class Client {
     orderKeyValue.put("M", "move");
     orderKeyValue.put("A", "attack");
     orderKeyValue.put("D", "commit");
-  }
-
-  /**
-   * Initiate the socket and connect to the server
-   */
-  private void initSocket(String hostname, int port) {
-    try {
-      this.socket = new Socket(hostname, port);
-      this.bw = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-      this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-      this.jCommunicate = new JSONCommunicator(br, bw);
-      jCommunicate.send(generateInfoJSON("Testing, server, can you hear me?\n"));
-      // Thread.sleep(5000);
-      // String ans = readLinesFromServer(this.br);
-      // String ans = this.br.readLine();
-      // String ans = readLinesFromServer();
-      JSONObject ans = jCommunicate.receive();
-      String prompt = ans.getString("prompt");
-      System.out.println(prompt);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   /**
@@ -199,10 +170,6 @@ public class Client {
     }
   }
 
-  public void run() {
-
-  }
-
   /**
    * Read the input from the user
    *
@@ -279,7 +246,7 @@ public class Client {
    * @param orderJSON The order JSON describes the Order
    */
   public void sendOrderToServer(JSONObject orderJSON) throws IOException {
-    jCommunicate.send(orderJSON);
+    socketClient.send(orderJSON);
   }
 
   /**
@@ -298,8 +265,7 @@ public class Client {
       JSONObject orderJSON = generateCommitJSON();
       sendOrderToServer(orderJSON);
     }
-    // Is that correct
-    if (getPrompt(jCommunicate.receive()) == "invalid") {
+    if (getPrompt(socketClient.receive()) == "invalid\n") {
       out.println("Your last order is invalid, please input your order again");
       orderString = sendOrder(prompt, legalOrderSet);
     }
@@ -308,29 +274,39 @@ public class Client {
 
   /**
    * Place the units at beginning of the game
+   *
+   * @return Always return true
    */
-  public void doPlacement() throws IOException {
-    out.println(getPrompt(jCommunicate.receive()));
+  public boolean doPlacement() throws IOException {
+    out.println(getPrompt(socketClient.receive()));
     String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
     out.println(prompt);
     HashSet<String> legalOrderSet = new HashSet<String>();
     legalOrderSet.add("M");
     legalOrderSet.add("D");
     ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
-    while (orderString.get(0) != "D") {
+    while (!orderString.get(0).equals("D")) {
+      orderString.clear();
       orderString = sendOrder(prompt, legalOrderSet);
     }
+    return true;
   }
 
   /**
    * Play the game after the placement phase
+   *
+   * @return Return the boolean whether the game is end
    */
-  public void playGame() throws IOException {
-    JSONObject receivedJSON = jCommunicate.receive();
+  public boolean playGame() throws IOException {
+    JSONObject receivedJSON = socketClient.receive();
     out.println(getPrompt(receivedJSON));
     if (getPlayerStatus(receivedJSON) == "L") {
       sendOrderToServer(generateCommitJSON());
-      // Should receive valid?
+      // if (getPrompt(jCommunicate.receive()) == "invalid\n") {
+      // sendOrderToServer(generateCommitJSON());
+      // }
+    } else if (getPlayerStatus(receivedJSON) == "E") {
+      endGame = true;
     } else {
       String prompt = "You are the Player " + String.valueOf(playerID)
           + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
@@ -340,9 +316,10 @@ public class Client {
       legalOrderSet.add("A");
       legalOrderSet.add("D");
       ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
-      while (orderString.get(0) != "D") {
+      while (!orderString.get(0).equals("D")) {
         orderString = sendOrder(prompt, legalOrderSet);
       }
     }
+    return endGame;
   }
 }

@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
  */
 public class App {
   final Client client;
+  final SocketClient socketClient;
 
   /**
    * The constructor of the App class
@@ -23,7 +24,8 @@ public class App {
    * @param port     The port of the game
    */
   public App(BufferedReader input, String hostname, int port) throws IOException {
-    this.client = new Client(System.out, input, hostname, port);
+    this.socketClient = new SocketClient(hostname, port);
+    this.client = new Client(System.out, input, socketClient);
   }
 
   public static void main(String[] args) throws IOException {
