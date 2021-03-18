@@ -25,9 +25,9 @@ public class TerritoryExistChecker extends RuleChecker {
    */
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
-    if (!gameMap.getOwnership().containsKey(order.getSourceTerritory())) {
+    if (order.getSourceTerritory() == null) {
       return "The source territory does not exist.";
-    } else if (!gameMap.getOwnership().containsKey(order.getTargetTerritory())) {
+    } else if (order.getTargetTerritory() == null) {
       return "The target territory does not exist.";
     }
     return null;

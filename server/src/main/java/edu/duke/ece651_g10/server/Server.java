@@ -621,6 +621,7 @@ public class Server {
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
+                sendValidResponse(playerId);
                 receiveCommit = true;
                 continue;
             }
@@ -633,17 +634,18 @@ public class Server {
             // TODO: Remove this later.
             synchronized (this) {
                 assert (order instanceof MoveOrder);
-                sendValidResponse(playerId);
-                orderProcessor.acceptOrder(order);
-//                String message = ruleChecker.checkOrder(order, this.playMap);
-//                // If valid, then send valid to user.
-//                if (message == null) {
-//                    sendValidResponse(playerId);
-//                    orderProcessor.acceptOrder(order);
-//                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
-//                } else {
-//                    sendInvalidResponse(playerId);
-//                }
+//                sendValidResponse(playerId);
+//                orderProcessor.acceptOrder(order);
+                //String message = ruleChecker.checkOrder(order, this.playMap);
+                String message = null;
+                // If valid, then send valid to user.
+                if (message == null) {
+                    sendValidResponse(playerId);
+                    orderProcessor.acceptOrder(order);
+                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
+                } else {
+                    sendInvalidResponse(playerId);
+                }
             }
         }
     }
