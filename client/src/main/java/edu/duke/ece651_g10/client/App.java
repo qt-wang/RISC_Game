@@ -25,7 +25,7 @@ public class App {
    */
   public App(BufferedReader input, String hostname, int port) throws IOException {
     this.socketClient = new SocketClient(hostname, port);
-    this.client = new Client(System.out, input, socketClient.jCommunicate);
+    this.client = new Client(System.out, input, socketClient);
   }
 
   public static void main(String[] args) throws IOException {

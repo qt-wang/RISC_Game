@@ -20,20 +20,20 @@ public class Client {
   final BufferedReader inputReader;
 
   public String playerStatus;
-  public JSONCommunicator jCommunicate;
 
   private boolean endGame;
   final int playerID;
   final HashSet<String> normalOrderSet;
   final HashMap<String, String> orderKeyValue;
+  public SocketClient socketClient;
 
   /**
    * The constructor of the Client
    */
-  public Client(PrintStream out, BufferedReader input, JSONCommunicator jCommunicate) throws IOException {
-    this.jCommunicate = jCommunicate;
-    jCommunicate.send(generateInfoJSON("Testing, server, can you hear me?\n"));
-    JSONObject ans = jCommunicate.receive();
+  public Client(PrintStream out, BufferedReader input, SocketClient socketClient) throws IOException {
+    this.socketClient = socketClient;
+    socketClient.send(generateInfoJSON("Testing, server, can you hear me?\n"));
+    JSONObject ans = socketClient.receive();
     String prompt = ans.getString("prompt");
     System.out.println(prompt);
     this.playerID = getPlayerId(ans);
@@ -249,7 +249,7 @@ public class Client {
    * @param orderJSON The order JSON describes the Order
    */
   public void sendOrderToServer(JSONObject orderJSON) throws IOException {
-    jCommunicate.send(orderJSON);
+    socketClient.send(orderJSON);
   }
 
   /**
@@ -269,7 +269,7 @@ public class Client {
       sendOrderToServer(orderJSON);
     }
     // Is that correct
-    if (getPrompt(jCommunicate.receive()) == "invalid\n") {
+    if (getPrompt(socketClient.receive()) == "invalid\n") {
       out.println("Your last order is invalid, please input your order again");
       orderString = sendOrder(prompt, legalOrderSet);
     }
@@ -280,7 +280,7 @@ public class Client {
    * Place the units at beginning of the game
    */
   public void doPlacement() throws IOException {
-    out.println(getPrompt(jCommunicate.receive()));
+    out.println(getPrompt(socketClient.receive()));
     String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
     out.println(prompt);
     HashSet<String> legalOrderSet = new HashSet<String>();
@@ -296,7 +296,7 @@ public class Client {
    * Play the game after the placement phase
    */
   public void playGame() throws IOException {
-    JSONObject receivedJSON = jCommunicate.receive();
+    JSONObject receivedJSON = socketClient.receive();
     out.println(getPrompt(receivedJSON));
     if (getPlayerStatus(receivedJSON) == "L") {
       sendOrderToServer(generateCommitJSON());

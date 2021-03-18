@@ -1,5 +1,11 @@
 package edu.duke.ece651_g10.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,15 +18,15 @@ import java.util.HashSet;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 public class ClientTest {
   private Client create_client(String inputData, OutputStream bytes, int port) throws IOException {
     BufferedReader input = new BufferedReader(new StringReader(inputData));
     PrintStream output = new PrintStream(bytes, true);
-    SocketClient socketClient = new SocketClient("0.0.0.0", port);
-    Client client = new Client(output, input, socketClient.jCommunicate);
+    //SocketClient socketClient = new SocketClient("0.0.0.0", port);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "A").put("prompt", "test string");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client = new Client(output, input, mockSocketClient);
     return client;
   }
 

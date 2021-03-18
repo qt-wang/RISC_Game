@@ -9,8 +9,6 @@ import java.net.Socket;
 
 import org.json.JSONObject;
 
-import edu.duke.ece651_g10.shared.JSONCommunicator;
-
 /**
  * The class for client side socket
  */
@@ -20,7 +18,6 @@ public class SocketClient {
   private Socket socket;
   private BufferedReader br;
   private BufferedWriter bw;
-  public JSONCommunicator jCommunicate;
 
   /**
    * The constructor of the ClientSocket
@@ -39,9 +36,35 @@ public class SocketClient {
       this.socket = new Socket(hostname, port);
       this.bw = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
       this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-      this.jCommunicate = new JSONCommunicator(br, bw);
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  /**
+   * read JSONObject from the server
+   * 
+   * @return the JSONObject
+   * @throws IOException
+   */
+  public JSONObject receive() throws IOException {
+    String jsonString = br.readLine();
+    while (jsonString == null) {
+      jsonString = br.readLine();
+    }
+    JSONObject obj = new JSONObject(jsonString);
+    return obj;
+  }
+
+  /**
+   * send a JSONObject to the server
+   * 
+   * @param obj the JSONObject to be sent
+   * @throws IOException
+   */
+  public void send(JSONObject obj) throws IOException {
+    String jsonString = obj.toString();
+    bw.write(jsonString + "\n");
+    bw.flush();
   }
 }
