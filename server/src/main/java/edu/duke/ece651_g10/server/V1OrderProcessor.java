@@ -42,7 +42,9 @@ public class V1OrderProcessor implements OrderProcessor{
             else {
                 Vector<Order> vector = attacksInOneTurn.get(order.getSourceTerritory().getOwner());
                 vector.addElement(order);
-                merge(vector);
+                if(vector.capacity() > 1) {
+                    merge(vector);
+                }
                 attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
             }
         }
@@ -59,10 +61,10 @@ public class V1OrderProcessor implements OrderProcessor{
             for(int j = i + 1; j < length; j++){
                 //if destination is same, change the unit number of the ith order. we
                 //need to remove the jth order later.
-                if(vector.get(i).getTargetTerritory().equals(vector.get(j).getTargetTerritory())){
+                //if(vector.get(i).getTargetTerritory().equals(vector.get(j).getTargetTerritory())){
                     vector.get(i).addUnits(vector.get(j).getNumUnit());
                     index = j;
-                }
+                //}
             }
         }
         //Remove this order, because we have added the unit number of this order to another order.

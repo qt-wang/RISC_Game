@@ -704,7 +704,7 @@ public class Server {
             }
             Order order = toOrder(playerId, obj);
             synchronized (this) {
-                String message = ruleChecker.checkMyRule(order, playMap);
+                String message = ruleChecker.checkOrder(order, playMap);
                 if (message == null) {
                     sendValidResponse(playerId);
                     orderProcessor.acceptOrder(order);
