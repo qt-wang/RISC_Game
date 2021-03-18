@@ -14,7 +14,7 @@ public class App {
     public static void main(String[] args) throws IOException, InterruptedException {
         //TODO: Test remote connection.
         FixedGameMapFactory factory = new FixedGameMapFactory();
-        Server server = new Server(12345, 2, 12, 3, factory);
+        Server server = new Server(12346, 1, 12, 3, factory, null, new V1OrderProcessor());
         //server.acceptConnections();
         server.run();
     }

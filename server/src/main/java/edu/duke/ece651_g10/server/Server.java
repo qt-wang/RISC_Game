@@ -103,13 +103,21 @@ public class Server {
     /**
      * only for tests.
      */
-    public Server(int port, int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, GameMapFactory factory) throws IOException {
+    public Server(int port, int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, GameMapFactory factory, RuleChecker ruleChecker, OrderProcessor orderProcessor) throws IOException {
         this.numPlayer = numPlayer;
         this.numTerritoryPerPlayer = numTerritoryPerPlayer;
         this.numUnitPerPlayer = numUnitPerPlayer;
         players = new HashMap<>();
         setServerSocket(port);
         this.mapFactory = factory;
+        gameEnds = false;
+
+
+        this.ruleChecker = ruleChecker;
+        this.mapFactory = factory;
+        this.numPlayer = numPlayer;
+        players = new HashMap<>();
+        this.orderProcessor = orderProcessor;
         gameEnds = false;
     }
 
@@ -625,15 +633,17 @@ public class Server {
             // TODO: Remove this later.
             synchronized (this) {
                 assert (order instanceof MoveOrder);
-                String message = ruleChecker.checkOrder(order, this.playMap);
-                // If valid, then send valid to user.
-                if (message == null) {
-                    sendValidResponse(playerId);
-                    orderProcessor.acceptOrder(order);
-                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
-                } else {
-                    sendInvalidResponse(playerId);
-                }
+                sendValidResponse(playerId);
+                orderProcessor.acceptOrder(order);
+//                String message = ruleChecker.checkOrder(order, this.playMap);
+//                // If valid, then send valid to user.
+//                if (message == null) {
+//                    sendValidResponse(playerId);
+//                    orderProcessor.acceptOrder(order);
+//                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
+//                } else {
+//                    sendInvalidResponse(playerId);
+//                }
             }
         }
     }

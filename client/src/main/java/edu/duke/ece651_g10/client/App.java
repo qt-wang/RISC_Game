@@ -33,6 +33,7 @@ public class App {
     app.client.doPlacement();
     while (true) {
       //JSONObject ans = app.client.jCommunicate.receive();
+      // JSONObject ans = app.client.jCommunicate.receive();
       //System.out.println(ans.getString("prompt"));
       app.client.playGame();
     }
