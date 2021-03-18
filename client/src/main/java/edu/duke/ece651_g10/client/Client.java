@@ -10,8 +10,6 @@ import java.util.HashSet;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.duke.ece651_g10.shared.JSONCommunicator;
-
 /**
  * The client of the game
  */
@@ -51,7 +49,6 @@ public class Client {
     orderKeyValue.put("A", "attack");
     orderKeyValue.put("D", "commit");
   }
-
 
   /**
    * generate a JSONObject of type: inform
@@ -268,7 +265,6 @@ public class Client {
       JSONObject orderJSON = generateCommitJSON();
       sendOrderToServer(orderJSON);
     }
-    // Is that correct
     if (getPrompt(socketClient.receive()) == "invalid\n") {
       out.println("Your last order is invalid, please input your order again");
       orderString = sendOrder(prompt, legalOrderSet);
@@ -278,8 +274,10 @@ public class Client {
 
   /**
    * Place the units at beginning of the game
+   *
+   * @return Always return true
    */
-  public void doPlacement() throws IOException {
+  public boolean doPlacement() throws IOException {
     out.println(getPrompt(socketClient.receive()));
     String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
     out.println(prompt);
@@ -287,15 +285,19 @@ public class Client {
     legalOrderSet.add("M");
     legalOrderSet.add("D");
     ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
-    while (orderString.get(0) != "D") {
+    while (!orderString.get(0).equals("D")) {
+      orderString.clear();
       orderString = sendOrder(prompt, legalOrderSet);
     }
+    return true;
   }
 
   /**
    * Play the game after the placement phase
+   *
+   * @return Return the boolean whether the game is end
    */
-  public void playGame() throws IOException {
+  public boolean playGame() throws IOException {
     JSONObject receivedJSON = socketClient.receive();
     out.println(getPrompt(receivedJSON));
     if (getPlayerStatus(receivedJSON) == "L") {
@@ -303,6 +305,8 @@ public class Client {
       // if (getPrompt(jCommunicate.receive()) == "invalid\n") {
       // sendOrderToServer(generateCommitJSON());
       // }
+    } else if (getPlayerStatus(receivedJSON) == "E") {
+      endGame = true;
     } else {
       String prompt = "You are the Player " + String.valueOf(playerID)
           + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
@@ -312,9 +316,10 @@ public class Client {
       legalOrderSet.add("A");
       legalOrderSet.add("D");
       ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
-      while (orderString.get(0) != "D") {
+      while (!orderString.get(0).equals("D")) {
         orderString = sendOrder(prompt, legalOrderSet);
       }
     }
+    return endGame;
   }
 }
