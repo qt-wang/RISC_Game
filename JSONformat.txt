@@ -1,0 +1,36 @@
+
+JSONformat of the messages sent from server to client:
+    
+    {
+        "type": "inform",
+        "playerID": int,
+        "playerStatus": "L","A",
+        "prompt": String,
+    }
+    //used to send information with update of palyer status
+    
+sent from client to server:
+    {
+        "type": "order",
+        "orderType": "move"/"attack",
+        "sourceTerritory": String,
+        "destTerritory": String,
+        "unitNumber": int
+    }
+    //send order and get de-parsed at the server side
+    or
+    {
+        "type": "inform",
+        "prompt": String
+    }
+    //used to send information
+    or
+    {
+        "type": "commit"
+    }
+    //commit message to end order phase
+
+
+
+
+
