@@ -19,15 +19,14 @@ public class MoveOrder extends Order{
      *source territory, and increases the number of units in the army of destination territory.
      */
     public void execute(){
-        checkValidMove();
         source.decreaseUnit(unitNum);
         dest.increaseUnit(unitNum);
     }
 
-    private void checkValidMove(){
-        RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
-        rule.checkOrder(this, gMap);
-    }
+//    private void checkValidMove(){
+//        RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
+//        rule.checkOrder(this, gMap);
+//    }
 
     public void addUnits(int numbers){
 

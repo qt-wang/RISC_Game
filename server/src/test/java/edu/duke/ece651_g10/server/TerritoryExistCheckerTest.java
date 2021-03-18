@@ -21,8 +21,8 @@ public class TerritoryExistCheckerTest {
     Territory mockTerritory1 = mock(Territory.class);
     Territory mockTerritory2 = mock(Territory.class);
 
-    when(mockOrder1.getSourceTerritory()).thenReturn(mockTerritory1);
-    when(mockOrder1.getTargetTerritory()).thenReturn(mockTerritory2);
+    when(mockOrder1.getSourceTerritory()).thenReturn(null);
+    when(mockOrder1.getTargetTerritory()).thenReturn(null);
 
     String resSource = "The source territory does not exist.";
     String resTarget = "The target territory does not exist.";
@@ -30,8 +30,10 @@ public class TerritoryExistCheckerTest {
 
     assertEquals(resSource, checker.checkMyRule(mockOrder1, mockGameMap));
     ownership.put(mockTerritory1, mockPlayer1);
+    when(mockOrder1.getSourceTerritory()).thenReturn(mockTerritory1);
     assertEquals(resTarget, checker.checkMyRule(mockOrder1, mockGameMap));
     ownership.put(mockTerritory2, mockPlayer1);
+        when(mockOrder1.getTargetTerritory()).thenReturn(mockTerritory2);
     assertEquals(null, checker.checkMyRule(mockOrder1, mockGameMap));
   }
 
