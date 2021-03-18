@@ -29,15 +29,15 @@ public class Client {
      * The constructor of the Client
      */
     public Client(PrintStream out, BufferedReader input, SocketClient socketClient) throws IOException {
+        this.playerStatus = "A";
+        this.out = out;
+        this.inputReader = input;
         this.socketClient = socketClient;
         socketClient.send(generateInfoJSON("Testing, server, can you hear me?\n"));
         JSONObject ans = socketClient.receive();
         String prompt = ans.getString("prompt");
         System.out.println(prompt);
         this.playerID = getPlayerId(ans);
-        this.playerStatus = "A";
-        this.out = out;
-        this.inputReader = input;
         endGame = false;
 
         this.normalOrderSet = new HashSet<String>();
@@ -180,14 +180,14 @@ public class Client {
     public String readString(String prompt) throws IOException {
         out.println(prompt);
         //Thread.sl
-        out.print("Before readLine()");
+        //out.print("Before readLine()");
         String str = inputReader.readLine();
-        out.print("After readLine()");
+        //out.print("After readLine()");
         while (str == null) {
-            out.print("Before readLine2()");
+            //out.print("Before readLine2()");
             str = inputReader.readLine();
-            out.print("After readLine()2");
-            out.println(str);
+            //out.print("After readLine()2");
+            //out.println(str);
         }
         out.println(str);
         return str;
@@ -322,7 +322,7 @@ public class Client {
         } else {
             String prompt = "You are the Player " + String.valueOf(playerID)
                     + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
-            out.println(prompt);
+            //out.println(prompt);
             HashSet<String> legalOrderSet = new HashSet<String>();
             legalOrderSet.add("M");
             legalOrderSet.add("A");

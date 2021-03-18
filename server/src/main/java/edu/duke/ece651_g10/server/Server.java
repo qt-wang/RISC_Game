@@ -445,7 +445,7 @@ public class Server {
      */
     private boolean isOrderMessage(JSONObject obj) {
         String type = getMessageType(obj);
-        if (type == "order") {
+        if (type.equals("order")) {
             return true;
         } else {
             return false;
@@ -460,7 +460,7 @@ public class Server {
      */
     private boolean isCommitMessage(JSONObject obj) {
         String type = getMessageType(obj);
-        if (type == "commit") {
+        if (type.equals("commit")) {
             return true;
         }
         return false;
@@ -637,7 +637,7 @@ public class Server {
 //                sendValidResponse(playerId);
 //                orderProcessor.acceptOrder(order);
                 //String message = ruleChecker.checkOrder(order, this.playMap);
-                String message = null;
+                String message = ruleChecker.checkOrder(order, this.playMap);
                 // If valid, then send valid to user.
                 if (message == null) {
                     sendValidResponse(playerId);
