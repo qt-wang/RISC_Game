@@ -21,6 +21,9 @@ public class JSONCommunicator {
      */
     public JSONObject receive() throws IOException{
         String jsonString = br.readLine();
+        while (jsonString == null) {
+          jsonString = br.readLine();
+        }
         JSONObject obj = new JSONObject(jsonString);
         return obj;
     }
