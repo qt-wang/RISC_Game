@@ -36,11 +36,7 @@ public class Client {
     JSONObject ans = jCommunicate.receive();
     String prompt = ans.getString("prompt");
     System.out.println(prompt);
-
-    // Don't know how to use Mockito to set playerID at the beginning, just set 0
-    // for now.
-    // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
-    this.playerID = getPlayerId(jCommunicate.receive());
+    this.playerID = getPlayerId(ans);
     this.playerStatus = "A";
     this.out = out;
     this.inputReader = input;
