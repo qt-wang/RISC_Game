@@ -19,16 +19,11 @@ public class ClientTest {
   private Client create_client(String inputData, OutputStream bytes, int port) throws IOException {
     BufferedReader input = new BufferedReader(new StringReader(inputData));
     PrintStream output = new PrintStream(bytes, true);
-    Client client = new Client(output, input, "0.0.0.0", port);
+    SocketClient socketClient = new SocketClient("0.0.0.0", port);
+    Client client = new Client(output, input, socketClient.jCommunicate);
     return client;
   }
 
-  @Test
-  public void test_set_player_id_from_server() throws IOException {
-    Client mockClient = mock(Client.class);
-    when(mockClient.getPlayerIDFromServer()).thenReturn(10);
-    assertEquals(10, mockClient.getPlayerIDFromServer());
-  }
 
   @Test
   public void test_read_string() throws IOException {

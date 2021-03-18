@@ -1,14 +1,16 @@
 package edu.duke.ece651_g10.client;
 
-import edu.duke.ece651_g10.shared.JSONCommunicator;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.*;
-import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import edu.duke.ece651_g10.shared.JSONCommunicator;
 
 /**
  * The client of the game
@@ -17,31 +19,28 @@ public class Client {
   final PrintStream out;
   final BufferedReader inputReader;
 
-  final String serverHostname;
-  final int serverPort;
-  private Socket socket;
-  private BufferedReader br;
-  private BufferedWriter bw;
   public String playerStatus;
   public JSONCommunicator jCommunicate;
 
   private boolean endGame;
-  private int playerID;
+  final int playerID;
   final HashSet<String> normalOrderSet;
   final HashMap<String, String> orderKeyValue;
 
   /**
    * The constructor of the Client
    */
-  public Client(PrintStream out, BufferedReader input, String hostname, int port) throws IOException {
-    this.serverHostname = hostname;
-    this.serverPort = port;
-    initSocket(hostname, port);
+  public Client(PrintStream out, BufferedReader input, JSONCommunicator jCommunicate) throws IOException {
+    this.jCommunicate = jCommunicate;
+    jCommunicate.send(generateInfoJSON("Testing, server, can you hear me?\n"));
+    JSONObject ans = jCommunicate.receive();
+    String prompt = ans.getString("prompt");
+    System.out.println(prompt);
 
     // Don't know how to use Mockito to set playerID at the beginning, just set 0
     // for now.
     // this.playerID = Integer.parseInt(readLinesFromServer(this.br));
-    this.playerID = -1;
+    this.playerID = getPlayerId(jCommunicate.receive());
     this.playerStatus = "A";
     this.out = out;
     this.inputReader = input;
@@ -57,37 +56,6 @@ public class Client {
     orderKeyValue.put("D", "commit");
   }
 
-  /**
-   * Set the player ID 
-   *
-   * @return the player ID
-*/
-  public int getPlayerIDFromServer() throws IOException{
-    playerID = getPlayerId(jCommunicate.receive());
-    return playerID;
-  }
-
-  /**
-   * Initiate the socket and connect to the server
-   */
-  private void initSocket(String hostname, int port) {
-    try {
-      this.socket = new Socket(hostname, port);
-      this.bw = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-      this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-      this.jCommunicate = new JSONCommunicator(br, bw);
-      jCommunicate.send(generateInfoJSON("Testing, server, can you hear me?\n"));
-      // Thread.sleep(5000);
-      // String ans = readLinesFromServer(this.br);
-      // String ans = this.br.readLine();
-      // String ans = readLinesFromServer();
-      JSONObject ans = jCommunicate.receive();
-      String prompt = ans.getString("prompt");
-      System.out.println(prompt);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 
   /**
    * generate a JSONObject of type: inform
@@ -207,10 +175,6 @@ public class Client {
       // e.printStackTrace();
       return null;
     }
-  }
-
-  public void run() {
-
   }
 
   /**
