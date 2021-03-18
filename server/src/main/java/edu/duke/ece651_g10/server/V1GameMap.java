@@ -67,6 +67,13 @@ public class V1GameMap implements GameMap {
     }
 
     @Override
+    public void addUnitToEachTerritory() {
+        for (Territory t: territories) {
+            t.increaseUnit(1);
+        }
+    }
+
+    @Override
     public Set<Territory> getTerritoriesForPlayer(Player p) {
         Set<Territory> result = new HashSet<>();
         for (Territory t: territories) {

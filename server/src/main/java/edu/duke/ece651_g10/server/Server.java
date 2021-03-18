@@ -286,6 +286,19 @@ public class Server {
 //    }
 
 
+    private void updatePlayerInfo() {
+        for (Player p: players.values()) {
+            if (p.getIsLost()) {
+                continue;
+            } else {
+                if (playMap.getTerritoriesForPlayer(p).size() == 0) {
+                    p.setIsLost();
+                }
+            }
+        }
+    }
+
+
     /**
      * Run this game, this should be the only method posted to the outer world.
      * ie. Server newServer(port)
@@ -306,6 +319,8 @@ public class Server {
             orderProcessor.executeEndTurnOrders();
             // Send the updated information to all players.
             //sendToAllPlayer(getWholeGameInformation());
+            playMap.addUnitToEachTerritory();
+            updatePlayerInfo();
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
