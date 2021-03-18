@@ -189,7 +189,6 @@ public class Client {
             //out.print("After readLine()2");
             //out.println(str);
         }
-        //out.println(str);
         return str;
     }
 
