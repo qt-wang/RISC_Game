@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 /**
  * This class implements the server of the client-server model.
@@ -193,6 +194,39 @@ public class Server {
         }
     }
 
+//    public void test() {
+//        Function<Integer, Runnable> todo = new Function<Integer, Runnable>() {
+//            @Override
+//            public Runnable apply(Integer integer) {
+//                return new UnitsDistributionTask(integer);
+//            }
+//        }
+//    }
+
+    private void runTasksForAllPlayer(Function<Integer,Runnable> toDo) throws BrokenBarrierException, InterruptedException {
+        CyclicBarrier barrier = new CyclicBarrier(players.size()+1);
+        for (int i = 1; i <= players.size(); i++) {
+            int currentPlayerId = i;
+            // We create multiple tasks here.
+            Runnable task = toDo.apply(i);
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        task.run();
+                        barrier.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t.start();
+        }
+        barrier.await();
+    }
+
     private void runTasksForAllPlayer(int taskNumber) {
         CyclicBarrier barrier = new CyclicBarrier(players.size());
         for (int i = 1; i <= players.size(); i++) {
@@ -306,8 +340,10 @@ public class Server {
     }
 
     //TODO: Change this later.
-    private Order receiveOrder(int playerId) {
-        return null;
+    private Order receiveOrder(int playerId) throws IOException {
+        //return null;
+        JSONObject info = players.get(playerId).getJCommunicator().receive();
+        return toOrder(playerId, info);
     }
 
 
@@ -335,8 +371,9 @@ public class Server {
 
     /**
      * generate a JSONObject of type: inform
+     *
      * @param playerId the player's id
-     * @param prompt the information
+     * @param prompt   the information
      * @return the constructed JSONObject
      */
     public JSONObject generateInfoJSON(int playerId, String prompt) {
@@ -349,14 +386,15 @@ public class Server {
 
     /**
      * generate a JSONObject of type: inform
-     * @param playerId the player's id
-     * @param prompt the information
+     *
+     * @param playerId   the player's id
+     * @param prompt     the information
      * @param askingType the type of asking
      * @return the constructed JSONObject
      */
-    public JSONObject generateAskJSON(int playerId, String prompt, String askingType){
-        assert(askingType.equals("initial")||askingType.equals("regular"));
-        JSONObject ask = new JSONObject().put("type", "ask").put("asking",askingType);
+    public JSONObject generateAskJSON(int playerId, String prompt, String askingType) {
+        assert (askingType.equals("initial") || askingType.equals("regular"));
+        JSONObject ask = new JSONObject().put("type", "ask").put("asking", askingType);
         ask = ask.put("prompt", prompt).put("playerID", playerId);
         boolean isLost = players.get(playerId).getIsLost();
         ask = isLost ? ask.put("playerStatus", "L") : ask.put("playerStatus", "A");
@@ -364,16 +402,46 @@ public class Server {
     }
 
     /**
+     * Return whether the obj is a order object.
+     *
+     * @param obj The json object from the client.
+     * @return True if the object can be used to construct a order.
+     */
+    private boolean isOrderMessage(JSONObject obj) {
+        String type = getMessageType(obj);
+        if (type == "order") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Return whether the obj is a commit message.
+     *
+     * @param obj The json object from the client.
+     * @return True if the object can be used to construct a commit message.
+     */
+    private boolean isCommitMessage(JSONObject obj) {
+        String type = getMessageType(obj);
+        if (type == "commit") {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * get the String mapped to "type" in the JSONObject
      * call this first when you receive any JSONObject before parsing!
+     *
      * @param obj a JSONObject
      * @return the content or null if not exists
      */
-    public String getMessageType(JSONObject obj){
-        try{
+    public String getMessageType(JSONObject obj) {
+        try {
             String ans = obj.getString("type");
             return ans;
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
@@ -381,15 +449,16 @@ public class Server {
 
     /**
      * get the information in a inform JSONObject
+     *
      * @param obj the obj received
      * @return the prompt field or null if not exists
      */
-    public String getPrompt(JSONObject obj){
-        assert(getMessageType(obj)!=null && getMessageType(obj).equals("inform"));
-        try{
+    public String getPrompt(JSONObject obj) {
+        assert (getMessageType(obj) != null && getMessageType(obj).equals("inform"));
+        try {
             String ans = obj.getString("prompt");
             return ans;
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
@@ -397,26 +466,31 @@ public class Server {
 
     /**
      * parse order JSONObject into order object
+     *
      * @param playerId the id of the player where the obj from
-     * @param obj the JSONObject
+     * @param obj      the JSONObject
      * @return an order object or null if the obj is not a parsable one
      */
-    public Order toOrder(int playerId, JSONObject obj){
-        try{
+    public Order toOrder(int playerId, JSONObject obj) {
+        try {
+            //Should we check this?
+//            if (!isOrderMessage(obj)) {
+//                return null;
+//            }
             String orderType = obj.getString("orderType"),
                     sourceT = obj.getString("sourceTerritory"),
                     destT = obj.getString("destTerritory");
             int unitNum = obj.getInt("unitNumber");
-            if(orderType.equals("move")){
-                Order order = new MoveOrder(playerId,sourceT,destT,unitNum,this.playMap);
+            if (orderType.equals("move")) {
+                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap);
                 return order;
-            }else if(orderType.equals("attack")){
-                Order order = new AttackOrder(playerId,sourceT,destT,unitNum,this.playMap);
+            } else if (orderType.equals("attack")) {
+                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap);
                 return order;
-            }else {
+            } else {
                 return null;
             }
-        }catch(JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
