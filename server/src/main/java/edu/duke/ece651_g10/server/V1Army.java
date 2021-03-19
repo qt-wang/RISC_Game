@@ -1,13 +1,12 @@
+
 package edu.duke.ece651_g10.server;
 
 import java.util.Set;
-
 /**
  * A class that implements the Army interface.
  * Maintained by Guancheng Fu
  */
 public class V1Army implements Army{
-
     private Set<Unit> units;
 
 
@@ -32,3 +31,15 @@ public class V1Army implements Army{
 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
