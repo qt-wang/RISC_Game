@@ -37,7 +37,7 @@ public class SocketClient {
       this.bw = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
       this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
     } catch (IOException e) {
-      e.printStackTrace();
+      System.err.println("Failed to connect to server.");
     }
   }
 
