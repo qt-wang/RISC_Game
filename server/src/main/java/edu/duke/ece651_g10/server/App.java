@@ -15,10 +15,9 @@ public class App {
         //TODO: Test remote connection.
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
-        RuleChecker V1RuleChecker = new V1RuleChecker(moveRuleChecker, attackRuleChecker);
-        //GameMapFactory factory = new V1GameMapFactory(new PseudoNumberGenerator());
-        GameMapFactory factory = new FixedGameMapFactory();
-        Server server = new Server(12345, 3, 12, 3, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
+        GameMapFactory factory = new V1GameMapFactory(new PseudoNumberGenerator());
+        //GameMapFactory factory = new FixedGameMapFactory();
+        Server server = new Server(12345, 3, 12, 4, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
         //server.acceptConnections();
         server.run();
     }

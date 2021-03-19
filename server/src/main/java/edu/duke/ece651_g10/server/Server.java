@@ -724,8 +724,8 @@ public class Server {
                 receiveCommit = true;
                 continue;
             }
-            Order order = toOrder(playerId, obj);
             synchronized (this) {
+                Order order = toOrder(playerId, obj);
                 String message = null;
                 if (order instanceof MoveOrder) {
                     message = moveRuleChecker.checkOrder(order, playMap);
