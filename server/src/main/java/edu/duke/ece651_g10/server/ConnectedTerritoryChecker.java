@@ -58,8 +58,10 @@ public class ConnectedTerritoryChecker extends RuleChecker {
   @Override
   protected String checkMyRule(Order order, GameMap gameMap) {
     if (!searchConnection(order.getSourceTerritory(), order.getTargetTerritory(), order.getPlayerID(), gameMap)) {
+      waypoints.clear();
       return "The source territory and target territory are not connected.";
     }
+    waypoints.clear();
     return null;
   }
 }

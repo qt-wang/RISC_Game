@@ -40,12 +40,18 @@ public interface GameMap {
     public Territory getTerritory(String name);
 
     /**
+     * Add one unit to each territory.
+     */
+    public void addUnitToEachTerritory();
+
+    /**
      * Give the player, return a set of territories belong to this player.
      *
      * @param p The player for looking up.
      * @return A set of territories belong to this user.
      */
     public Set<Territory> getTerritoriesForPlayer(Player p);
+
 }
 
 

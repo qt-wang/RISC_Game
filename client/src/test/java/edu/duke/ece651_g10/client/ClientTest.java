@@ -189,7 +189,7 @@ public class ClientTest {
     assertEquals(true, ans);
   }
 
-   @Test
+  @Test
   public void test_play_game_lost() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     BufferedReader input = new BufferedReader(new StringReader(""));
@@ -203,7 +203,48 @@ public class ClientTest {
     assertEquals(false, ans);
   }
 
-   @Test
+  @Test
+  public void test_play_game_unnormal() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    HashSet<String> legalOrderSet = new HashSet<String>();
+    legalOrderSet.add("M");
+    legalOrderSet.add("D");
+    BufferedReader input = new BufferedReader(new StringReader("M\nDurham\nOrange\n42\nD\n"));
+    PrintStream output = new PrintStream(bytes, true);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "A")
+        .put("prompt", "test string");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client1 = new Client(output, input, mockSocketClient);
+    JSONObject json1 = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "L").put("prompt",
+        "123\n");
+    JSONObject json2 = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "L").put("prompt",
+        "invalid\n");
+    JSONObject json3 = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "L").put("prompt",
+        "valid\n");
+
+    when(mockSocketClient.receive()).thenAnswer(new Answer<JSONObject>() {
+      private int count = 0;
+
+      public JSONObject answer(InvocationOnMock invocation) {
+        if (count == 0) {
+          count += 1;
+          return json1;
+        } else if (count == 1) {
+          count += 1;
+          return json2;
+        } else {
+          return json3;
+        }
+      }
+    });
+
+    boolean ans = client1.playGame();
+
+    assertEquals(false, ans);
+  }
+
+  @Test
   public void test_play_game_normal() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     BufferedReader input = new BufferedReader(new StringReader("M\nDurham\nOrange\n42\nD\n"));
@@ -238,14 +279,12 @@ public class ClientTest {
     orderJSON_test_helper(order2, "move", "beijing", "chicago", 9);
     JSONObject testNullGetter = new JSONObject();
     assertNull(c.getMessageType(testNullGetter));
-    assertThrows(AssertionError.class, () -> c.getAskingType(testNullGetter));
     assertNull(c.getPlayerId(testNullGetter));
     assertNull(c.getPrompt(testNullGetter));
     assertNull(c.getPlayerStatus(testNullGetter));
     JSONObject testGetter = new JSONObject().put("type", "ask").put("playerID", 3).put("playerStatus", "L")
         .put("prompt", "aaa").put("asking", "regular");
     assertEquals(c.getMessageType(testGetter), "ask");
-    assertEquals(c.getAskingType(testGetter), "regular");
     assertEquals(c.getPlayerId(testGetter), 3);
     assertEquals(c.getPrompt(testGetter), "aaa");
     assertEquals(c.getPlayerStatus(testGetter), "L");

@@ -286,6 +286,19 @@ public class Server {
 //    }
 
 
+    private void updatePlayerInfo() {
+        for (Player p: players.values()) {
+            if (p.getIsLost()) {
+                continue;
+            } else {
+                if (playMap.getTerritoriesForPlayer(p).size() == 0) {
+                    p.setIsLost();
+                }
+            }
+        }
+    }
+
+
     /**
      * Run this game, this should be the only method posted to the outer world.
      * ie. Server newServer(port)
@@ -306,6 +319,8 @@ public class Server {
             orderProcessor.executeEndTurnOrders();
             // Send the updated information to all players.
             //sendToAllPlayer(getWholeGameInformation());
+            playMap.addUnitToEachTerritory();
+            updatePlayerInfo();
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -631,14 +646,13 @@ public class Server {
                 receiveCommit = true;
                 continue;
             }
-            Order order = toOrder(playerId, obj);
-            if (order == null) {
-                sendInvalidResponse(playerId);
-                continue;
-            }
-
             // TODO: Remove this later.
             synchronized (this) {
+                Order order = toOrder(playerId, obj);
+                if (order == null) {
+                    sendInvalidResponse(playerId);
+                    continue;
+                }
                 assert (order instanceof MoveOrder);
 //                sendValidResponse(playerId);
 //                orderProcessor.acceptOrder(order);
@@ -709,8 +723,8 @@ public class Server {
                 receiveCommit = true;
                 continue;
             }
-            Order order = toOrder(playerId, obj);
             synchronized (this) {
+                Order order = toOrder(playerId, obj);
                 String message = null;
                 if (order instanceof MoveOrder) {
                     message = moveRuleChecker.checkOrder(order, playMap);

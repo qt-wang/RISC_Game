@@ -151,26 +151,6 @@ public class Client {
     }
 
     /**
-     * get the asking field from the json object
-     *
-     * @param obj the json object
-     * @return "initial" where the player is in the initialization part of the game
-     * and whose order should be restricted to move and commit "regular"
-     * where the player is in the game and can input any order type and
-     * commit
-     */
-    public String getAskingType(JSONObject obj) {
-        assert (getMessageType(obj) != null && getMessageType(obj).equals("ask"));
-        try {
-            String ans = obj.getString("asking");
-            return ans;
-        } catch (NullPointerException e) {
-            // e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
      * Read the input from the user
      *
      * @param prompt The String will print in the terminal before the user inputs
@@ -179,16 +159,7 @@ public class Client {
      */
     public String readString(String prompt) throws IOException {
         out.println(prompt);
-        //Thread.sl
-        //out.print("Before readLine()");
         String str = inputReader.readLine();
-        //out.print("After readLine()");
-        while (str == null) {
-            //out.print("Before readLine2()");
-            str = inputReader.readLine();
-            //out.print("After readLine()2");
-            //out.println(str);
-        }
         return str;
     }
 
@@ -311,12 +282,12 @@ public class Client {
     public boolean playGame() throws IOException {
         JSONObject receivedJSON = socketClient.receive();
         out.println(getPrompt(receivedJSON));
-        if (getPlayerStatus(receivedJSON).equals("L\n")) {
+        if (getPlayerStatus(receivedJSON).equals("L")) {
             sendOrderToServer(generateCommitJSON());
-            if (getPrompt(socketClient.receive()).equals("invalid\n")) {
+            while (getPrompt(socketClient.receive()).equals("invalid\n")) {
                 sendOrderToServer(generateCommitJSON());
             }
-        } else if (getPlayerStatus(receivedJSON).equals("E\n")) {
+        } else if (getPlayerStatus(receivedJSON).equals("E")) {
             endGame = true;
         } else {
             String prompt = "You are the Player " + String.valueOf(playerID)
