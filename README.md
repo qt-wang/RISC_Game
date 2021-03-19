@@ -1,5 +1,12 @@
 # ECE651_G10_RISK
 
+## Running Instruction
+ 1. Go to root directory in the project.
+ 2. Run './gradlew installDist'
+ 3. Run server first through './server/build/install/server/bin/server'.
+ 4. Run several clients through './client/build/install/client/bin/client'
+ 5. Enjoy the game!
+
 ```mermaid
 classDiagram
  
@@ -7,11 +14,11 @@ RuleChecker "1" <-- "1" Server
     SufficientUnitChecker "1" <|-- "1" RuleChecker
     AdjacentTerritoryChecker "1" <|-- "1" RuleChecker
     SelfTerritoryChecker "1" <|-- "1" RuleChecker
+    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
     EnemyTerritoryChecker "1" <|-- "1" RuleChecker
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
-    InputChecker "1" <|-- "1" RuleChecker
+    InputChecker "1" <-- "1" Client
     Server "1" --> "n" Player
-    Client "1" --> "1" RuleChecker
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
     Player "1" --> "n" Unit
@@ -21,6 +28,7 @@ RuleChecker "1" <-- "1" Server
     MoveOrder "1" <|-- "1" Order
     AttackOrder "1" <|-- "1" Order
     OrderProcessor "1" --> "n" Order
+    Client "1" --> "n" Order
     AddUnitOrder "1" <|-- "1" Order
     Server "1" --> "1" OrderProcessor
     AttackOrder "1" --> "n" Dice
@@ -46,7 +54,11 @@ RuleChecker "1" <-- "1" Server
     }
 
     class Order {
+        -int playerID
         +execute()
+        +getNumUnit()
+        +getSourceTerritory()
+        +getTargetTerritory()
     }
 
     class MoveOrder {
@@ -98,6 +110,10 @@ RuleChecker "1" <-- "1" Server
     class SufficientUnitChecker {
 
     }
+    
+    class PlayerSelfOrderChecker {
+
+    }
 
     class SelfTerritoryChecker {
 
@@ -136,8 +152,10 @@ RuleChecker "1" <-- "1" Server
     }
 
     class Territory {
+        -String name
         -HashSet~Territory~ neighbours
-        -HashMap~Player,List~Unit~~ units 
+        -HashMap~String,List~Unit~~ units 
+        +getNumUnit()
     }
 
     class Unit {

@@ -1,0 +1,11 @@
+You've connected to the server.
+
+First phase, soldiers distribution
+0 units in PVMWMM (next to: SPM)
+0 units in GBO (next to: CXJTG, SPM)
+0 units in CXJTG (next to: GBO, WWKR, NFM)
+12 units in SPM (next to: PVMWMM, GBO, WWKR, YXK)
+
+You can move your units now.
+   (M)ove
+   (D)one

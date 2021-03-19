@@ -1,0 +1,14 @@
+Waiting for client to connect
+Connected with client
+Client：Testing, server, can you hear me?
+
+Waiting for client to connect
+Connected with client
+Client：Testing, server, can you hear me?
+
+Waiting for client to connect
+Connected with client
+Client：Testing, server, can you hear me?
+
+Setup map!
+Finish setup
