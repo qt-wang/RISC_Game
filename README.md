@@ -1,5 +1,12 @@
 # ECE651_G10_RISK
 
+## Running Instruction
+ 1. Go to root directory in project.
+ 2. run './gradlew installDist'
+ 3. run server first through './server/build/install/server/bin/server'.
+ 4. run several clients through './client/build/install/client/bin/client'
+ 5. Enjoy the game!
+
 ```mermaid
 classDiagram
  
