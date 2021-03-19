@@ -18,4 +18,8 @@ public class PseudoNumberGenerator implements RandomNumberGenerator{
     public PseudoNumberGenerator() {
         rand = new Random();
     }
+
+    public PseudoNumberGenerator(long seed){
+        rand = new Random(seed);
+    }
 }

@@ -5,5 +5,6 @@ package edu.duke.ece651_g10.server;
  */
 public interface Dice {
 
-    public int roll();
+//    public int roll();
+    public int roll(long seed);
 }
