@@ -79,7 +79,7 @@ public class V1GameMapFactory implements GameMapFactory {
         // We need to divide it into numberOfPlayers group, each will has territoriesPerPlayer.
         HashMap<Integer, HashSet<Territory>> groups = new HashMap<>();
         List<Territory> copied = new LinkedList<>(allTerritories);
-        for (int i = 0; i < numberOfPlayers; i ++) {
+        for (int i = 1; i <= numberOfPlayers; i ++) {
             HashSet<Territory> group = (HashSet<Territory>) getPlayerTerritoryGroup(copied, territoriesPerPlayer);
             groups.put(i, group);
         }

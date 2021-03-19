@@ -50,8 +50,9 @@ public class AttackOrder extends Order{
         }
         //attacker.decreaseUnit(unitNum);
         while(!attackerWin && !defenderWin){
-            int attDice = dice.roll();
-            int defDice = dice.roll();
+            long seed = System.currentTimeMillis();
+            int attDice = dice.roll(seed);
+            int defDice = dice.roll(seed+1000);
             if(attDice > defDice){     //attacker wins a round
                 defender.decreaseUnit(1);
             }

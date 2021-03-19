@@ -7,8 +7,14 @@ import java.util.Random;
 */
 public class TwentySidesDice implements Dice{
 
+//    @Override
+//    public int roll() {
+//        Random random = new Random();
+//        return random.nextInt(20);
+//    }
+
     @Override
-    public int roll() {
+    public int roll(long seed) {
         Random random = new Random();
         return random.nextInt(20);
     }
