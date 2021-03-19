@@ -19,47 +19,47 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppTest {
 
     // tee server/src/test/resources/input.txt | ./server/build/install/server/bin/server | tee server/src/test/resources/output.txt
-    @Disabled
-    @Test
-    @ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ_WRITE)
-    void test_main() throws IOException {
-        String[] inputs = new String[3], outputs = new String[3];
-        inputs[0] = "input1.txt";
-        inputs[1] = "input2.txt";
-        inputs[2] = "input3.txt";
-        outputs[0] = "output1.txt";
-        outputs[1] = "output2.txt";
-        outputs[2] = "output3.txt";
-        //change numbers in the for loop to decide the file name of input and output to test
-        //note that for the same index in input[] and output[],
-        // those two files should be a set of input and output
-        for(int i=0;i<3;i++){
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            PrintStream out = new PrintStream(bytes, true);
+    // @Disabled
+    // @Test
+    // @ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ_WRITE)
+    // void test_main() throws IOException {
+    //     String[] inputs = new String[3], outputs = new String[3];
+    //     inputs[0] = "input1.txt";
+    //     inputs[1] = "input2.txt";
+    //     inputs[2] = "input3.txt";
+    //     outputs[0] = "output1.txt";
+    //     outputs[1] = "output2.txt";
+    //     outputs[2] = "output3.txt";
+    //     //change numbers in the for loop to decide the file name of input and output to test
+    //     //note that for the same index in input[] and output[],
+    //     // those two files should be a set of input and output
+    //     for(int i=0;i<3;i++){
+    //         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    //         PrintStream out = new PrintStream(bytes, true);
 
-            InputStream input = getClass().getClassLoader().getResourceAsStream(inputs[i]);
-            assertNotNull(input);
+    //         InputStream input = getClass().getClassLoader().getResourceAsStream(inputs[i]);
+    //         assertNotNull(input);
 
-            InputStream expectedStream = getClass().getClassLoader().getResourceAsStream(outputs[i]);
-            assertNotNull(expectedStream);
+    //         InputStream expectedStream = getClass().getClassLoader().getResourceAsStream(outputs[i]);
+    //         assertNotNull(expectedStream);
 
-            InputStream oldIn = System.in;
-            PrintStream oldOut = System.out;
+    //         InputStream oldIn = System.in;
+    //         PrintStream oldOut = System.out;
 
-            try {
-                System.setIn(input);
-                System.setOut(out);
-                App.main(new String[0]);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                System.setIn(oldIn);
-                System.setOut(oldOut);
-            }
-            String expected = new String(expectedStream.readAllBytes());
-            String actual = bytes.toString();
-            assertEquals(expected, actual);
-        }
-    }
+    //         try {
+    //             System.setIn(input);
+    //             System.setOut(out);
+    //             App.main(new String[0]);
+    //         } catch (InterruptedException e) {
+    //             e.printStackTrace();
+    //         } finally {
+    //             System.setIn(oldIn);
+    //             System.setOut(oldOut);
+    //         }
+    //         String expected = new String(expectedStream.readAllBytes());
+    //         String actual = bytes.toString();
+    //         assertEquals(expected, actual);
+    //     }
+    // }
 }
 
