@@ -13,7 +13,7 @@ public class V1OrderProcessorTest {
     gMap.getTerritory("Elantris").increaseUnit(5);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap);
     AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
-    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Roshar", 1, gMap, player);
+    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Scadrial", 1, gMap, player);
     V1OrderProcessor op = new V1OrderProcessor();
     op.acceptOrder(mOrder);
     op.acceptOrder(aOrder);

@@ -15,9 +15,15 @@ public class PlayerTest {
     assertEquals(player.getPlayerID(), player.getPlayerID());
     assertEquals(player.getIsLost(), player.getIsLost());
     assertEquals(player.getJCommunicator(), player.getJCommunicator());
+    player.setIsLost();
+    assertEquals(true, player.getIsLost());
   }
 
 }
+
+
+
+
 
 
 
