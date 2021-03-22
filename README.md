@@ -17,6 +17,11 @@ RuleChecker "1" <-- "1" Server
     PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
     EnemyTerritoryChecker "1" <|-- "1" RuleChecker
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
+    ResourceChecker "1" <|-- "1" RuleChecker
+    AttackResourceChecker "1" <|-- "1" ResourceChecker
+    MoveResourceChecker "1" <|-- "1" ResourceChecker
+    UpgradeResourceChecker "1" <|-- "1" ResourceChecker
+    ResourceChecker "1" --> "1" ShortestPath
     InputChecker "1" <-- "1" Client
     Server "1" --> "n" Player
     Server "1" --> "1" Map
@@ -28,10 +33,14 @@ RuleChecker "1" <-- "1" Server
     MoveOrder "1" <|-- "1" Order
     AttackOrder "1" <|-- "1" Order
     OrderProcessor "1" --> "n" Order
+    OrderProcessor "1" --> "1" ShortestPath
     Client "1" --> "n" Order
-    AddUnitOrder "1" <|-- "1" Order
+    UpgradeOrder "1" <|-- "1" Order
+    UnitUpgradeOrder "1" <|-- "1" UpgradeOrder
+    TechnologyUpgradeOrder "1" <|-- "1" UpgradeOrder
     Server "1" --> "1" OrderProcessor
     AttackOrder "1" --> "n" Dice
+
 
 
     class Server{
@@ -43,6 +52,10 @@ RuleChecker "1" <-- "1" Server
         -checkEndGame()
         +assignTerritory()
         +distributeResults()
+    }
+
+    class ShortestPath {
+        -GameMap map
     }
 
     class OrderProcessor {
@@ -59,6 +72,7 @@ RuleChecker "1" <-- "1" Server
         +getNumUnit()
         +getSourceTerritory()
         +getTargetTerritory()
+        +getPlayerID()
     }
 
     class MoveOrder {
@@ -74,9 +88,16 @@ RuleChecker "1" <-- "1" Server
         -int unitNumTotal
     }
 
-    class AddUnitOrder{
-        -Territory bornTerritory
-        -int unitNum
+    class UpgradeOrder {
+
+    }
+
+    class UnitUpgradeOrder {
+
+    }
+
+    class TechnologyUpgradeOrder {
+
     }
 
     class Dice{
@@ -91,6 +112,9 @@ RuleChecker "1" <-- "1" Server
         +checkRule()
         +sendOrders()
         +displyResult()
+        +createAccount()
+        +login()
+        +logout()
     }
 
     class RuleChecker {
@@ -123,12 +147,31 @@ RuleChecker "1" <-- "1" Server
 
     }
 
+    class ResourceChecker {
+        -HashMap~String, HashMap~int, int~ ~ ResourceCost 
+    }
+
+    class AttackResourceChecker {
+
+    }
+
+    class MoveResourceChecker {
+
+    }
+
+    class UpgradeResourceChecker {
+        
+    }
+
     class InputChecker {
 
     }
 
     class Player {
         -int ID
+        -boolean isUpgrade
+        -HashMap~String, int~ resourcesTotal
+        -int technologyLevel
         +pickTerritory()
         +setUnits()
         +commitOrders()
@@ -155,11 +198,13 @@ RuleChecker "1" <-- "1" Server
         -String name
         -HashSet~Territory~ neighbours
         -HashMap~String,List~Unit~~ units 
+        -HashMap~String,int~ resources
         +getNumUnit()
     }
 
     class Unit {
         -Player owner
+        -int level
         -Territory position 
     }       
 ```
