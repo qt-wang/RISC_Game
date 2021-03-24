@@ -1,9 +1,6 @@
 package edu.duke.ece651_g10.server;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class represents one territory of the map.
@@ -14,19 +11,26 @@ public class V1Territory implements Territory {
 
     @Override
     public void setUnitNumber(int unit) {
-        this.ownedUnits = unit;
+        ownedUnits = new LinkedList<>();
+        for (int i = 0; i < unit; i ++) {
+            ownedUnits.add(new V1Unit());
+        }
     }
 
 
     @Override
     public void decreaseUnit(int unit) {
-        this.ownedUnits -= unit;
+        for (int i = 0; i < unit; i ++) {
+            ownedUnits.remove(0);
+        }
     }
 
 
     @Override
     public void increaseUnit(int unit) {
-        this.ownedUnits += unit;
+        for (int i = 0; i < unit; i ++) {
+            ownedUnits.add(new V1Unit());
+        }
     }
 
 
@@ -36,7 +40,7 @@ public class V1Territory implements Territory {
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
-    private int ownedUnits;
+    private List<Unit> ownedUnits;
 
     @Override
     public void setOwner(Player player) {
@@ -48,6 +52,7 @@ public class V1Territory implements Territory {
         this.name = name;
         neighbours = new HashSet<>();
         units = new HashMap<>();
+        ownedUnits = new LinkedList<>();
     }
 
 
@@ -58,7 +63,7 @@ public class V1Territory implements Territory {
 
     @Override
     public int getNumUnit() {
-        return ownedUnits;
+        return ownedUnits.size();
     }
 
     @Override
