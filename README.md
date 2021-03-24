@@ -39,7 +39,7 @@ RuleChecker "1" <-- "1" Server
     UnitUpgradeOrder "1" <|-- "1" UpgradeOrder
     TechnologyUpgradeOrder "1" <|-- "1" UpgradeOrder
     Server "1" --> "1" OrderProcessor
-    AttackOrder "1" --> "n" Dice
+    AttackOrder "1" --> "n" TwentySidesDice
 
 
 
@@ -59,11 +59,11 @@ RuleChecker "1" <-- "1" Server
     }
 
     class OrderProcessor {
-        -HashMap~Territory,List~Order~~ attackOrders
-        +parseOrder()
-        +mergeOrder()
-        +issueOrders()
-        +executeOrders()
+        -HashMap<Player, Vector<Order>> attacksInOneTurn
+        +acceptOrder(Order order)
+        +executeEndTurnOrders()
+        -merge(Vector<Order> vector)
+        -Vector<Order> obtainAllAttackOrders()
     }
 
     class Order {
@@ -77,15 +77,17 @@ RuleChecker "1" <-- "1" Server
 
     class MoveOrder {
         -Territory source
-        -Territory destination
+        -Territory dest
         -int unitNum
-        -HashSet~Unit~ units
+        -GameMap gMap
     }
 
     class AttackOrder {
-        -HashMap~Territory,HashSet~Unit~~ attacker
+        -Territory attacker
         -Territory defender
-        -int unitNumTotal
+        -int unitNum
+        -Player owner
+        -GameMap gMap
     }
 
     class UpgradeOrder {
@@ -100,9 +102,9 @@ RuleChecker "1" <-- "1" Server
 
     }
 
-    class Dice{
+    class TwentySidesDice{
         -int sides
-        +roll()
+        +int roll(long seed)
     }
 
     class Client {
