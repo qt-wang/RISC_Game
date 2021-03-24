@@ -208,14 +208,6 @@ public class Server {
         }
     }
 
-//    public void test() {
-//        Function<Integer, Runnable> todo = new Function<Integer, Runnable>() {
-//            @Override
-//            public Runnable apply(Integer integer) {
-//                return new UnitsDistributionTask(integer);
-//            }
-//        }
-//    }
 
 
     private Function<Integer, Runnable> getUnitsDistributionTask() {
@@ -356,11 +348,9 @@ public class Server {
 
     private void sendValidResponse(int playerId) throws IOException {
         sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n"));
-        //TODO: Change this later to send a inform message.
     }
 
     private void sendInvalidResponse(int playerId) throws IOException {
-        // TODO: Change this later to send a inform message.
         sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n"));
     }
 
@@ -594,23 +584,6 @@ public class Server {
         return generateInfoJSON(playerId, sb.toString());
     }
 
-//    /**
-//     * This message is sent to the player at the beginning of the round.
-//     * And after the player send a command back to the server (so that they can see the effect
-//     * of their moves.).
-//     *
-//     * @param playerId              The id number of the player, starts from 1.
-//     * @param otherTerritoryMessage The other players' territory information, this should not changed
-//     *                              during this round (player should not get other players' information
-//     *                              during the round).
-//     * @return A String represents the message that was sent to the user.
-//     */
-//    public String secondPhaseInformation(int playerId, String otherTerritoryMessage) {
-//        String str = new String("Second phase, attack territories\n");
-//        str = phaseInformation(str, playerId);
-//        str += otherTerritoryMessage;
-//        return str;
-//    }
 
     public JSONObject secondPhaseInformation(int playerId, String otherTerritoryMessage) {
         //StringBuilder sb = new StringBuilder("Second phase, attack territories\n");
