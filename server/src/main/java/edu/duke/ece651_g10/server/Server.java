@@ -9,9 +9,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.concurrent.*;
-import java.util.function.Function;
 
 /**
  * This class implements the server of the client-server model.
@@ -57,6 +54,7 @@ public class Server {
     private OrderProcessor orderProcessor;
 
     private boolean gameEnds;
+
     /**
      * Setup the server socket.
      *
@@ -71,32 +69,32 @@ public class Server {
     }
 
 
-    /**
-     * Begin a server.
-     * Begins to listen on a specific port.
-     *
-     * @param port                        The port to listen to.
-     * @param numUnitPerPlayer            Number of units per player has when the game begin.
-     * @param numTerritoryPerPlayer       Number of territories per player has when the game begin.
-     * @param maximumNumberPlayersAllowed The maximum number of players allowed in the game.
-     * @param factory                     The factory used to generate the map.
-     * @param numPlayer                   The number of players allowed in this class.
-     * @throws IOException If the port is unavailable.
-     */
-    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker ruleChecker, int numPlayer, OrderProcessor orderProcessor) throws IOException {
-        setServerSocket(port);
-        this.numTerritoryPerPlayer = numTerritoryPerPlayer;
-        this.numUnitPerPlayer = numUnitPerPlayer;
-        this.maximumNumberPlayersAllowed = maximumNumberPlayersAllowed;
-        //TODO: delete this.
-        //this.ruleChecker = ruleChecker;
-        this.mapFactory = factory;
-        this.numPlayer = numPlayer;
-        players = new HashMap<>();
-        setServerSocket(port);
-        this.orderProcessor = orderProcessor;
-        gameEnds = false;
-    }
+//    /**
+//     * Begin a server.
+//     * Begins to listen on a specific port.
+//     *
+//     * @param port                        The port to listen to.
+//     * @param numUnitPerPlayer            Number of units per player has when the game begin.
+//     * @param numTerritoryPerPlayer       Number of territories per player has when the game begin.
+//     * @param maximumNumberPlayersAllowed The maximum number of players allowed in the game.
+//     * @param factory                     The factory used to generate the map.
+//     * @param numPlayer                   The number of players allowed in this class.
+//     * @throws IOException If the port is unavailable.
+//     */
+//    public Server(int port, int numUnitPerPlayer, int numTerritoryPerPlayer, int maximumNumberPlayersAllowed, GameMapFactory factory, RuleChecker ruleChecker, int numPlayer, OrderProcessor orderProcessor) throws IOException {
+//        setServerSocket(port);
+//        this.numTerritoryPerPlayer = numTerritoryPerPlayer;
+//        this.numUnitPerPlayer = numUnitPerPlayer;
+//        this.maximumNumberPlayersAllowed = maximumNumberPlayersAllowed;
+//        //TODO: delete this.
+//        //this.ruleChecker = ruleChecker;
+//        this.mapFactory = factory;
+//        this.numPlayer = numPlayer;
+//        players = new HashMap<>();
+//        setServerSocket(port);
+//        this.orderProcessor = orderProcessor;
+//        gameEnds = false;
+//    }
 
 
     // This constructor is for test uses.
@@ -106,7 +104,17 @@ public class Server {
     }
 
     /**
-     * only for tests.
+     * Construct a server.
+     *
+     * @param port                  The port the server is listening for.
+     * @param numPlayer             The number of players allowed in one game.
+     * @param numUnitPerPlayer
+     * @param numTerritoryPerPlayer
+     * @param factory
+     * @param moveRuleChecker
+     * @param attackRuleChecker
+     * @param orderProcessor
+     * @throws IOException
      */
     public Server(int port, int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, GameMapFactory factory, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor) throws IOException {
         this.numPlayer = numPlayer;
@@ -168,95 +176,94 @@ public class Server {
         System.out.println("Finish setup");
     }
 
-    private class UnitsDistributionTask implements Runnable {
-        int playerId;
-        //CyclicBarrier barrier;
+//    private class UnitsDistributionTask implements Runnable {
+//        int playerId;
+//        //CyclicBarrier barrier;
+//
+//        UnitsDistributionTask(int playerId) {
+//            this.playerId = playerId;
+//            //this.barrier = barrier;
+//        }
+//
+//        @Override
+//        public void run() {
+//            try {
+//                setupInitialUnitsDistribution(playerId);
+//                //barrier.await();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
-        UnitsDistributionTask(int playerId) {
-            this.playerId = playerId;
-            //this.barrier = barrier;
-        }
-
-        @Override
-        public void run() {
-            try {
-                setupInitialUnitsDistribution(playerId);
-                //barrier.await();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private class PlayOneTurnTask implements Runnable {
-
-        int playerId;
-        //CyclicBarrier barrier;
-
-        PlayOneTurnTask(int playerId) {
-            this.playerId = playerId;
-            //this.barrier = barrier;
-        }
-
-        @Override
-        public void run() {
-            try {
-                playOneTurn(playerId);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
-    private Function<Integer, Runnable> getUnitsDistributionTask() {
-        return new Function<Integer, Runnable>() {
-            @Override
-            public Runnable apply(Integer integer) {
-                return new UnitsDistributionTask(integer);
-            }
-        };
-    }
-
-    private Function<Integer, Runnable> getPlayOneTurnTask() {
-        return new Function<Integer, Runnable>() {
-            @Override
-            public Runnable apply(Integer integer) {
-                return new PlayOneTurnTask(integer);
-            }
-        };
-    }
+//    private class PlayOneTurnTask implements Runnable {
+//
+//        int playerId;
+//        //CyclicBarrier barrier;
+//
+//        PlayOneTurnTask(int playerId) {
+//            this.playerId = playerId;
+//            //this.barrier = barrier;
+//        }
+//
+//        @Override
+//        public void run() {
+//            try {
+//                playOneTurn(playerId);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 
-    private void runTasksForAllPlayer(Function<Integer, Runnable> toDo) {
-        CyclicBarrier barrier = new CyclicBarrier(players.size() + 1);
-        for (int i = 1; i <= players.size(); i++) {
-            // We create multiple tasks here.
-            Runnable task = toDo.apply(i);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        task.run();
-                        barrier.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (BrokenBarrierException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            t.start();
-        }
-        try {
-            barrier.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
-            e.printStackTrace();
-        }
-    }
+//    private Function<Integer, Runnable> getUnitsDistributionTask() {
+//        return new Function<Integer, Runnable>() {
+//            @Override
+//            public Runnable apply(Integer integer) {
+//                return new UnitsDistributionTask(integer);
+//            }
+//        };
+//    }
+//
+//    private Function<Integer, Runnable> getPlayOneTurnTask() {
+//        return new Function<Integer, Runnable>() {
+//            @Override
+//            public Runnable apply(Integer integer) {
+//                return new PlayOneTurnTask(integer);
+//            }
+//        };
+//    }
+
+
+//    private void runTasksForAllPlayer(Function<Integer, Runnable> toDo) {
+//        CyclicBarrier barrier = new CyclicBarrier(players.size() + 1);
+//        for (int i = 1; i <= players.size(); i++) {
+//            // We create multiple tasks here.
+//            Runnable task = toDo.apply(i);
+//            Thread t = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        task.run();
+//                        barrier.await();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    } catch (BrokenBarrierException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            t.start();
+//        }
+//        try {
+//            barrier.await();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (BrokenBarrierException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 //
 //    private void runTasksForAllPlayer(int taskNumber) {
@@ -278,17 +285,17 @@ public class Server {
 //    }
 
 
-    private void updatePlayerInfo() {
-        for (Player p: players.values()) {
-            if (p.getIsLost()) {
-                continue;
-            } else {
-                if (playMap.getTerritoriesForPlayer(p).size() == 0) {
-                    p.setIsLost();
-                }
-            }
-        }
-    }
+//    private void updatePlayerInfo() {
+//        for (Player p: players.values()) {
+//            if (p.getIsLost()) {
+//                continue;
+//            } else {
+//                if (playMap.getTerritoriesForPlayer(p).size() == 0) {
+//                    p.setIsLost();
+//                }
+//            }
+//        }
+//    }
 
 
     /**
@@ -300,97 +307,79 @@ public class Server {
         // Create the map used in this game.
         acceptConnections();
         setUpMap();
-        assignInitialTerritories();
-        runTasksForAllPlayer(getUnitsDistributionTask());
-        Player winner = null;
-        // All threads has finished the execution of the units distribution.
-        while ((winner = checkGameEnds()) == null) {
-            // We create multiple threads to tell the user what to do.
-            runTasksForAllPlayer(getPlayOneTurnTask());
-            //When this is done.
-            orderProcessor.executeEndTurnOrders();
-            // Send the updated information to all players.
-            //sendToAllPlayer(getWholeGameInformation());
-            playMap.addUnitToEachTerritory();
-            updatePlayerInfo();
-        }
-        gameEnds = true;
-        String message = "Game ends, the winner is player " + winner.getPlayerID();
-        message += "\n";
-        sendToAllPlayer(message);
     }
 
-    /**
-     * Get all the alive user's information within the map.
-     * In the format:
-     * Player 1:
-     * ---------------------
-     * Info ignored.
-     * Player 2:
-     * ---------------------
-     * Info ignored....
-     *
-     * @return The string representation.
-     */
-    String getWholeGameInformation() {
-        StringBuilder sb = new StringBuilder();
-        for (Player p : players.values()) {
-            if (!p.getIsLost()) {
-                sb.append("Player ");
-                sb.append(p.getPlayerID());
-                sb.append(":\n");
-                sb.append("-----------------------\n");
-                sb.append(view.territoryForUser(p));
-            }
-        }
-        return sb.toString();
-    }
+//    /**
+//     * Get all the alive user's information within the map.
+//     * In the format:
+//     * Player 1:
+//     * ---------------------
+//     * Info ignored.
+//     * Player 2:
+//     * ---------------------
+//     * Info ignored....
+//     *
+//     * @return The string representation.
+//     */
+//    String getWholeGameInformation() {
+//        StringBuilder sb = new StringBuilder();
+//        for (Player p : players.values()) {
+//            if (!p.getIsLost()) {
+//                sb.append("Player ");
+//                sb.append(p.getPlayerID());
+//                sb.append(":\n");
+//                sb.append("-----------------------\n");
+//                sb.append(view.territoryForUser(p));
+//            }
+//        }
+//        return sb.toString();
+//    }
 
-    private void sendValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n"));
-    }
-
-    private void sendInvalidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n"));
-    }
-
-
-    private void sendToAllPlayer(String message) throws IOException {
-        for (Player p : players.values()) {
-            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message));
-        }
-    }
+//    private void sendValidResponse(int playerId) throws IOException {
+//        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n"));
+//    }
+//
+//    private void sendInvalidResponse(int playerId) throws IOException {
+//        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n"));
+//    }
 
 
-    private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
-        Player p = players.get(playerId);
-        p.getJCommunicator().send(obj);
-    }
+//    private void sendToAllPlayer(String message) throws IOException {
+//        for (Player p : players.values()) {
+//            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message));
+//        }
+//    }
 
-    /**
-     * Assign territories to each player, changed the attributes for the territories.
-     * Each player shall pick (or be assigned) one such group as her starting territories.
-     */
-    private void assignInitialTerritories() {
-        HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
-        for (int i = 1; i <= players.size(); i++) {
-            // Get the player.
-            Player p = players.get(i);
-            Territory end = null;
-            for (Territory t : groups.get(i)) {
-                t.setOwner(p);
-                end = t;
-            }
-            end.setUnitNumber(numUnitPerPlayer);
-        }
-    }
 
-    //TODO: Change this later.
-    private Order receiveOrder(int playerId) throws IOException {
-        //return null;
-        JSONObject info = players.get(playerId).getJCommunicator().receive();
-        return toOrder(playerId, info);
-    }
+//    private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
+//        Player p = players.get(playerId);
+//        p.getJCommunicator().send(obj);
+//    }
+
+//    /**
+//     * Assign territories to each player, changed the attributes for the territories.
+//     * Each player shall pick (or be assigned) one such group as her starting territories.
+//     */
+//    private void assignInitialTerritories() {
+//        HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
+//        for (int i = 1; i <= players.size(); i++) {
+//            // Get the player.
+//            Player p = players.get(i);
+//            Territory end = null;
+//            for (Territory t : groups.get(i)) {
+//                t.setOwner(p);
+//                end = t;
+//            }
+//            end.setUnitNumber(numUnitPerPlayer);
+//        }
+//    }
+
+//    //TODO: Change this later.
+//    private Order receiveOrder(int playerId) throws IOException {
+//        //return null;
+//        JSONObject info = players.get(playerId).getJCommunicator().receive();
+//        return toOrder(playerId, info);
+//    }
 
 
     /**
@@ -431,117 +420,117 @@ public class Server {
         return info;
     }
 
-    /**
-     * generate a JSONObject of type: inform
-     *
-     * @param playerId   the player's id
-     * @param prompt     the information
-     * @param askingType the type of asking
-     * @return the constructed JSONObject
-     */
-    public JSONObject generateAskJSON(int playerId, String prompt, String askingType) {
-        assert (askingType.equals("initial") || askingType.equals("regular"));
-        JSONObject ask = new JSONObject().put("type", "ask").put("asking", askingType);
-        ask = ask.put("prompt", prompt).put("playerID", playerId);
-        boolean isLost = players.get(playerId).getIsLost();
-        ask = isLost ? ask.put("playerStatus", "L") : ask.put("playerStatus", "A");
-        return ask;
-    }
+//    /**
+//     * generate a JSONObject of type: inform
+//     *
+//     * @param playerId   the player's id
+//     * @param prompt     the information
+//     * @param askingType the type of asking
+//     * @return the constructed JSONObject
+//     */
+//    public JSONObject generateAskJSON(int playerId, String prompt, String askingType) {
+//        assert (askingType.equals("initial") || askingType.equals("regular"));
+//        JSONObject ask = new JSONObject().put("type", "ask").put("asking", askingType);
+//        ask = ask.put("prompt", prompt).put("playerID", playerId);
+//        boolean isLost = players.get(playerId).getIsLost();
+//        ask = isLost ? ask.put("playerStatus", "L") : ask.put("playerStatus", "A");
+//        return ask;
+//    }
 
-    /**
-     * Return whether the obj is a order object.
-     *
-     * @param obj The json object from the client.
-     * @return True if the object can be used to construct a order.
-     */
-    private boolean isOrderMessage(JSONObject obj) {
-        String type = getMessageType(obj);
-        if (type.equals("order")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    /**
+//     * Return whether the obj is a order object.
+//     *
+//     * @param obj The json object from the client.
+//     * @return True if the object can be used to construct a order.
+//     */
+//    private boolean isOrderMessage(JSONObject obj) {
+//        String type = getMessageType(obj);
+//        if (type.equals("order")) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
-    /**
-     * Return whether the obj is a commit message.
-     *
-     * @param obj The json object from the client.
-     * @return True if the object can be used to construct a commit message.
-     */
-    private boolean isCommitMessage(JSONObject obj) {
-        String type = getMessageType(obj);
-        if (type.equals("commit")) {
-            return true;
-        }
-        return false;
-    }
+//    /**
+//     * Return whether the obj is a commit message.
+//     *
+//     * @param obj The json object from the client.
+//     * @return True if the object can be used to construct a commit message.
+//     */
+//    private boolean isCommitMessage(JSONObject obj) {
+//        String type = getMessageType(obj);
+//        if (type.equals("commit")) {
+//            return true;
+//        }
+//        return false;
+//    }
 
-    /**
-     * get the String mapped to "type" in the JSONObject
-     * call this first when you receive any JSONObject before parsing!
-     *
-     * @param obj a JSONObject
-     * @return the content or null if not exists
-     */
-    public String getMessageType(JSONObject obj) {
-        try {
-            String ans = obj.getString("type");
-            return ans;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    /**
+//     * get the String mapped to "type" in the JSONObject
+//     * call this first when you receive any JSONObject before parsing!
+//     *
+//     * @param obj a JSONObject
+//     * @return the content or null if not exists
+//     */
+//    public String getMessageType(JSONObject obj) {
+//        try {
+//            String ans = obj.getString("type");
+//            return ans;
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
-    /**
-     * get the information in a inform JSONObject
-     *
-     * @param obj the obj received
-     * @return the prompt field or null if not exists
-     */
-    public String getPrompt(JSONObject obj) {
-        assert (getMessageType(obj) != null && getMessageType(obj).equals("inform"));
-        try {
-            String ans = obj.getString("prompt");
-            return ans;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    /**
+//     * get the information in a inform JSONObject
+//     *
+//     * @param obj the obj received
+//     * @return the prompt field or null if not exists
+//     */
+//    public String getPrompt(JSONObject obj) {
+//        assert (getMessageType(obj) != null && getMessageType(obj).equals("inform"));
+//        try {
+//            String ans = obj.getString("prompt");
+//            return ans;
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
-    /**
-     * parse order JSONObject into order object
-     *
-     * @param playerId the id of the player where the obj from
-     * @param obj      the JSONObject
-     * @return an order object or null if the obj is not a parsable one
-     */
-    public Order toOrder(int playerId, JSONObject obj) {
-        try {
-            //Should we check this?
-//            if (!isOrderMessage(obj)) {
+//    /**
+//     * parse order JSONObject into order object
+//     *
+//     * @param playerId the id of the player where the obj from
+//     * @param obj      the JSONObject
+//     * @return an order object or null if the obj is not a parsable one
+//     */
+//    public Order toOrder(int playerId, JSONObject obj) {
+//        try {
+//            //Should we check this?
+////            if (!isOrderMessage(obj)) {
+////                return null;
+////            }
+//            String orderType = obj.getString("orderType"),
+//                    sourceT = obj.getString("sourceTerritory"),
+//                    destT = obj.getString("destTerritory");
+//            int unitNum = obj.getInt("unitNumber");
+//            if (orderType.equals("move")) {
+//                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap);
+//                return order;
+//            } else if (orderType.equals("attack")) {
+//                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
+//                return order;
+//            } else {
 //                return null;
 //            }
-            String orderType = obj.getString("orderType"),
-                    sourceT = obj.getString("sourceTerritory"),
-                    destT = obj.getString("destTerritory");
-            int unitNum = obj.getInt("unitNumber");
-            if (orderType.equals("move")) {
-                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap);
-                return order;
-            } else if (orderType.equals("attack")) {
-                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
-                return order;
-            } else {
-                return null;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
 
     void setView(GameBoardTextView view) {
@@ -599,167 +588,136 @@ public class Server {
         return obj;
     }
 
-    /**
-     * Setup the units distribution of the territories for each player.
-     * Each player shall have the same number of initial units, which she may place in her territories as she wishes.
-     * This phase should occur simultaneously.
-     * Consider using a ThreadPool for this, and waiting all the threads to be done.
-     */
-    private void setupInitialUnitsDistribution(int playerId) throws IOException {
-        // Assume we can receive orders from the client.
-        // Send the view to the user.
-        // The player should not see the units distributions of other players.
-        boolean receiveCommit = false;
-
-        sendToPlayer(playerId, firstPhaseInformation(playerId));
-        while (!receiveCommit) {
-            JSONObject obj = receiveJSONObject(playerId);
-            if (isCommitMessage(obj)) {
-                sendValidResponse(playerId);
-                receiveCommit = true;
-                continue;
-            }
-            // TODO: Remove this later.
-            synchronized (this) {
-                Order order = toOrder(playerId, obj);
-                if (order == null) {
-                    sendInvalidResponse(playerId);
-                    continue;
-                }
-                assert (order instanceof MoveOrder);
+//    /**
+//     * Setup the units distribution of the territories for each player.
+//     * Each player shall have the same number of initial units, which she may place in her territories as she wishes.
+//     * This phase should occur simultaneously.
+//     * Consider using a ThreadPool for this, and waiting all the threads to be done.
+//     */
+//    private void setupInitialUnitsDistribution(int playerId) throws IOException {
+//        // Assume we can receive orders from the client.
+//        // Send the view to the user.
+//        // The player should not see the units distributions of other players.
+//        boolean receiveCommit = false;
+//
+//        sendToPlayer(playerId, firstPhaseInformation(playerId));
+//        while (!receiveCommit) {
+//            JSONObject obj = receiveJSONObject(playerId);
+//            if (isCommitMessage(obj)) {
 //                sendValidResponse(playerId);
-//                orderProcessor.acceptOrder(order);
-                //String message = ruleChecker.checkOrder(order, this.playMap);
-                String message = moveRuleChecker.checkOrder(order, this.playMap);
-                // If valid, then send valid to user.
-                if (message == null) {
-                    sendValidResponse(playerId);
-                    orderProcessor.acceptOrder(order);
-                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
-                } else {
-                    sendInvalidResponse(playerId);
-                }
-            }
-        }
-    }
+//                receiveCommit = true;
+//                continue;
+//            }
+//            // TODO: Remove this later.
+//            synchronized (this) {
+//                Order order = toOrder(playerId, obj);
+//                if (order == null) {
+//                    sendInvalidResponse(playerId);
+//                    continue;
+//                }
+//                assert (order instanceof MoveOrder);
+////                sendValidResponse(playerId);
+////                orderProcessor.acceptOrder(order);
+//                //String message = ruleChecker.checkOrder(order, this.playMap);
+//                String message = moveRuleChecker.checkOrder(order, this.playMap);
+//                // If valid, then send valid to user.
+//                if (message == null) {
+//                    sendValidResponse(playerId);
+//                    orderProcessor.acceptOrder(order);
+//                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
+//                } else {
+//                    sendInvalidResponse(playerId);
+//                }
+//            }
+//        }
+//    }
 
 
-    /**
-     * Get all the territory information for all other players (alive player).
-     *
-     * @param playerId The current player Id
-     * @return A String representation of the player information.
-     */
-    String getEnemyTerritoryInformation(int playerId) {
-        // We need to iterate through all the players.
-        StringBuilder sb = new StringBuilder();
-        for (Player p : players.values()) {
-            if (p.getPlayerID() == playerId || p.getIsLost()) {
-                continue;
-            } else {
-                sb.append("Player ");
-                sb.append(p.getPlayerID());
-                sb.append(":\n");
-                sb.append("-----------------------\n");
-                sb.append(view.territoryForUser(p));
-            }
-        }
-        return sb.toString();
-    }
+//    /**
+//     * Get all the territory information for all other players (alive player).
+//     *
+//     * @param playerId The current player Id
+//     * @return A String representation of the player information.
+//     */
+//    String getEnemyTerritoryInformation(int playerId) {
+//        // We need to iterate through all the players.
+//        StringBuilder sb = new StringBuilder();
+//        for (Player p : players.values()) {
+//            if (p.getPlayerID() == playerId || p.getIsLost()) {
+//                continue;
+//            } else {
+//                sb.append("Player ");
+//                sb.append(p.getPlayerID());
+//                sb.append(":\n");
+//                sb.append("-----------------------\n");
+//                sb.append(view.territoryForUser(p));
+//            }
+//        }
+//        return sb.toString();
+//    }
 
 
-    /**
-     * Play one turn of the game.
-     * One turn of the game includes:
-     * 0. Distribute the current map to the player (The player's own view).
-     * 1. Read inputs from each user (Or orders)
-     * -- Print the related map information to the user.
-     * 2. Wait until each player to enter the commit message (What is the commit message?)
-     * 0, 1, 2 might be handled in multi-thread functions, ie listenForCommands.
-     * 3. After timeout seconds if no player are enter new commands, end the turn.
-     * 4. Execute all the commands.
-     * 5. Change the ownership of the territories, add one unit to each territory.
-     * 6. Distributes the result.
-     *
-     * @param playerId The player who will receive the playOneTurn message.
-     */
-    private void playOneTurn(int playerId) throws IOException {
-        // Record other player's information, this should not change while this turn.
-        String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
-        //String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
-        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
-        boolean receiveCommit = false;
-        while (!receiveCommit) {
-            JSONObject obj = receiveJSONObject(playerId);
-            if (isCommitMessage(obj)) {
-                sendValidResponse(playerId);
-                receiveCommit = true;
-                continue;
-            }
-            synchronized (this) {
-                Order order = toOrder(playerId, obj);
-                String message = null;
-                if (order instanceof MoveOrder) {
-                    message = moveRuleChecker.checkOrder(order, playMap);
-                } else if (order instanceof AttackOrder) {
-                    message = attackRuleChecker.checkOrder(order, playMap);
-                } else {
-                    //TODO: fail fast
-                    assert(false);
-                }
-                if (message == null) {
-                    sendValidResponse(playerId);
-                    orderProcessor.acceptOrder(order);
-                    //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
-                } else {
-                    sendInvalidResponse(playerId);
-                }
-            }
-            
-        }
-    }
-
-    /**
-     * This function might do the following things until receive the commit command from the user.
-     * 0. Distribute the current map to the player (The player's own view).
-     * 1. Read inputs from each user (Or orders)
-     * 2. Verify the commands use the RuleChecker.
-     * -- Print the related map information to the user.
-     *
-     * @param timeout
-     */
-    private void listenForCommands(int timeout) {
-
-    }
+//    /**
+//     * Play one turn of the game.
+//     * One turn of the game includes:
+//     * 0. Distribute the current map to the player (The player's own view).
+//     * 1. Read inputs from each user (Or orders)
+//     * -- Print the related map information to the user.
+//     * 2. Wait until each player to enter the commit message (What is the commit message?)
+//     * 0, 1, 2 might be handled in multi-thread functions, ie listenForCommands.
+//     * 3. After timeout seconds if no player are enter new commands, end the turn.
+//     * 4. Execute all the commands.
+//     * 5. Change the ownership of the territories, add one unit to each territory.
+//     * 6. Distributes the result.
+//     *
+//     * @param playerId The player who will receive the playOneTurn message.
+//     */
+//    private void playOneTurn(int playerId) throws IOException {
+//        // Record other player's information, this should not change while this turn.
+//        String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
+//        //String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
+//        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+//        boolean receiveCommit = false;
+//        while (!receiveCommit) {
+//            JSONObject obj = receiveJSONObject(playerId);
+//            if (isCommitMessage(obj)) {
+//                sendValidResponse(playerId);
+//                receiveCommit = true;
+//                continue;
+//            }
+//            synchronized (this) {
+//                Order order = toOrder(playerId, obj);
+//                String message = null;
+//                if (order instanceof MoveOrder) {
+//                    message = moveRuleChecker.checkOrder(order, playMap);
+//                } else if (order instanceof AttackOrder) {
+//                    message = attackRuleChecker.checkOrder(order, playMap);
+//                } else {
+//                    //TODO: fail fast
+//                    assert(false);
+//                }
+//                if (message == null) {
+//                    sendValidResponse(playerId);
+//                    orderProcessor.acceptOrder(order);
+//                    //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+//                } else {
+//                    sendInvalidResponse(playerId);
+//                }
+//            }
+//
+//        }
+//    }
 
 
-    /**
-     * Return the player who has won the game.
-     *
-     * @return Player if the game ends and the player has won the game.
-     * @reutrn null If the game is not end.
-     */
-    private Player checkGameEnds() {
-        return playMap.allBelongsToSamePlayer();
-    }
+//    /**
+//     * Return the player who has won the game.
+//     *
+//     * @return Player if the game ends and the player has won the game.
+//     * @reutrn null If the game is not end.
+//     */
+//    private Player checkGameEnds() {
+//        return playMap.allBelongsToSamePlayer();
+//    }
 
-    /**
-     * Generate the win information for the game.
-     *
-     * @param player The winner of the game.
-     * @return
-     */
-    private String distributeWinInfo(Player player) {
-        return null;
-    }
-
-    /**
-     * Invoke this function at the end of the turn.
-     * This function should check the condition of each player.
-     * If the player has lost, set up a flag on the player.
-     */
-    private void checkPlayerConditions() {
-
-    }
 
 }
