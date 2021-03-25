@@ -114,7 +114,6 @@ RuleChecker "1" <-- "1" Server
         +displyResult()
         +createAccount()
         +login()
-        +logout()
     }
 
     class RuleChecker {
@@ -148,7 +147,7 @@ RuleChecker "1" <-- "1" Server
     }
 
     class ResourceChecker {
-        -HashMap~String, HashMap~int, int~ ~ ResourceCost 
+
     }
 
     class AttackResourceChecker {
@@ -160,7 +159,7 @@ RuleChecker "1" <-- "1" Server
     }
 
     class UpgradeResourceChecker {
-        
+        -HashMap~String, HashMap~int, int~ ~ ResourceCost 
     }
 
     class InputChecker {
