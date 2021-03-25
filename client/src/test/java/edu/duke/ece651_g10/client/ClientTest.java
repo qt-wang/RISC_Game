@@ -2,7 +2,6 @@ package edu.duke.ece651_g10.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -171,7 +170,7 @@ public class ClientTest {
         .put("prompt", "valid\n");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.doPlacement();
+    boolean ans = client1.doPlacement(mockSocketClient.receive());
     assertEquals(true, ans);
   }
 
@@ -185,7 +184,7 @@ public class ClientTest {
         .put("prompt", "End Game");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame();
+    boolean ans = client1.playGame(mockSocketClient.receive());
     assertEquals(true, ans);
   }
 
@@ -199,7 +198,7 @@ public class ClientTest {
         .put("prompt", "Please watch the game");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame();
+    boolean ans = client1.playGame(mockSocketClient.receive());
     assertEquals(false, ans);
   }
 
@@ -239,7 +238,7 @@ public class ClientTest {
       }
     });
 
-    boolean ans = client1.playGame();
+    boolean ans = client1.playGame(mockSocketClient.receive());
 
     assertEquals(false, ans);
   }
@@ -254,7 +253,7 @@ public class ClientTest {
         .put("prompt", "Please play the game.");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame();
+    boolean ans = client1.playGame(mockSocketClient.receive());
     assertEquals(false, ans);
   }
 
