@@ -146,6 +146,21 @@ public class Client {
     }
   }
 
+    /**
+   * get the String mapped to "type" in the JSONObject
+   *
+   * @return the content or null if not exists
+   */
+  public String getCurrentMessageType() {
+    try {
+      String ans = currentJSON.getString("type");
+      return ans;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
   /**
    * get the player's id from the JSONObject
    *

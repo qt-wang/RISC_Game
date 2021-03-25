@@ -34,14 +34,13 @@ public class App {
   public static void main(String[] args) throws IOException {
     BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     App app = new App(input, "127.0.0.1", 12345);
-    app.client.setCurrentJSON(app.socketClient.receive());
-    app.client.doPlacement();
     while (true) {
       app.client.setCurrentJSON(app.socketClient.receive());
-      app.client.playGame();
+      app.client.commandMap.get(app.client.getCurrentMessageType()).run();
     }
   }
 }
+
 
 
 
