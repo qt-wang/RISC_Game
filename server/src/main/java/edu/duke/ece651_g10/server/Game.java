@@ -3,7 +3,10 @@ package edu.duke.ece651_g10.server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.BrokenBarrierException;
@@ -14,12 +17,16 @@ import java.util.function.Function;
  * This class represents a game that is running on the server.
  * The server may have multiple games that are concurrently running on the server.
  */
-public class Game {
+public class Game implements Runnable{
 
     // Indicates the players in this game.
     // Each player has a unique integer represent its identity.
     private HashMap<Integer, Player> players;
 
+    //This is the unique game identification of the game.
+    private int gameId;
+
+    private int numPlayers;
     // The game map of the game.
     private GameMap playMap;
 
@@ -42,19 +49,31 @@ public class Game {
      * @param moveRuleChecker   The rule checker used to check whether the move order is valid or not.
      * @param attackRuleChecker The attack checker used to check whether the attack order is valid or not.
      * @param orderProcessor    An order processor used to process the orders.
-     * @param players           The players involved in this game.
      * @param view              The text board view used to represent this game.
      * @param numUnitPerPlayer  The number of units belong to a player in this game.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, HashMap<Integer, Player> players, GameBoardView view, int numUnitPerPlayer) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers) {
         this.playMap = map;
-        this.players = players;
+        this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
         this.attackRuleChecker = attackRuleChecker;
         this.view = view;
         this.orderProcessor = orderProcessor;
         this.gameEnds = false;
         this.numUnitPerPlayer = numUnitPerPlayer;
+        this.numPlayers = numPlayers;
+    }
+
+    /**
+     * Add a new player to this game.
+     *
+     * @param p The new player's information.
+     */
+    public void addPlayer(Player p) {
+        int playerNums = players.size();
+        if (!players.containsValue(p) && playerNums < numPlayers) {
+            players.put(playerNums + 1, p);
+        }
     }
 
     /**
@@ -243,7 +262,7 @@ public class Game {
                     message = attackRuleChecker.checkOrder(order, playMap);
                 } else {
                     //TODO: fail fast
-                    assert(false);
+                    assert (false);
                 }
                 if (message == null) {
                     sendValidResponse(playerId);
@@ -384,6 +403,7 @@ public class Game {
             }
         };
     }
+
     private void runTasksForAllPlayer(Function<Integer, Runnable> toDo) {
         CyclicBarrier barrier = new CyclicBarrier(players.size() + 1);
         for (int i = 1; i <= players.size(); i++) {
@@ -425,7 +445,7 @@ public class Game {
 
 
     private void updatePlayerInfo() {
-        for (Player p: players.values()) {
+        for (Player p : players.values()) {
             if (p.getIsLost()) {
                 continue;
             } else {
@@ -442,12 +462,53 @@ public class Game {
         }
     }
 
+//    /**
+//     * This method begins listen to the socket and accept connections from the client.
+//     * The server will end this stage if:
+//     * 1. If There are 5 players (The maximum number of players allowed).
+//     * 2. If there are at least 2 players and there are no connections in wait seconds.
+//     * This method should also setup the players field of the class.
+//     * This method should fill the hashmap (called players)
+//     * For each player, it should has a number associated with him, starts from 0.
+//     * This should also setup the socket of the player.
+//     */
+//    //TODO: Change to private later and put it into the run function.
+//    public HashMap<Integer, Player> acceptConnections(int numPlayer) throws InterruptedException, IOException {
+//        int connectedPlayer = 0;
+//        HashMap<Integer, Player> playersInGame = new HashMap<>();
+//        //accept connections from the clients
+//        while (connectedPlayer < numPlayer) {
+//            System.out.println("Waiting for client to connect");
+//            Socket s = this.serverSocket.accept();
+//            System.out.println("Connected with client");
+//            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+//            JSONCommunicator jc = new JSONCommunicator(br, bw);
+//            String msg = jc.receive().getString("prompt");
+//            System.out.println("Client：" + msg);
+//            Player player = new Player(s, jc);
+//            playersInGame.put(player.getPlayerID(), player);
+//            jc.send(generateInfoJSON(player.getPlayerID(), "You've connected to the server.\n"));
+//            connectedPlayer += 1;
+//        }
+//        return playersInGame;
+//    }
+
+    public int getNumPlayers() {
+        return players.size();
+    }
+
+    public boolean canGameStart() {
+        return players.size() == numPlayers;
+    }
+
     /**
      * Run this game, this should be the only method posted to the outer world.
      * ie. Server newServer(port)
      * newServer.run() will automatically start the game until the game is over.
      */
-    public void run() throws IOException, InterruptedException {
+    @Override
+    public void run() {
         // Create the map used in this game.
         assignInitialTerritories();
         runTasksForAllPlayer(getUnitsDistributionTask());
@@ -466,6 +527,10 @@ public class Game {
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
         message += "\n";
-        sendToAllPlayer(message);
+        try {
+            sendToAllPlayer(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -62,7 +62,7 @@ public class Player {
    * @param socket   The socket which can be used to read/write to it.
    */
   Player(Socket socket, JSONCommunicator jc) {
-    this.playerId = availableId++;
+    this.playerId = availableId ++;
     this.connectedSocket = socket;
     this.jCommunicate = jc;
   }
