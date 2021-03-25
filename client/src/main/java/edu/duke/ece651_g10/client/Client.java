@@ -68,10 +68,30 @@ public class Client {
         out.println("Meet IO exception.");
       }
     });
+    commandMap.put("connection", () -> {
+      try {
+        connectGame();
+      } catch (IOException e) {
+        out.println("Meet IO exception.");
+      }
+    });
   }
 
   public void setCurrentJSON(JSONObject currentJSON) {
     this.currentJSON = currentJSON;
+  }
+
+  /**
+   * generate a JSONObject of type: connection
+   * @param password the password to join the game
+   * @return the constructed JSONOBject
+   */
+  public JSONObject generateConnectJSON(String password) throws IOException{
+    if (!password.equals("")) {
+      return new JSONObject().put("type", "connection").put("needPass", false).put("password", password);
+    } else {
+      return new JSONObject().put("type", "connection").put("needPass", true);
+    }
   }
 
   /**
@@ -275,6 +295,20 @@ public class Client {
       orderString = sendOrder(prompt, legalOrderSet);
     }
     return orderString;
+  }
+
+  /**
+   * Connect to one of the game
+   */
+  public void connectGame() throws IOException {
+    out.println(getPrompt(this.currentJSON));
+    String prompt = "If you already join a game, please input the password.\n if you want to join a new game, please press Enter.";
+    String passowrd = readString(prompt);
+    sendOrderToServer(generateConnectJSON(passowrd));
+    setCurrentJSON(socketClient.receive());
+    if (getPrompt(this.currentJSON).equals("invalid\n")) {
+      connectGame();
+    }
   }
 
   /**
