@@ -175,6 +175,22 @@ public class ClientTest {
   }
 
   @Test
+  public void test_get_current_message_type() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    BufferedReader input = new BufferedReader(new StringReader("\n"));
+    PrintStream output = new PrintStream(bytes, true);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client1 = new Client(output, input, mockSocketClient);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("connection").run();
+    assertEquals("connection", client1.getCurrentMessageType());
+    client1.setCurrentJSON(new JSONObject());
+    assertNull(client1.getCurrentMessageType());
+  }
+
+  @Test
   public void test_connect_game() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     BufferedReader input = new BufferedReader(new StringReader("\n"));
@@ -185,6 +201,7 @@ public class ClientTest {
     Client client1 = new Client(output, input, mockSocketClient);
     client1.setCurrentJSON(mockSocketClient.receive());
     client1.commandMap.get("connection").run();
+    assertEquals("connection", client1.getCurrentMessageType());
   }
 
   @Test
@@ -215,8 +232,7 @@ public class ClientTest {
     client1.commandMap.get("play").run();
   }
 
-
-   @Test
+  @Test
   public void test_re_connect_game() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     BufferedReader input = new BufferedReader(new StringReader("123\n456\n789\n"));
