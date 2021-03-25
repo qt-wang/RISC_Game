@@ -170,8 +170,8 @@ public class ClientTest {
         .put("prompt", "valid\n");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.doPlacement(mockSocketClient.receive());
-    assertEquals(true, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("placement").run();
   }
 
   @Test
@@ -184,8 +184,8 @@ public class ClientTest {
         .put("prompt", "End Game");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame(mockSocketClient.receive());
-    assertEquals(true, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test
@@ -198,8 +198,8 @@ public class ClientTest {
         .put("prompt", "Please watch the game");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame(mockSocketClient.receive());
-    assertEquals(false, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test
@@ -238,9 +238,8 @@ public class ClientTest {
       }
     });
 
-    boolean ans = client1.playGame(mockSocketClient.receive());
-
-    assertEquals(false, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test
@@ -253,8 +252,8 @@ public class ClientTest {
         .put("prompt", "Please play the game.");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame(mockSocketClient.receive());
-    assertEquals(false, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test

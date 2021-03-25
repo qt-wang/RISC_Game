@@ -32,15 +32,17 @@ public class App {
    * @param args The argument of when user run the client program in the shell
    */
   public static void main(String[] args) throws IOException {
-    boolean endGame = false;
     BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     App app = new App(input, "127.0.0.1", 12345);
-    app.client.doPlacement(app.socketClient.receive());
-    while (!endGame) {
-      endGame = app.client.playGame(app.socketClient.receive());
+    app.client.setCurrentJSON(app.socketClient.receive());
+    app.client.doPlacement();
+    while (true) {
+      app.client.setCurrentJSON(app.socketClient.receive());
+      app.client.playGame();
     }
   }
 }
+
 
 
 

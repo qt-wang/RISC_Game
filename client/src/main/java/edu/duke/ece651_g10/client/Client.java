@@ -17,12 +17,13 @@ public class Client {
   final PrintStream out;
   final BufferedReader inputReader;
 
+  private JSONObject currentJSON;
   public String playerStatus;
 
-  private boolean endGame;
   final int playerID;
   final HashSet<String> normalOrderSet;
   final HashMap<String, String> orderKeyValue;
+  final HashMap<String, Runnable> commandMap;
   public SocketClient socketClient;
 
   /**
@@ -42,7 +43,6 @@ public class Client {
     String prompt = ans.getString("prompt");
     System.out.println(prompt);
     this.playerID = getPlayerId(ans);
-    endGame = false;
 
     this.normalOrderSet = new HashSet<String>();
     normalOrderSet.add("M");
@@ -52,6 +52,26 @@ public class Client {
     orderKeyValue.put("M", "move");
     orderKeyValue.put("A", "attack");
     orderKeyValue.put("D", "commit");
+
+    this.commandMap = new HashMap<String, Runnable>();
+    commandMap.put("placement", () -> {
+      try {
+        doPlacement();
+      } catch (IOException e) {
+        out.println("Meet IO exception.");
+      }
+    });
+    commandMap.put("play", () -> {
+      try {
+        playGame();
+      } catch (IOException e) {
+        out.println("Meet IO exception.");
+      }
+    });
+  }
+
+  public void setCurrentJSON(JSONObject currentJSON) {
+    this.currentJSON = currentJSON;
   }
 
   /**
@@ -259,12 +279,9 @@ public class Client {
 
   /**
    * Place the units at beginning of the game
-   *
-   * @param receivedJSON The json object comes from server
-   * @return Always return true
    */
-  public boolean doPlacement(JSONObject receivedJSON) throws IOException {
-    out.println(getPrompt(receivedJSON));
+  public void doPlacement() throws IOException {
+    out.println(getPrompt(this.currentJSON));
     String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
     HashSet<String> legalOrderSet = new HashSet<String>();
     legalOrderSet.add("M");
@@ -274,24 +291,20 @@ public class Client {
       orderString.clear();
       orderString = sendOrder(prompt, legalOrderSet);
     }
-    return true;
   }
 
   /**
    * Play the game after the placement phase
-   *
-   * @param receivedJSON The json object comes from server
-   * @return Return the boolean whether the game is end
    */
-  public boolean playGame(JSONObject receivedJSON) throws IOException {
-    out.println(getPrompt(receivedJSON));
-    if (getPlayerStatus(receivedJSON).equals("L")) {
+  public void playGame() throws IOException {
+    out.println(getPrompt(this.currentJSON));
+    if (getPlayerStatus(this.currentJSON).equals("L")) {
       sendOrderToServer(generateCommitJSON());
       while (getPrompt(socketClient.receive()).equals("invalid\n")) {
         sendOrderToServer(generateCommitJSON());
       }
-    } else if (getPlayerStatus(receivedJSON).equals("E")) {
-      endGame = true;
+    } else if (getPlayerStatus(this.currentJSON).equals("E")) {
+      out.println("Game over.");
     } else {
       String prompt = "You are the Player " + String.valueOf(playerID)
           + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
@@ -304,6 +317,5 @@ public class Client {
         orderString = sendOrder(prompt, legalOrderSet);
       }
     }
-    return endGame;
   }
 }
