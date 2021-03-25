@@ -27,6 +27,10 @@ public class Client {
 
     /**
      * The constructor of the Client
+     *
+     * @param out The print stream
+     * @param input The buffered reader 
+     * @param socketClinet the socket client
      */
     public Client(PrintStream out, BufferedReader input, SocketClient socketClient) throws IOException {
         this.playerStatus = "A";
@@ -173,7 +177,6 @@ public class Client {
      */
     public String readAction(String prompt, HashSet<String> legalInputSet) throws IOException {
         String action = readString(prompt);
-        //TODO: Read null at here.
         if (!legalInputSet.contains(action.toUpperCase())) {
             out.println("Please input valid actions.");
             return readAction(prompt, legalInputSet);
@@ -262,7 +265,6 @@ public class Client {
     public boolean doPlacement() throws IOException {
         out.println(getPrompt(socketClient.receive()));
         String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
-        //out.println(prompt);
         HashSet<String> legalOrderSet = new HashSet<String>();
         legalOrderSet.add("M");
         legalOrderSet.add("D");
@@ -292,7 +294,6 @@ public class Client {
         } else {
             String prompt = "You are the Player " + String.valueOf(playerID)
                     + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
-            //out.println(prompt);
             HashSet<String> legalOrderSet = new HashSet<String>();
             legalOrderSet.add("M");
             legalOrderSet.add("A");
