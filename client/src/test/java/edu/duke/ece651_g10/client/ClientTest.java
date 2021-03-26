@@ -2,7 +2,6 @@ package edu.duke.ece651_g10.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -171,8 +170,38 @@ public class ClientTest {
         .put("prompt", "valid\n");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.doPlacement();
-    assertEquals(true, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("placement").run();
+  }
+
+  @Test
+  public void test_get_current_message_type() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    BufferedReader input = new BufferedReader(new StringReader("\n"));
+    PrintStream output = new PrintStream(bytes, true);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client1 = new Client(output, input, mockSocketClient);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("connection").run();
+    assertEquals("connection", client1.getCurrentMessageType());
+    client1.setCurrentJSON(new JSONObject());
+    assertNull(client1.getCurrentMessageType());
+  }
+
+  @Test
+  public void test_connect_game() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    BufferedReader input = new BufferedReader(new StringReader("\n"));
+    PrintStream output = new PrintStream(bytes, true);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client1 = new Client(output, input, mockSocketClient);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("connection").run();
+    assertEquals("connection", client1.getCurrentMessageType());
   }
 
   @Test
@@ -185,8 +214,8 @@ public class ClientTest {
         .put("prompt", "End Game");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame();
-    assertEquals(true, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test
@@ -199,8 +228,42 @@ public class ClientTest {
         .put("prompt", "Please watch the game");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame();
-    assertEquals(false, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
+  }
+
+  @Test
+  public void test_re_connect_game() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    BufferedReader input = new BufferedReader(new StringReader("123\n456\n789\n"));
+    PrintStream output = new PrintStream(bytes, true);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "connection").put("playerID", 1).put("playerStatus", "A")
+        .put("prompt", "test string");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client1 = new Client(output, input, mockSocketClient);
+    JSONObject json1 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n");
+    JSONObject json2 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "invalid\n");
+    JSONObject json3 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n");
+
+    when(mockSocketClient.receive()).thenAnswer(new Answer<JSONObject>() {
+      private int count = 0;
+
+      public JSONObject answer(InvocationOnMock invocation) {
+        if (count == 0) {
+          count += 1;
+          return json1;
+        } else if (count == 1) {
+          count += 1;
+          return json2;
+        } else {
+          return json3;
+        }
+      }
+    });
+
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("connection").run();
   }
 
   @Test
@@ -239,9 +302,8 @@ public class ClientTest {
       }
     });
 
-    boolean ans = client1.playGame();
-
-    assertEquals(false, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test
@@ -254,8 +316,8 @@ public class ClientTest {
         .put("prompt", "Please play the game.");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    boolean ans = client1.playGame();
-    assertEquals(false, ans);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("play").run();
   }
 
   @Test

@@ -17,7 +17,6 @@ RuleChecker "1" <-- "1" Server
     PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
     EnemyTerritoryChecker "1" <|-- "1" RuleChecker
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
-    InputChecker "1" <-- "1" Client
     Server "1" --> "n" Player
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
@@ -28,7 +27,6 @@ RuleChecker "1" <-- "1" Server
     MoveOrder "1" <|-- "1" Order
     AttackOrder "1" <|-- "1" Order
     OrderProcessor "1" --> "n" Order
-    Client "1" --> "n" Order
     AddUnitOrder "1" <|-- "1" Order
     Server "1" --> "1" OrderProcessor
     AttackOrder "1" --> "n" Dice
@@ -86,11 +84,12 @@ RuleChecker "1" <-- "1" Server
 
     class Client {
         -int PlayerID
-        -bool couldCommand
-        -bool isDisconnected
-        +checkRule()
-        +sendOrders()
-        +displyResult()
+        -HashSet~String~ normalOrderSet
+        -HashMap~String, String~ orderKeyMap
+        -HashMap~String, Runnable~ commandMap
+        +connectGame()
+        +doPlacement()
+        +playGame()
     }
 
     class RuleChecker {
@@ -120,10 +119,6 @@ RuleChecker "1" <-- "1" Server
     }
 
     class EnemyTerritoryChecker {
-
-    }
-
-    class InputChecker {
 
     }
 
