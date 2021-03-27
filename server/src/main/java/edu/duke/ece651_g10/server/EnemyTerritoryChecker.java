@@ -3,13 +3,13 @@ package edu.duke.ece651_g10.server;
 /**
  * The RuleChekcer to check whether the target Territory belongs to the enemy
  */
-public class EnemyTerritoryChecker extends RuleChecker {
+public class EnemyTerritoryChecker extends RuleChecker<Order> {
   /**
    * The constructor of the the EnemyTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public EnemyTerritoryChecker(RuleChecker next) {
+  public EnemyTerritoryChecker(RuleChecker<Order> next) {
     super(next);
   }
 
@@ -31,3 +31,10 @@ public class EnemyTerritoryChecker extends RuleChecker {
   }
 
 }
+
+
+
+
+
+
+

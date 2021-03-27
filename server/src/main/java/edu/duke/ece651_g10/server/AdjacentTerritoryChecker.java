@@ -4,14 +4,14 @@ package edu.duke.ece651_g10.server;
  * The RuleChecker to check whether the source Territory and target Territory
  * are adjacent to each other
  */
-public class AdjacentTerritoryChecker extends RuleChecker {
+public class AdjacentTerritoryChecker extends RuleChecker<Order> {
 
   /**
    * The constructor of the the AdjacentTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public AdjacentTerritoryChecker(RuleChecker next) {
+  public AdjacentTerritoryChecker(RuleChecker<Order> next) {
     super(next);
   }
 

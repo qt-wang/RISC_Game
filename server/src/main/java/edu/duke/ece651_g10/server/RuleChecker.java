@@ -4,15 +4,16 @@ package edu.duke.ece651_g10.server;
  * The abstract class to check whether the order follows the rules in the RISK
  * game
  */
-public abstract class RuleChecker {
-  private final RuleChecker next;
+//TODO: public abstract class RuleChecker<T extends Order> {
+public abstract class RuleChecker<T> {
+  private final RuleChecker<T> next;
 
   /**
    * The RuleChecker constructor
    *
    * @param next the next Rulechecker linked with current RuleChecker
    */
-  public RuleChecker(RuleChecker next) {
+  public RuleChecker(RuleChecker<T> next) {
     this.next = next;
   }
 
@@ -24,7 +25,7 @@ public abstract class RuleChecker {
    * @return if the rule is not violated, return null. Otherwise, return the
    *         reason causing the invalid placement
    */
-  public String checkOrder(Order order, GameMap gameMap) {
+  public String checkOrder(T order, GameMap gameMap) {
     if (checkMyRule(order, gameMap) != null) {
       return checkMyRule(order, gameMap);
     }
@@ -45,5 +46,15 @@ public abstract class RuleChecker {
    * @return if the rule is not violated, return null. Otherwise, return the
    *         reason casuing the invalid placement
    */
-  protected abstract String checkMyRule(Order order, GameMap gameMap);
+  protected abstract String checkMyRule(T order, GameMap gameMap);
 }
+
+
+
+
+
+
+
+
+
+
