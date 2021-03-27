@@ -94,11 +94,11 @@ public class Server {
                 Player p = new Player(this.socket, jc);
                 synchronized (Server.this) {
                     game.addPlayer(p);
+                    this.running = false;
                     if (game.canGameStart()) {
                         System.out.println(true);
                         Thread t = new Thread(game);
                         t.start();
-                        this.running = false;
                     }
                 }
             }
@@ -120,6 +120,7 @@ public class Server {
                     this.running = false;
                 }
             }
+            System.out.println("finish loop 1");
         }
 
         RequestHandleTask(JSONCommunicator jc, Socket socket) {
