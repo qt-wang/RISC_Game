@@ -52,31 +52,50 @@ public class Server {
     }
 
     /**
+     * Generate a JSON object of type: pong
+     * <p>
+     * This is the response to the ping message.
+     *
+     * @param prompt the information
+     * @return the constructed JSONObject
+     */
+    private JSONObject generatePongJSON(String prompt) {
+        return new JSONObject().put("type", "pong").put("prompt", prompt);
+    }
+
+    /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
      */
     private class RequestHandleTask implements Runnable {
         JSONCommunicator jc;
         Socket socket;
         Boolean running;
-        private void handleJSONObject(JSONObject obj) {
+
+        private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
             //TODO: Change this later.
-            assert(str.equals("connection"));
+            if (str.equals("ping")) {
+                jc.send(generatePongJSON("Hello client, I can here you!"));
+                return;
+            }
+            assert (str.equals("connection"));
             Boolean needPass = obj.getBoolean("needPass");
             if (needPass) {
                 // Send it back a password.
                 JSONObject info = new JSONObject().put("type", "connection");
-                info.put("valid", true);
+                //info.put("playerID", 0);
+                //info.put("valid", true);
                 synchronized (Server.this) {
-                    info = info.put("password", password++);
+                    info = info.put("password", Integer.toString(password++));
                 }
+                jc.send(info);
             } else {
                 // Add the user to the game.
                 Player p = new Player(this.socket, jc);
                 synchronized (Server.this) {
                     game.addPlayer(p);
                     if (game.canGameStart()) {
-                        // We start the game.
+                        System.out.println(true);
                         Thread t = new Thread(game);
                         t.start();
                         this.running = false;
@@ -151,7 +170,7 @@ public class Server {
      * Connect one user with one game.
      * newServer.run() will automatically start the game server and run multiple games automatically.
      */
-    public void run() throws IOException{
+    public void run() throws IOException {
         ExecutorService threadPool = Executors.newCachedThreadPool();
         // Keep listening for new commands forever.
         while (true) {

@@ -72,6 +72,7 @@ public class Game implements Runnable{
     public void addPlayer(Player p) {
         int playerNums = players.size();
         if (!players.containsValue(p) && playerNums < numPlayers) {
+            System.out.println("Player added successfully");
             players.put(playerNums + 1, p);
         }
     }
@@ -106,8 +107,8 @@ public class Game implements Runnable{
      * @param prompt   the information
      * @return the constructed JSONObject
      */
-    public JSONObject generateInfoJSON(int playerId, String prompt) {
-        JSONObject info = new JSONObject().put("type", "inform");
+    public JSONObject generateInfoJSON(int playerId, String prompt, String type) {
+        JSONObject info = new JSONObject().put("type", type);
         info = info.put("prompt", prompt).put("playerID", playerId);
         boolean isLost = players.get(playerId).getIsLost();
         info = isLost ? info.put("playerStatus", "L") : info.put("playerStatus", "A");
@@ -140,7 +141,7 @@ public class Game implements Runnable{
         str = phaseInformation(str, playerId);
         //sb.append(phaseInformation(sb.toString()))
         str += otherTerritoryMessage;
-        return generateInfoJSON(playerId, str);
+        return generateInfoJSON(playerId, str, "play");
     }
 
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
@@ -186,7 +187,8 @@ public class Game implements Runnable{
 
 
     private void sendValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n"));
+        //TODO: change this later.
+        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "test"));
     }
 
     /**
@@ -222,7 +224,8 @@ public class Game implements Runnable{
     }
 
     private void sendInvalidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n"));
+        //TODO: Change this later.
+        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n", "test"));
     }
 
     /**
@@ -280,7 +283,7 @@ public class Game implements Runnable{
     public JSONObject firstPhaseInformation(int playerId) {
         StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
         sb.append(view.territoryForUser(players.get(playerId)));
-        return generateInfoJSON(playerId, sb.toString());
+        return generateInfoJSON(playerId, sb.toString(), "placement");
     }
 
 
@@ -456,9 +459,9 @@ public class Game implements Runnable{
         }
     }
 
-    private void sendToAllPlayer(String message) throws IOException {
+    private void sendToAllPlayer(String message, String type) throws IOException {
         for (Player p : players.values()) {
-            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message));
+            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message, type));
         }
     }
 
@@ -528,7 +531,7 @@ public class Game implements Runnable{
         String message = "Game ends, the winner is player " + winner.getPlayerID();
         message += "\n";
         try {
-            sendToAllPlayer(message);
+            sendToAllPlayer(message, "play");
         } catch (IOException e) {
             e.printStackTrace();
         }
