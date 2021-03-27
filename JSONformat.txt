@@ -1,6 +1,6 @@
 
 JSONformat of the messages sent from server to client:
-    
+    evolution 1:
     {
         "type": "inform",
         "playerID": int,
@@ -8,7 +8,27 @@ JSONformat of the messages sent from server to client:
         "prompt": String,
     }
     //used to send information with update of palyer status
-    
+    evolution 2: not finished yet
+    {
+        "territories":{
+            "HSGF":{
+                "size": int,
+                "resourceGenrationRate": int,
+                "units":{
+                    1 : int,
+                    2 : int,
+                    3 : int,
+                    4 : int,
+                    5 : int,
+                    6 : int
+                }
+            },
+            "GENAJ":{
+                ......
+            }
+            ......
+        }
+    } 
 sent from client to server:
     {
         "type": "order",
