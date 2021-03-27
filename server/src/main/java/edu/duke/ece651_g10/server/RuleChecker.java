@@ -4,8 +4,7 @@ package edu.duke.ece651_g10.server;
  * The abstract class to check whether the order follows the rules in the RISK
  * game
  */
-//TODO: public abstract class RuleChecker<T extends Order> {
-public abstract class RuleChecker<T> {
+public abstract class RuleChecker<T extends Order> {
   private final RuleChecker<T> next;
 
   /**
