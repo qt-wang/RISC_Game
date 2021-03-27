@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -174,6 +175,7 @@ public class ClientTest {
     client1.commandMap.get("placement").run();
   }
 
+  @Disabled
   @Test
   public void test_get_current_message_type() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -190,6 +192,7 @@ public class ClientTest {
     assertNull(client1.getCurrentMessageType());
   }
 
+  @Disabled
   @Test
   public void test_connect_game() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -232,6 +235,7 @@ public class ClientTest {
     client1.commandMap.get("play").run();
   }
 
+  @Disabled
   @Test
   public void test_re_connect_game() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -320,6 +324,7 @@ public class ClientTest {
     client1.commandMap.get("play").run();
   }
 
+  @Disabled
   @Test
   public void test_JSONObject_generator_getter() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
