@@ -3,13 +3,13 @@ package edu.duke.ece651_g10.server;
 /**
  * The RuleChekcer to check whether the source Territory belongs to the Player
  */
-public class PlayerSelfOrderChecker extends RuleChecker {
+public class PlayerSelfOrderChecker extends RuleChecker<Order> {
   /**
    * The constructor of the the PlayerSelfOrderChecker
    *
    * @param next The next RuleChecker
    */
-  public PlayerSelfOrderChecker(RuleChecker next) {
+  public PlayerSelfOrderChecker(RuleChecker<Order> next) {
     super(next);
   }
 

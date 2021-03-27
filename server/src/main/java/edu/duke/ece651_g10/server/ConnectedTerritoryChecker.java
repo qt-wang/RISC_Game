@@ -5,7 +5,7 @@ import java.util.HashSet;
 /**
  * The RuleChecker to check whether two territories connected with each other
  */
-public class ConnectedTerritoryChecker extends RuleChecker {
+public class ConnectedTerritoryChecker extends RuleChecker<Order> {
   final HashSet<Territory> waypoints;
 
   /**
@@ -13,7 +13,7 @@ public class ConnectedTerritoryChecker extends RuleChecker {
    *
    * @param next The next RuleChecker
    */
-  public ConnectedTerritoryChecker(RuleChecker next) {
+  public ConnectedTerritoryChecker(RuleChecker<Order> next) {
     super(next);
     this.waypoints = new HashSet<Territory>();
   }
@@ -65,3 +65,10 @@ public class ConnectedTerritoryChecker extends RuleChecker {
     return null;
   }
 }
+
+
+
+
+
+
+

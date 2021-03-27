@@ -53,8 +53,8 @@ public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
-        RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
+        RuleChecker<Order> moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
+        RuleChecker<Order> attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         Server server;
         GameMapFactory factory;
         String selectMap = "Please enter the map you want to choose:\n" +

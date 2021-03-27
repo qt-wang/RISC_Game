@@ -11,12 +11,13 @@
 classDiagram
  
 RuleChecker "1" <-- "1" Server
-    SufficientUnitChecker "1" <|-- "1" RuleChecker
-    AdjacentTerritoryChecker "1" <|-- "1" RuleChecker
-    SelfTerritoryChecker "1" <|-- "1" RuleChecker
-    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
-    EnemyTerritoryChecker "1" <|-- "1" RuleChecker
-    ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
+    SufficientUnitChecker "1" <|-- "1" RuleChecker~T extends Order~
+    AdjacentTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SelfTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker~T extends Order~
+    EnemyTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    ConnectedTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    TerritoryExistChecker "1" <|-- "1" RuleChecker~T extends Order~
     Server "1" --> "n" Player
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
@@ -92,7 +93,7 @@ RuleChecker "1" <-- "1" Server
         +playGame()
     }
 
-    class RuleChecker {
+    class RuleChecker~T extends Order~ {
         -RuleChecker nextRule
         -checkMyRule()
         +checkOrder()
@@ -119,6 +120,10 @@ RuleChecker "1" <-- "1" Server
     }
 
     class EnemyTerritoryChecker {
+
+    }
+
+    class TerritoryExistChecker {
 
     }
 
