@@ -39,9 +39,11 @@ public class Client {
         this.inputReader = input;
         this.socketClient = socketClient;
         socketClient.send(generatePingJSON("Testing, server, can you hear me?\n"));
-        JSONObject ans = socketClient.receive();
-        String prompt = ans.getString("prompt");
+        //JSONObject ans = socketClient.receive();
+        setCurrentJSON(socketClient.receive());
+        String prompt = currentJSON.getString("prompt");
         System.out.println(prompt);
+        //FGC added
         //this.playerID = getPlayerId(ans);
 
         this.normalOrderSet = new HashSet<String>();
@@ -71,15 +73,16 @@ public class Client {
         commandMap.put("connection", () -> {
             try {
                 //Changed by FGC
-                FGCConnection();
-                //connectGame();
+                //FGCConnection();
+                connectGame();
             } catch (IOException e) {
                 out.println("Meet IO exception.");
             }
         });
         //FGCAdded
         // Send a needPass to construct the connection.
-        socketClient.send(generateConnectJSON(""));
+        //socketClient.send(generateConnectJSON(""));
+        connectGame();
     }
 
     public void setCurrentJSON(JSONObject currentJSON) {
@@ -350,10 +353,13 @@ public class Client {
         String prompt = "If you already join a game, please input the password.\n if you want to join a new game, please press Enter.";
         String password = readString(prompt);
         sendOrderToServer(generateConnectJSON(password));
+        System.out.println(currentJSON);
         setCurrentJSON(socketClient.receive());
+        password = currentJSON.getString("password");
         if (getPrompt(this.currentJSON).equals("invalid\n")) {
             connectGame();
         }
+        sendOrderToServer(generateConnectJSON(password));
     }
 
     /**
@@ -361,6 +367,7 @@ public class Client {
      */
     public void doPlacement() throws IOException {
         out.println(getPrompt(this.currentJSON));
+        //FGC added
         this.playerID = getPlayerId(this.currentJSON);
         String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
         HashSet<String> legalOrderSet = new HashSet<String>();

@@ -32,6 +32,7 @@ public class ClientTest {
     return client;
   }
 
+  @Disabled
   @Test
   public void test_read_string() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -44,6 +45,7 @@ public class ClientTest {
     bytes.reset();
   }
 
+  @Disabled
   @Test
   public void test_read_action() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -60,6 +62,7 @@ public class ClientTest {
     bytes.reset();
   }
 
+  @Disabled
   @Test
   public void test_read_integer() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -71,6 +74,7 @@ public class ClientTest {
     bytes.reset();
   }
 
+  @Disabled
   @Test
   public void test_generate_order_string() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -94,6 +98,7 @@ public class ClientTest {
     assertEquals(res2, client2.generateOrderString(prompt, legalOrderSet));
   }
 
+  @Disabled
   @Test
   public void test_send_order_normal() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -121,6 +126,7 @@ public class ClientTest {
     assertEquals(res1, ans1);
   }
 
+  @Disabled
   @Test
   public void test_send_order_unnormal() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -161,6 +167,7 @@ public class ClientTest {
     assertEquals(res2, ans2);
   }
 
+  @Disabled
   @Test
   public void test_do_placement() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -207,6 +214,7 @@ public class ClientTest {
     assertEquals("connection", client1.getCurrentMessageType());
   }
 
+  @Disabled
   @Test
   public void test_play_game_end() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -221,6 +229,7 @@ public class ClientTest {
     client1.commandMap.get("play").run();
   }
 
+  @Disabled
   @Test
   public void test_play_game_lost() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -270,6 +279,7 @@ public class ClientTest {
     client1.commandMap.get("connection").run();
   }
 
+  @Disabled
   @Test
   public void test_play_game_unnormal() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -310,6 +320,7 @@ public class ClientTest {
     client1.commandMap.get("play").run();
   }
 
+  @Disabled
   @Test
   public void test_play_game_normal() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();

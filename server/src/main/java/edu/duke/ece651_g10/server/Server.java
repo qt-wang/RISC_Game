@@ -36,6 +36,8 @@ public class Server {
     //HashMap<Integer, Game> games;
     Game game;
 
+    // Add a map from client to multiple players.
+    // Add a map from client to multiple games.
     HashMap<String, List<Player>> clientInfo;
 
     /**
@@ -86,7 +88,7 @@ public class Server {
                 //info.put("playerID", 0);
                 //info.put("valid", true);
                 synchronized (Server.this) {
-                    info = info.put("password", Integer.toString(password++));
+                    info = info.put("password", Integer.toString(password++)).put("prompt", "valid");
                 }
                 jc.send(info);
             } else {
