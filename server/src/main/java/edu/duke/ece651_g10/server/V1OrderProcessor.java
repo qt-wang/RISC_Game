@@ -10,7 +10,7 @@ import java.util.Vector;
  * an attack order, it stores the order in a hashmap temporarily and executes them at last.
  */
 public class V1OrderProcessor implements OrderProcessor{
-    private HashMap<Player, Vector<Order>> attacksInOneTurn;
+    private HashMap<Player, Vector<AttackOrder>> attacksInOneTurn;
 
     public V1OrderProcessor(){
         attacksInOneTurn = new HashMap<>();
@@ -31,15 +31,15 @@ public class V1OrderProcessor implements OrderProcessor{
             //If the owner of source territory did not attack others before, then create a new item
             //for the hashmap.
             if(attacksInOneTurn.get(order.getSourceTerritory().getOwner()) == null) {
-                Vector<Order> vector = new Vector<>();
-                vector.addElement(order);
+                Vector<AttackOrder> vector = new Vector<>();
+                vector.addElement((AttackOrder) order);
                 attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
             }
             //If the owner of source territory attacked others before, then put this order to his
             //vector of orders and then merge with other orders if necessary.
             else {
-                Vector<Order> vector = attacksInOneTurn.get(order.getSourceTerritory().getOwner());
-                vector.addElement(order);
+                Vector<AttackOrder> vector = attacksInOneTurn.get(order.getSourceTerritory().getOwner());
+                vector.addElement((AttackOrder) order);
                 if(vector.size() > 1) {
                     merge(vector);
                 }
@@ -52,7 +52,7 @@ public class V1OrderProcessor implements OrderProcessor{
      * This method merges all attack orders with same territories' owner and same destination.
      * @param vector is a vector of orders in which the owner of territories is same.
      */
-    private void merge(Vector<Order> vector){
+    private void merge(Vector<AttackOrder> vector){
         int length = vector.size();
         int index = -1;
         for(int i = 0; i < length - 1; i++){
@@ -94,7 +94,7 @@ public class V1OrderProcessor implements OrderProcessor{
     private Vector<Order> obtainAllAttackOrders(){
         Vector<Order> allAttacks = new Vector<>();
         for(Player player : attacksInOneTurn.keySet()){
-            Vector<Order> v = attacksInOneTurn.get(player);
+            Vector<AttackOrder> v = attacksInOneTurn.get(player);
             for(Order order : v){
                 //order.getSourceTerritory().decreaseUnit(order.getNumUnit());
                 allAttacks.addElement(order);

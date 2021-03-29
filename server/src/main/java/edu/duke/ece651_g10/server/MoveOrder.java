@@ -5,7 +5,7 @@ public class MoveOrder extends Order{
     private Territory dest;
     private int unitNum;
     GameMap gMap;
-    // HashSet<Unit> units;
+//    // HashSet<Unit> units;
 
     public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap){  //need to change Territory to string
         super(playerID);
@@ -19,17 +19,17 @@ public class MoveOrder extends Order{
      *source territory, and increases the number of units in the army of destination territory.
      */
     public void execute(){
+        //checkValidMove();
         source.decreaseUnit(unitNum);
         dest.increaseUnit(unitNum);
     }
-
-//    private void checkValidMove(){
-//        RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
-//        rule.checkOrder(this, gMap);
-//    }
-
-    public void addUnits(int numbers){
-
+/*
+    private void checkValidMove(){
+        RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
+        rule.checkOrder(this, gMap);
+    }*/
+    public int getNumUnit(){
+        return unitNum;
     }
 
     public Territory getSourceTerritory(){
@@ -40,7 +40,8 @@ public class MoveOrder extends Order{
         return dest;
     }
 
-    public int getNumUnit(){
-        return unitNum;
+    public void addUnits(int number){
+        unitNum += number;
     }
 }
+

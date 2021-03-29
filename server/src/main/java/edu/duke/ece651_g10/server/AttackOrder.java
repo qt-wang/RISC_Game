@@ -49,6 +49,11 @@ public class AttackOrder extends Order{
             return;
         }
         //attacker.decreaseUnit(unitNum);
+        if(defender.getNumUnit() == 0){
+            attackerWin = true;
+            defender.setOwner(attacker.getOwner());
+            defender.increaseUnit(unitNum);
+        }
         while(!attackerWin && !defenderWin){
             long seed = System.currentTimeMillis();
             int attDice = dice.roll(seed);
@@ -69,9 +74,8 @@ public class AttackOrder extends Order{
             }
         }
     }
-
-    public void addUnits(int numbers){
-        this.unitNum += numbers;
+    public int getNumUnit(){
+        return unitNum;
     }
 
     public Territory getSourceTerritory(){
@@ -82,7 +86,8 @@ public class AttackOrder extends Order{
         return defender;
     }
 
-    public int getNumUnit(){
-        return unitNum;
+    public void addUnits(int number){
+        unitNum += number;
     }
+
 }
