@@ -3,14 +3,14 @@ package edu.duke.ece651_g10.server;
 /**
  * The RuleChekcer to check whether the target Territory belongs to the player
  */
-public class SelfTerritoryChecker extends RuleChecker {
+public class SelfTerritoryChecker extends RuleChecker<Order> {
 
   /**
    * The constructor of the the SelfTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public SelfTerritoryChecker(RuleChecker next) {
+  public SelfTerritoryChecker(RuleChecker<Order> next) {
     super(next);
   }
 
@@ -31,3 +31,11 @@ public class SelfTerritoryChecker extends RuleChecker {
     return null;
   }
 }
+
+
+
+
+
+
+
+

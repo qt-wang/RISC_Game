@@ -3,14 +3,14 @@ package edu.duke.ece651_g10.server;
 /**
  * The RuleChecker to check whether it has sufficient unit
  */
-public class SufficientUnitChecker extends RuleChecker {
+public class SufficientUnitChecker extends RuleChecker<Order> {
 
   /**
    * The constructor of the the SufficientUnitChecker
    *
    * @param next The next RuleChecker
    */
-  public SufficientUnitChecker(RuleChecker next) {
+  public SufficientUnitChecker(RuleChecker<Order> next) {
     super(next);
   }
 

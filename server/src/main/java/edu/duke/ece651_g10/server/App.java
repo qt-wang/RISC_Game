@@ -74,6 +74,5 @@ public class App {
 //        }
 //        server.run();
         Server server = new Server(12345, new FixedGameMapFactory());
-        server.run();
     }
 }
