@@ -23,6 +23,8 @@ public class Game implements Runnable{
     // Each player has a unique integer represent its identity.
     private HashMap<Integer, Player> players;
 
+    static int gameIdentifier = 0;
+
     //This is the unique game identification of the game.
     private int gameId;
 
@@ -62,6 +64,13 @@ public class Game implements Runnable{
         this.gameEnds = false;
         this.numUnitPerPlayer = numUnitPerPlayer;
         this.numPlayers = numPlayers;
+        synchronized (Game.class) {
+            this.gameId = gameIdentifier++;
+        }
+    }
+
+    public int getGameId() {
+        return this.gameId;
     }
 
     /**
