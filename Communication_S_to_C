@@ -1,0 +1,158 @@
+Interaction between client and server:
+0. Ping and Pong message, send automatically when the client connect to the server.
+
+1. Client ask for a password.
+{
+    type="connection"
+    sub = "needPass"
+}
+
+Server response (let the user enter one open game):
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+    password = "xxxxxxxxx"
+}
+
+
+2. Client provide a password.
+For instance, after a user provide the password, display all the games the user participant.
+{
+    type="connection"
+    sub="providePass"
+    password="xxxxxxxx"
+}
+Server response:
+{
+    type="connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+    numberOfGames = 3      (for instance)
+    game0 = {
+        gameId = "xxxxxxx" (unique game identifier, currently just a int)
+        numberOfTerritories = x  (Number of territories per player, provide some map info to player)
+        currentPlayers = x (A number indicate current players in this game.)
+        totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+    }
+    game1 = {
+        ........
+    }
+    game2 = {
+        ........
+    }
+}
+
+
+4. Client wants to list all his game:
+{
+    type = "connection"
+    sub = "listMyGame"
+    password = "xxxxxxx"
+}
+Server response:
+{
+    type="connection"
+    prompt="valid/invalid"
+    reason="xxxxxx"        (if invalid, then provide a reason to tell the client.)
+    numberOfGames = 3      (for instance)
+    game0 = {
+        gameId = "xxxxxxx" (unique game identifier, currently just a int)
+        numberOfTerritories = x  (Number of territories per player, provide some map info to player)
+        currentPlayers = x (A number indicate current players in this game.)
+        totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+    }
+    game1 = {
+        ........
+    }
+    game2 = {
+        ........
+    }
+}
+
+
+5. Client wants to enter a new open game:
+might needs to be divided in two phases.
+Client sends:
+{
+    type = "connection"
+    sub = "listOpenGame"         (list all the open games that the player currently not in)
+    password = "xxxxxx" 
+}
+
+Server response:
+{
+    type="connection"
+    prompt="valid/invalid"
+    reason="xxxxxx"        (if invalid, then provide a reason to tell the client.)
+    numberOfGames = 3      (for instance)
+    game0 = {
+        gameId = "xxxxxxx" (unique game identifier, currently just a int)
+        numberOfTerritories = x  (Number of territories per player, provide some map info to player)
+        currentPlayers = x (A number indicate current players in this game.)
+        totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+    }
+    game1 = {
+        ........
+    }
+    game2 = {
+        ........
+    }
+}
+
+
+Send a json request to join a new game.
+{
+    type="connection"
+    sub="joinGame"
+    password = "xxxxxx"
+    gameId = "xxxxxx"
+}
+
+Server response:
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+}
+
+// Client use the cache to build the GUI for the client user.
+
+// Now the player will wait, until enough players enter the game (for new game:).
+// After enough players enter the game:
+{
+    type = "placement"
+    needAction = false
+    playerID = xxxxxx
+    prompt = "prompt"
+    playerStatus: "L/E/A"
+}
+...... the game will start the same to version 1.
+
+
+6. Client wants to enter a previous game.
+Send a json request to join a new game.
+{
+    type="connection"
+    sub="joinGame"
+    password = "xxxxxx"
+    gameId = "xxxxxx"
+}
+
+Server response:
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+}
+
+Server must respond the game information for this round, it could be in the do placement phase, or in the 
+play phase.
+
+
+
+7. Client wants to switch game (more detail needed).
+
+
+
+
