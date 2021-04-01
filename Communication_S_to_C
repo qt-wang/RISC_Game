@@ -131,7 +131,10 @@ Server response:
 
 
 6. Client wants to enter a previous game.
-Send a json request to join a new game.
+Client is only allowed to join a previous game at these moments:
+   -- 1. Waiting for placement to begun.
+   -- 2. Waiting for another round to begin.
+Send a json request to join a previous game.
 {
     type="connection"
     sub="joinGame"
@@ -140,19 +143,64 @@ Send a json request to join a new game.
 }
 
 Server response:
+//Maybe, we can send the player's connection status to the client, so the client can makeup their decision, whether to wait or logout to play another game.
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+    playerStatus = {
+        // nc - not commit | c - commit (connected) | dc - commit, but disconnected
+        0 = "nc"/"c"/"dc"
+        1 = "xxxx"
+        2 = "xxxx"
+        3 = "xxxx"
+    }
+}
+
+Server must respond the game information for the new round, it could be in the do placement phase, or in the
+play phase.
+There are different situations, and different player status:
+  -- The new round is placement phase
+     Only one case, all the players must alive at this time:
+     Just display the placement information when all the players connected back.
+
+  -- The new round is play phase.
+     The player can be in either two status:
+     * Alive, we must wait the player to join to begin the next round.
+     * Lose, this player is not required to join the game to begin the next round.
+       -- temp, might be difficult to implement.
+
+  -- The new round is the result round (ie. A player win the game).
+     In this case, the previous round's alive players are in the game.
+     We just distribute this to all the players, and end this game.
+
+
+
+7. Client wants to switch game (more detail needed).
+   -- Divided into two steps:
+     -- 1. Logout from the current game.
+     -- 2. Enter a previous game, the same to point 6.
+   This part will talk about how to log out from a game, i.e. point 7.1
+
+The player can only be allowed to logout at these moments:
+1. Before the game starts, ie. all the player is waiting for enough players to login, for placement be be begin.
+
+2. After commit in one round, then the player is free to logout to operates on another game.
+
+Logout needs to send specific message to the Game, so that the game knows that the player choose to logout.
+{
+     type = "logout"
+     password = "xxxxxx"
+     playerID = xxxx
+}
+
+
+// If valid then the client is free to logout.
+// Otherwise, present the information.
+server response:
 {
     type = "connection"
     prompt = "valid/invalid"
     reason = "xxxxxx"
 }
-
-Server must respond the game information for this round, it could be in the do placement phase, or in the 
-play phase.
-
-
-
-7. Client wants to switch game (more detail needed).
-
-
-
 

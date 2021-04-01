@@ -465,38 +465,6 @@ public class Game implements Runnable{
         }
     }
 
-//    /**
-//     * This method begins listen to the socket and accept connections from the client.
-//     * The server will end this stage if:
-//     * 1. If There are 5 players (The maximum number of players allowed).
-//     * 2. If there are at least 2 players and there are no connections in wait seconds.
-//     * This method should also setup the players field of the class.
-//     * This method should fill the hashmap (called players)
-//     * For each player, it should has a number associated with him, starts from 0.
-//     * This should also setup the socket of the player.
-//     */
-//    //TODO: Change to private later and put it into the run function.
-//    public HashMap<Integer, Player> acceptConnections(int numPlayer) throws InterruptedException, IOException {
-//        int connectedPlayer = 0;
-//        HashMap<Integer, Player> playersInGame = new HashMap<>();
-//        //accept connections from the clients
-//        while (connectedPlayer < numPlayer) {
-//            System.out.println("Waiting for client to connect");
-//            Socket s = this.serverSocket.accept();
-//            System.out.println("Connected with client");
-//            BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-//            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-//            JSONCommunicator jc = new JSONCommunicator(br, bw);
-//            String msg = jc.receive().getString("prompt");
-//            System.out.println("Client：" + msg);
-//            Player player = new Player(s, jc);
-//            playersInGame.put(player.getPlayerID(), player);
-//            jc.send(generateInfoJSON(player.getPlayerID(), "You've connected to the server.\n"));
-//            connectedPlayer += 1;
-//        }
-//        return playersInGame;
-//    }
-
     public int getNumPlayers() {
         return players.size();
     }
