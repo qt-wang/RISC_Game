@@ -17,6 +17,19 @@ public class PlayerTest {
     assertEquals(player.getJCommunicator(), player.getJCommunicator());
     player.setIsLost();
     assertEquals(true, player.getIsLost());
+
+    assertEquals(0, player.getFoodResourceTotal());
+    assertEquals(0, player.getTechnologyResourceTotal());
+    assertEquals(0, player.getTechnologyLevel());
+
+    player.setFoodResourceTotal(100);
+    assertEquals(100, player.getFoodResourceTotal());
+
+    player.setTechnologyResourceTotal(120);
+    assertEquals(120, player.getTechnologyResourceTotal());
+
+    player.incrementTechnologyLevel();
+    assertEquals(1, player.getTechnologyLevel());
   }
 
 }

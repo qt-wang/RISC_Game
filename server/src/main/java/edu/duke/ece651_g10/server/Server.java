@@ -77,7 +77,7 @@ public class Server {
         Socket socket;
         Boolean running;
 
-        //TODO: later abstract out this as a method?
+        //TODO: later abstract out this as a mehod?
         private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
 
