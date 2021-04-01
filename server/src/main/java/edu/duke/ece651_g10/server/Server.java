@@ -39,6 +39,10 @@ public class Server {
     // Add a map from client to multiple games.
     HashMap<String, List<Player>> clientInfo;
 
+    HashMap<String, Socket> clientSocket;
+
+
+    PasswordGenerator serverPasswordGenerator;
     /**
      * Setup the server socket.
      *
@@ -66,12 +70,14 @@ public class Server {
 
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
+     * One client connection use one thread to handle it?
      */
     private class RequestHandleTask implements Runnable {
         JSONCommunicator jc;
         Socket socket;
         Boolean running;
 
+        //TODO: later abstract out this as a method?
         private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
 
@@ -80,28 +86,14 @@ public class Server {
                 return;
             }
             assert (str.equals("connection"));
-            Boolean needPass = obj.getBoolean("needPass");
-            if (needPass) {
-                // Send it back a password.
-                JSONObject info = new JSONObject().put("type", "connection");
-                //info.put("playerID", 0);
-                //info.put("valid", true);
-                synchronized (Server.this) {
-                    info = info.put("password", Integer.toString(password++)).put("prompt", "valid");
-                }
-                jc.send(info);
-            } else {
-                // Add the user to the game.
-                Player p = new Player(this.socket, jc);
-                synchronized (Server.this) {
-                    game.addPlayer(p);
-                    this.running = false;
-                    if (game.canGameStart()) {
-                        System.out.println(true);
-                        Thread t = new Thread(game);
-                        t.start();
-                    }
-                }
+            String subType = obj.getString("sub");
+            switch (str) {
+                case "needPass":
+                    // The user needs a password.
+                    String password = serverPasswordGenerator.generate();
+                    clientSocket.put(password, socket);
+                    // Now send the password back.
+                    break;
             }
         }
 
@@ -137,7 +129,7 @@ public class Server {
      * @param factory
      * @throws IOException
      */
-    public Server(int port, GameMapFactory factory) throws IOException {
+    public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
         this.mapFactory = factory;
         //Now, only one test game.
@@ -145,6 +137,8 @@ public class Server {
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = mapFactory.createGameMap(3, 3);
         game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3);
+        this.serverPasswordGenerator = serverPasswordGenerator;
+        clientSocket = new HashMap<>();
     }
 
     /**

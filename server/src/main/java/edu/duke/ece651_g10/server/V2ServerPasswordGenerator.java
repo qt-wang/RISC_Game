@@ -6,8 +6,8 @@ package edu.duke.ece651_g10.server;
  */
 public class V2ServerPasswordGenerator implements  PasswordGenerator{
 
-
     @Override
+    //TODO: Implementation.
     public String generate() {
         return null;
     }

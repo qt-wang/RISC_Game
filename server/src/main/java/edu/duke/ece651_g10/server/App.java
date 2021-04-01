@@ -73,6 +73,7 @@ public class App {
 //            server = new Server(12345, players, 25, territories, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
 //        }
 //        server.run();
-        Server server = new Server(12345, new FixedGameMapFactory());
+        PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
+        Server server = new Server(12345, new FixedGameMapFactory(), passwordGenerator);
     }
 }
