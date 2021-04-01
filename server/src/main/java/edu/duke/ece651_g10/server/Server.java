@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 
 /**
  * This class implements the server of the client-server model.
- * The server class is responsible for:
+ * The server class is responsible for:2121
  * 1. Wait for the connections and begin the game.
  * 2. At each turn: accept the commands from the players.
  * 3. Execute the attack command at the end of the turn.
