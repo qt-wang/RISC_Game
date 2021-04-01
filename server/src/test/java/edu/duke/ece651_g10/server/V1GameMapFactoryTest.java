@@ -39,7 +39,6 @@ class V1GameMapFactoryTest {
         }
     }
 
-    //TODO: Need more tests (ie. test the if the graph is connected or not).
     @Test
     public void test_create_random_territory_graph() {
         PseudoNumberGenerator rand = new PseudoNumberGenerator();

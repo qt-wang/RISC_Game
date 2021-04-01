@@ -47,7 +47,6 @@ public class V1Territory implements Territory {
         this.owner = player;
     }
 
-    //TODO:Change this later.
     public V1Territory(String name) {
         this.name = name;
         neighbours = new HashSet<>();

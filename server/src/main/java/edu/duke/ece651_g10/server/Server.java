@@ -74,7 +74,7 @@ public class Server {
 
         private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
-            //TODO: Change this later.
+
             if (str.equals("ping")) {
                 jc.send(generatePongJSON("Hello client, I can here you!"));
                 return;
@@ -114,7 +114,6 @@ public class Server {
                 //Keep receive new JSON objects from the client.
                 try {
                     obj = jc.receive();
-                    //TODO: Maybe consider using new order and order processor to handle this?
                     handleJSONObject(obj);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -141,7 +140,6 @@ public class Server {
     public Server(int port, GameMapFactory factory) throws IOException {
         setServerSocket(port);
         this.mapFactory = factory;
-        //TODO: Change this later to allow creating multiple games.
         //Now, only one test game.
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));

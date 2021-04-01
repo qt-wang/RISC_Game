@@ -29,7 +29,7 @@ public class Player {
   private Socket connectedSocket;
 
   private int playerId;
-  // TODO:Don't forget to modify this function
+
   public int getPlayerID() {
     return playerId;
   }

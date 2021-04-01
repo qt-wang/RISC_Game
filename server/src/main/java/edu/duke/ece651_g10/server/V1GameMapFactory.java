@@ -4,7 +4,6 @@ import java.util.*;
 
 /**
  * This is the game map factory used in version one.
- * TODO: Need more tests on this class.
  */
 public class V1GameMapFactory implements GameMapFactory {
 
@@ -41,7 +40,6 @@ public class V1GameMapFactory implements GameMapFactory {
         //Random rand = new Random();
         Territory beginPoint = allTerritories.remove(randomNumberGenerator.nextInt(allTerritories.size()));
         group.add(beginPoint);
-        //TODO:Fix this.
         while (group.size() != territoriesPerPlayer) {
             Territory ref = null;
             for (Territory t: beginPoint.getNeighbours()) {
@@ -142,7 +140,6 @@ public class V1GameMapFactory implements GameMapFactory {
         int numberOfTerritories = numberOfPlayers * territoriesPerPlayer;
         List<String> names = getRandomNames(numberOfTerritories, 3, 6);
         for (int i = 0; i < numberOfTerritories; i++) {
-            // TODO: change this later, add arguments inside.
             Territory temp = new V1Territory(names.remove(0));
             allTerritories.add(temp);
         }

@@ -196,7 +196,6 @@ public class Game implements Runnable{
 
 
     private void sendValidResponse(int playerId) throws IOException {
-        //TODO: change this later.
         sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "test"));
     }
 
@@ -233,7 +232,6 @@ public class Game implements Runnable{
     }
 
     private void sendInvalidResponse(int playerId) throws IOException {
-        //TODO: Change this later.
         sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n", "test"));
     }
 
@@ -273,7 +271,6 @@ public class Game implements Runnable{
                 } else if (order instanceof AttackOrder) {
                     message = attackRuleChecker.checkOrder(order, playMap);
                 } else {
-                    //TODO: fail fast
                     assert (false);
                 }
                 if (message == null) {
@@ -316,7 +313,6 @@ public class Game implements Runnable{
                 receiveCommit = true;
                 continue;
             }
-            // TODO: Remove this later.
             synchronized (this) {
                 Order order = toOrder(playerId, obj);
                 if (order == null) {
