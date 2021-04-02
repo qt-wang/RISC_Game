@@ -20,7 +20,7 @@ class V1GameMapFactoryTest {
         reached.add(beginPoint);
         Set<Territory> marked = new HashSet<>();
         marked.add(beginPoint);
-        while(!container.isEmpty()) {
+        while (!container.isEmpty()) {
             Territory t = container.pollFirst();
             for (Territory territory : t.getNeighbours()) {
                 if (!marked.contains(territory)) {
@@ -40,9 +40,30 @@ class V1GameMapFactoryTest {
     }
 
     @Test
+    public void test_version_map_setup() {
+        PseudoNumberGenerator rand = new PseudoNumberGenerator();
+        V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
+        GameMap map = factory.createGameMap(5, 3);
+        HashMap<Integer, HashSet<Territory>> test = map.getInitialGroups();
+        for (Map.Entry<Integer, HashSet<Territory>> entry : test.entrySet()) {
+            int sizeTotal = 0;
+            int foodTotal = 0;
+            int resourceTotal = 0;
+            for (Territory t: entry.getValue()) {
+                sizeTotal += t.getSize();
+                foodTotal += t.getFoodResourceGenerationRate();
+                resourceTotal += t.getTechnologyResourceGenerationRate();
+            }
+            assertEquals(100, sizeTotal);
+            assertEquals(60, foodTotal);
+            assertEquals(80, resourceTotal);
+        }
+    }
+
+    @Test
     public void test_create_random_territory_graph() {
         PseudoNumberGenerator rand = new PseudoNumberGenerator();
-        V1GameMapFactory factory = new V1GameMapFactory(rand);
+        V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
         Set<Territory> territories = factory.createRandomTerritoryGraph(3, 5);
         assertEquals(territories.size(), 15);
         assertEquals(true, checkConnected(territories));

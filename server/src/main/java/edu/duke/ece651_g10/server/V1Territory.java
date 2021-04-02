@@ -111,6 +111,16 @@ public class V1Territory implements Territory {
     public void setTechnologyResourceGenerationRate(int rate) {
         this.technologyResourceGenerationRate = rate;
     }
+
+    @Override
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    @Override
+    public int getSize() {
+        return this.size;
+    }
 }
 
 

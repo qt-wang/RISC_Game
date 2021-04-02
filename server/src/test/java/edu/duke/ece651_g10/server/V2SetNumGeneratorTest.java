@@ -12,7 +12,7 @@ public class V2SetNumGeneratorTest {
         int[] test = generator.get();
         int total = 0;
         for (int i = 0; i < 4; i++) {
-            System.out.println(test[i]);
+            //System.out.println(test[i]);
             total += test[i];
         }
         assertEquals(50, total);

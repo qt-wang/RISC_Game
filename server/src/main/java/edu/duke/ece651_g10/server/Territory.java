@@ -100,4 +100,16 @@ public interface Territory {
      * @param rate The rate to generate technology resource.
      */
     public void setTechnologyResourceGenerationRate(int rate);
+
+    /**
+     * Set the size of the current territory.
+     */
+    public void setSize(int size);
+
+    /**
+     * Get the size of current territory.
+     *
+     * @return The size of current territory.
+     */
+    public int getSize();
 }

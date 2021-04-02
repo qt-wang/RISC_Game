@@ -10,14 +10,22 @@ public class V1GameMapFactory implements GameMapFactory {
     final String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     RandomNumberGenerator randomNumberGenerator;
+
+    int totalSize;
+    int totalFoodResourceGenerationRate;
+    int technologyResourceGenerationRate;
+
+    SetSumGenerator setSumGenerator;
     /**
      * Generate a map factory used in the game.
      *
      * @param randomNumberGenerator The random number generator used in this class.
      */
-    public V1GameMapFactory(RandomNumberGenerator randomNumberGenerator) {
-        //this.intense = intense;
+    public V1GameMapFactory(RandomNumberGenerator randomNumberGenerator, int totalFoodResourceGenerationRate, int technologyResourceGenerationRate, int sizeTotal) {
         this.randomNumberGenerator = randomNumberGenerator;
+        this.totalSize = sizeTotal;
+        this.totalFoodResourceGenerationRate = totalFoodResourceGenerationRate;
+        this.technologyResourceGenerationRate = technologyResourceGenerationRate;
     }
 
 //    /**
@@ -30,7 +38,6 @@ public class V1GameMapFactory implements GameMapFactory {
 
 
     /**
-     *
      * @param allTerritories
      * @param territoriesPerPlayer
      * @return
@@ -42,7 +49,7 @@ public class V1GameMapFactory implements GameMapFactory {
         group.add(beginPoint);
         while (group.size() != territoriesPerPlayer) {
             Territory ref = null;
-            for (Territory t: beginPoint.getNeighbours()) {
+            for (Territory t : beginPoint.getNeighbours()) {
                 // If t is still available and t is not in the group, then this territory is able to be added into the group.
                 if ((!group.contains(t)) && allTerritories.contains(t)) {
                     ref = t;
@@ -63,6 +70,27 @@ public class V1GameMapFactory implements GameMapFactory {
         return group;
     }
 
+    /**
+     * For each group of territories,
+     * setup their: 1. resource generation rate, 2. technology resource generation rate
+     * 3. its size.
+     */
+    private void setupTerritoryAttributes(GameMap map) {
+        HashMap<Integer, HashSet<Territory>> groups = map.getInitialGroups();
+        for (Map.Entry<Integer, HashSet<Territory>> entry: groups.entrySet()) {
+            HashSet<Territory> territories = entry.getValue();
+            int[] foodDistribution = new V2SetNumGenerator(territories.size(), 1, this.totalFoodResourceGenerationRate, this.totalFoodResourceGenerationRate).get();
+            int[] technologyDistribution = new V2SetNumGenerator(territories.size(), 1, this.technologyResourceGenerationRate, this.technologyResourceGenerationRate).get();
+            int[] sizeDistribution = new V2SetNumGenerator(territories.size(), 1, this.totalSize, this.totalSize).get();
+            int count = 0;
+            for (Territory t: territories) {
+                t.setFoodResourceGenerationRate(foodDistribution[count]);
+                t.setTechnologyResourceGenerationRate(technologyDistribution[count]);
+                t.setSize(sizeDistribution[count]);
+                count += 1;
+            }
+        }
+    }
 
     /**
      * This function should generate a connected graph with numberOfPlayers * territoriesPerPlayer nodes.
@@ -77,11 +105,12 @@ public class V1GameMapFactory implements GameMapFactory {
         // We need to divide it into numberOfPlayers group, each will has territoriesPerPlayer.
         HashMap<Integer, HashSet<Territory>> groups = new HashMap<>();
         List<Territory> copied = new LinkedList<>(allTerritories);
-        for (int i = 1; i <= numberOfPlayers; i ++) {
+        for (int i = 1; i <= numberOfPlayers; i++) {
             HashSet<Territory> group = (HashSet<Territory>) getPlayerTerritoryGroup(copied, territoriesPerPlayer);
             groups.put(i, group);
         }
         GameMap map = new V1GameMap(allTerritories, groups);
+        setupTerritoryAttributes(map);
         return map;
     }
 
@@ -96,7 +125,7 @@ public class V1GameMapFactory implements GameMapFactory {
     private String generateRandomName(int length) {
         StringBuilder sb = new StringBuilder();
         //Random rand = new Random();
-        for (int i = 0; i < length; i ++) {
+        for (int i = 0; i < length; i++) {
             sb.append(allowedCharacters.charAt(randomNumberGenerator.nextInt(allowedCharacters.length())));
         }
         return sb.toString();
