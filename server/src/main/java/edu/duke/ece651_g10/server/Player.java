@@ -69,6 +69,10 @@ public class Player {
 
     private boolean canUpgradeInThisTurn;
 
+    // This variable represents whether the player is in current game.
+    // If the player log out, then the inGame variable is set to false.
+    private boolean inGame;
+
     /**
      * Get the food resource total.
      *
@@ -98,6 +102,7 @@ public class Player {
 
     /**
      * Set the player's current total technology resource.
+     *
      * @param resourceTotal The player's total resource.
      */
     public void setTechnologyResourceTotal(int resourceTotal) {
@@ -106,6 +111,7 @@ public class Player {
 
     /**
      * Get the player's current technology level.
+     *
      * @return The player's current technology level.
      */
     public int getTechnologyLevel() {
@@ -117,6 +123,30 @@ public class Player {
      */
     public void incrementTechnologyLevel() {
         this.technologyLevel += 1;
+    }
+
+    /**
+     * Mark the player as join the game.
+     */
+    public void joinGame() {
+        this.inGame = true;
+    }
+
+    /**
+     * Check whether the player is in this game.
+     *
+     * @return True if the player is in this game.
+     * False if the player leaves the game.
+     */
+    public boolean getInGameStatus() {
+        return inGame;
+    }
+
+    /**
+     * Mark the player as leave the game.
+     */
+    public void leaveGame() {
+        this.inGame = false;
     }
 
 //  public BufferedWriter getBufferedWriter() {
@@ -137,6 +167,7 @@ public class Player {
         this.technologyResourceTotal = 0;
         this.technologyLevel = 0;
         this.canUpgradeInThisTurn = true;
+        this.inGame = false;
     }
 
 

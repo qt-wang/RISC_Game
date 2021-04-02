@@ -80,6 +80,7 @@ public class Game implements Runnable{
      */
     public void addPlayer(Player p) {
         int playerNums = players.size();
+        p.joinGame();
         if (!players.containsValue(p) && playerNums < numPlayers) {
             System.out.println("Player added successfully");
             players.put(playerNums + 1, p);
@@ -208,10 +209,6 @@ public class Game implements Runnable{
      */
     public Order toOrder(int playerId, JSONObject obj) {
         try {
-            //Should we check this?
-//            if (!isOrderMessage(obj)) {
-//                return null;
-//            }
             String orderType = obj.getString("orderType"),
                     sourceT = obj.getString("sourceTerritory"),
                     destT = obj.getString("destTerritory");
@@ -237,6 +234,7 @@ public class Game implements Runnable{
 
     /**
      * Play one turn of the game.
+     * Initially, the player should be in the game.
      * One turn of the game includes:
      * 0. Distribute the current map to the player (The player's own view).
      * 1. Read inputs from each user (Or orders)
@@ -281,7 +279,6 @@ public class Game implements Runnable{
                     sendInvalidResponse(playerId);
                 }
             }
-
         }
     }
 

@@ -32,7 +32,7 @@ public class Server {
     private GameMapFactory mapFactory;
 
     // Each game has a specific identification.
-    //HashMap<Integer, Game> games;
+    // HashMap<Integer, Game> games;
     Game game;
 
     // Add a map from client to multiple players.
@@ -43,6 +43,7 @@ public class Server {
 
 
     PasswordGenerator serverPasswordGenerator;
+
     /**
      * Setup the server socket.
      *
