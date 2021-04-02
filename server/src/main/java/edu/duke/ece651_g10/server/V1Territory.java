@@ -34,13 +34,20 @@ public class V1Territory implements Territory {
     }
 
 
-    private String name;
+    private final String name;
     private Player owner;
     private HashMap<Player, Integer> units;
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
     private List<Unit> ownedUnits;
+
+
+    // Version 2 variables.
+    private int size;
+    private int foodResourceGenerationRate;
+    private int technologyResourceGenerationRate;
+
 
     @Override
     public void setOwner(Player player) {
@@ -52,6 +59,9 @@ public class V1Territory implements Territory {
         neighbours = new HashSet<>();
         units = new HashMap<>();
         ownedUnits = new LinkedList<>();
+        size = 0;
+        foodResourceGenerationRate = 0;
+        technologyResourceGenerationRate = 0;
     }
 
 
@@ -80,6 +90,26 @@ public class V1Territory implements Territory {
     @Override
     public Player getOwner(){
         return owner;
+    }
+
+    @Override
+    public int getFoodResourceGenerationRate() {
+        return foodResourceGenerationRate;
+    }
+
+    @Override
+    public int getTechnologyResourceGenerationRate() {
+        return technologyResourceGenerationRate;
+    }
+
+    @Override
+    public void setFoodResourceGenerationRate(int rate) {
+        this.foodResourceGenerationRate = rate;
+    }
+
+    @Override
+    public void setTechnologyResourceGenerationRate(int rate) {
+        this.technologyResourceGenerationRate = rate;
     }
 }
 
