@@ -19,6 +19,7 @@ RuleChecker "1" <-- "1" Server
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
     TerritoryExistChecker "1" <|-- "1" RuleChecker~T extends Order~
     AttackFoodChecker "1" <|-- "1" RuleChecker~T extends Order~
+    CanUpgradeTechChecker "1" <|-- "1" RuleChecker~T extends Order~
     Server "1" --> "n" Player
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
@@ -150,6 +151,10 @@ RuleChecker "1" <-- "1" Server
     }
 
     class AttackFoodChecker{
+
+    }
+
+    class CanUpgradeTechChecker{
 
     }
 
