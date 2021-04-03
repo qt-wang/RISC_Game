@@ -47,11 +47,11 @@ RuleChecker "1" <-- "1" Server
     }
 
     class OrderProcessor {
-        -HashMap<Player, Vector<Order>> attacksInOneTurn
-        +acceptOrder(Order order)
+        -HashMap~Player, Vector~Order~~ attacksInOneTurn
+        +acceptOrder()
         +executeEndTurnOrders()
-        -merge(Vector<Order> vector)
-        -Vector<Order> obtainAllAttackOrders()
+        -merge()
+        -Vector~Order~ obtainAllAttackOrders()
     }
     
     class Order {
@@ -179,17 +179,19 @@ RuleChecker "1" <-- "1" Server
         +getNumUnit()
     }
 
-    class Unit {
-        -Player owner
-        -Territory position 
-    }  
-    
     class Resources{
         -int foodResource
         -int techResource
         -int techLevel
         +consumeFood()
-        +consumeTech()
-        
+        +consumeTech()   
     }
+
+    class Unit {
+        -Player owner
+        -Territory position 
+    }  
+    
+
+
 ```
