@@ -190,18 +190,19 @@ The player can only be allowed to logout at these moments:
 Logout needs to send specific message to the Game, so that the game knows that the player choose to logout.
 {
      type = "logout"
-     password = "xxxxxx"
-     playerID = xxxx
+     password = "xxxxxx" (if difficult, then can not send.)
+     playerID = xxxx (if difficult, then can not send.)
 }
 
 
 // If valid then the client is free to logout.
 // Otherwise, present the information.
+// The json send back from the server actually contains a lot more redundant information, but the following must has.
 server response:
 {
     type = "connection"
     prompt = "valid/invalid"
-    reason = "xxxxxx"
+    reason = "xxxxx"
 }
 
 

@@ -137,7 +137,6 @@ public class Server {
     public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
         this.mapFactory = factory;
-        //Now, only one test game.
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = mapFactory.createGameMap(3, 3);

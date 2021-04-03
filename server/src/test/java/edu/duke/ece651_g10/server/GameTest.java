@@ -81,5 +81,12 @@ class GameTest {
         secondPhaseBeginMessage += expectedPlayer3;
         test = game.secondPhaseInformation(mockPlayer1.getPlayerID(), game.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()));
         assertEquals(secondPhaseBeginMessage, test.get("prompt"));
+
+
+
+        JSONObject receivedJson = game.generateServerResponse("valid\n", "", "connection");
+        assertEquals(receivedJson.getString("prompt"), "valid\n");
+        assertEquals(receivedJson.getString("reason"), "");
+        assertEquals(receivedJson.getString("type"), "connection");
     }
 }

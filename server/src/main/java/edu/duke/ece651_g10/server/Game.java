@@ -3,10 +3,7 @@ package edu.duke.ece651_g10.server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.BrokenBarrierException;
@@ -133,6 +130,13 @@ public class Game implements Runnable {
         return info;
     }
 
+    public JSONObject generateServerResponse(String prompt, String reason, String type) {
+        JSONObject response = new JSONObject().put("type", type);
+        response = response.put("prompt", prompt);
+        response = response.put("reason", reason);
+        return response;
+    }
+
 
     /**
      * Provide the phase information used to send to the users.
@@ -215,6 +219,14 @@ public class Game implements Runnable {
     }
 
 
+    private void sendServerValidResponse(int playerId) throws IOException {
+        sendToPlayer(playerId, generateServerResponse("valid\n", "", "connection"));
+    }
+
+    private void sendServerInvalidResponse(int playerId, String reason) throws IOException {
+        sendToPlayer(playerId, generateServerResponse("invalid\n", reason, "connection"));
+    }
+
     private void sendValidResponse(int playerId) throws IOException {
         sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "test"));
     }
@@ -251,7 +263,6 @@ public class Game implements Runnable {
         sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n", "test"));
     }
 
-    //TODO: Implement this function.
 
     /**
      * Check whether receive the quit command from the JSON object object.
@@ -271,20 +282,20 @@ public class Game implements Runnable {
      * 2. Ask the server to begin to monitor on the server.
      * This method is actually synchronized.
      */
-    private void handleQuitCommand(int playerId, WaitGroup waitGroup) {
+    private void handleQuitCommand(int playerId, WaitGroup waitGroup) throws IOException {
         // We check again.
         if (waitGroup.getState()) {
             // All the players are ready.
             // just simply go to the next round.
-            // TODO: Send invalid response
+            sendServerInvalidResponse(playerId, "The next round is ready to begin!\n");
         } else {
             // The player is allowed to logout.
             waitGroup.increase();
             Player logOutPlayer = players.get(playerId);
             // Now make game not to monitor on the socket.
             logOutPlayer.leaveGame();
-            // TODO: Send the valid response back to the client, so that the client is free to logout.
             this.serverTaskPool.execute(this.refServer.new RequestHandleTask(logOutPlayer.getJCommunicator(), logOutPlayer.getSocket()));
+            sendServerValidResponse(playerId);
         }
     }
 
@@ -301,10 +312,6 @@ public class Game implements Runnable {
      * 4. Execute all the commands.
      * 5. Change the ownership of the territories, add one unit to each territory.
      * 6. Distributes the result.
-     * TODO: Implement this.
-     * Extend logic in version 2:
-     * The game can receive logout logic while playing.
-     * However, after the player commit, he cannot logout.
      *
      * @param playerId The player who will receive the playOneTurn message.
      */
@@ -428,7 +435,7 @@ public class Game implements Runnable {
                         handleQuitCommand(playerId, waitGroup);
                     }
                 } else {
-                    // TODO: Send invalid response back to the player.
+                    sendServerInvalidResponse(playerId, "Can only issue logout command in this state!");
                 }
             }
             // Else do nothing.
