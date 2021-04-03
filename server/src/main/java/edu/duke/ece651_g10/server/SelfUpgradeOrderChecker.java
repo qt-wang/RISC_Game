@@ -1,15 +1,16 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChecker to check whether the palyer's units are in upgrade range
+ * The RuleChecker to check whether the palyer's units upgrade is upgrading its
+ * own units
  */
-public class UnitUpgradeRangeChecker extends RuleChecker<OneTerritoryOrder> {
-/**
-   * The constructor of the UnitUpgradeRangeChecker
+public class SelfUpgradeOrderChecker extends RuleChecker<OneTerritoryOrder> {
+  /**
+   * The constructor of the SelfUpgradeOrderChecker
    * 
    * @param next The next RuleChecker
    */
-  public UnitUpgradeRangeChecker(RuleChecker<OneTerritoryOrder> next) {
+  public SelfUpgradeOrderChecker(RuleChecker<OneTerritoryOrder> next) {
     super(next);
   }
 
@@ -24,27 +25,9 @@ public class UnitUpgradeRangeChecker extends RuleChecker<OneTerritoryOrder> {
    */
   @Override
   protected String checkMyRule(OneTerritoryOrder order, GameMap gameMap) {
-    if (!order.getUnitUpgradeTable().containsKey(order.getLevel())) {
-      return "The player's upgrade level is not in the unit upgrade range.";
+    if (gameMap.getOwnership().get(order.getSourceTerritory()).getPlayerID() != order.getPlayerID()) {
+      return "The player is not upgrading his or her own units.";
     }
     return null;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

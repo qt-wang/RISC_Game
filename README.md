@@ -23,6 +23,7 @@ RuleChecker "1" <-- "1" Server
     TechUpgradeRangeChecker "1" <|-- "1" RuleChecker~T extends Order~
     SufficientTechResourceChecker "1" <|-- "1" RuleChecker~T extends Order~
     UnitUpgradeRangeChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SelfUpgradeOrderChecker "1" <|-- "1" RuleChecker~T extends Order~
     Server "1" --> "n" Player
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
@@ -170,6 +171,10 @@ RuleChecker "1" <-- "1" Server
     }
 
     class UnitUpgradeRangeChecker{
+
+    }
+
+    class SelfUpgradeOrderChecker{
 
     }
 
