@@ -21,6 +21,29 @@ class GameTest {
     }
 
     @Test
+    public void test_present_game_info() {
+        Game testGame = createTestGame();
+        Player p = mock(Player.class);
+        testGame.addPlayer(p);
+        assertEquals(true, testGame.containsPlayer(p));
+        JSONObject test = testGame.presentGameInfo();
+        assertEquals(0, test.getInt("gameId"));
+        assertEquals(3, test.getInt("numberOfTerritories"));
+        assertEquals(1, test.getInt("currentPlayer"));
+        assertEquals(3, test.getInt("totalPlayers"));
+        Player p2 = mock(Player.class);
+        Player p3 = mock(Player.class);
+        assertEquals(false, testGame.containsPlayer(p2));
+        testGame.addPlayer(p2);
+        assertEquals(false, testGame.isGameFull());
+        testGame.addPlayer(p3);
+        assertEquals(true, testGame.isGameFull());
+        test = testGame.presentGameInfo();
+
+    }
+    
+
+    @Test
     public void test_get_player_info() {
         Player mockPlayer1 = mock(Player.class);
         Player mockPlayer2 = mock(Player.class);

@@ -155,6 +155,13 @@ Send a json request to join a previous game.
 
 Server response:
 //Maybe, we can send the player's connection status to the client, so the client can makeup their decision, whether to wait or logout to play another game.
+Server response:
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+}
+//TODO:One question here: how to resume previous state, use buffer in client?
 {
     type = "connection"
     prompt = "valid/invalid"

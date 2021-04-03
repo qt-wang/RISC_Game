@@ -640,6 +640,7 @@ public class Game implements Runnable {
         }
     }
 
+
     /**
      * Present the game info to the outer world.
      * Currently, display the following information:
@@ -653,7 +654,30 @@ public class Game implements Runnable {
         JSONObject response = new JSONObject();
         response.put("gameId", gameId);
         response.put("numberOfTerritories", playMap.getNumberOfTerritoriesPerPlayer());
-        //response.put("currentPlayer", )
-        return null;
+        response.put("currentPlayer", players.size());
+        response.put("totalPlayers", playMap.getTotalPlayers());
+        return response;
+    }
+
+    /**
+     * If the game is full, then return true.
+     * Otherwise return false.
+     */
+    public boolean isGameFull() {
+        return players.size() == playMap.getTotalPlayers();
+    }
+
+    /**
+     * If the game contains the player p, then return true.
+     * @param p  The player to check.
+     * @return  True if the game contains the player.
+     * Otherwise, return false.
+     */
+    public boolean containsPlayer(Player p) {
+        if (players.containsValue(p)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -7,9 +7,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -80,16 +78,31 @@ public class Server {
      * Append all the game information related to client with password "password" to the JSON object.
      *
      * @param password The provided password from the client.
+     * @param object   The object to append the new information.
      */
     void appendGameInformation(String password, JSONObject object) {
         List<Game> games = clientGames.get(password);
         int size = games.size();
         object.put("numberOfGames", size);
-        for (int i = 0; i < size; i ++) {
-
+        for (int i = 0; i < size; i++) {
+            object.put(Integer.toString(i), games.get(i).presentGameInfo());
         }
     }
 
+    /**
+     * Append all the open game information to the JSON object object.
+     *
+     * @param password The provided password from the client.
+     * @param object   The object to append the new information
+     */
+    void appendOpenGameInformation(String password, JSONObject object) {
+        Set<Game> inGames = new HashSet<>(clientGames.get(password));
+        for (int i = 0; i < games.size(); i++) {
+            if (!games.get(i).isGameFull() && inGames.contains(games.get(i))) {
+                object.put(Integer.toString(i), games.get(i).presentGameInfo());
+            }
+        }
+    }
 
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
@@ -116,21 +129,51 @@ public class Server {
                     // Generate the password.
                     String password = serverPasswordGenerator.generate();
                     clientGames.put(password, new LinkedList<>());
+                    clientInfo.put(password, new LinkedList<>());
                     JSONObject response = JSONCommunicator.generateServerResponse("valid", "", "connection");
                     jc.send(response);
                     break;
                 }
-                case "providePass": {
+                case "providePass":
+                case "listMyGame": {
                     // Get its password.
                     String providedPassword = obj.getString("password");
                     // Check whether the password is stored in it.
                     if (clientGames.containsKey(providedPassword)) {
                         // Valid, generate the response JSON object.
                         JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
-
+                        appendGameInformation(providedPassword, response);
+                        jc.send(response);
                     } else {
                         // Send invalid response back to it.
                         jc.sendServerInvalidResponse("Invalid password\n");
+                    }
+                    break;
+                }
+                case "listOpenGame": {
+                    String providedPassword = obj.getString("password");
+                    // Check whether the password is stored in it.
+                    if (clientGames.containsKey(providedPassword)) {
+                        JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                        // Then append open games to the response, we need to exclude all the games the players in.
+                        appendOpenGameInformation(providedPassword, response);
+                        jc.send(response);
+                    } else {
+                        jc.sendServerInvalidResponse("Invalid password\n");
+                    }
+                    break;
+                }
+                case "joinGame": {
+                    String providedPassword = obj.getString("password");
+                    int gameId = Integer.parseInt(obj.getString("gameId"));
+                    String reason = addPlayerToGame(providedPassword, gameId, socket, jc);
+                    if (reason == null) {
+                        // We should not monitor on this port anymore.
+                        running = false;
+                        JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                        jc.send(response);
+                    } else {
+                        jc.sendServerInvalidResponse(reason);
                     }
                     break;
                 }
@@ -176,10 +219,82 @@ public class Server {
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
+        clientInfo = new HashMap<>();
         //TODO: shall we only have fixed number of games? what if game ends?
         for (int i = 0; i < 5; i++) {
             games.put(i, gameFactory.createRandomGame());
         }
+    }
+
+
+    /**
+     * Check if the game is a valid open game for client with password "password"
+     *
+     * @param password The password provided by the user.
+     * @param gameId   The game id which represents the game.
+     * @return If not valid, then send back the reason.
+     * Otherwise, return null.
+     */
+    private String checkValidOpenGame(String password, int gameId) {
+        if (!games.containsKey(gameId)) {
+            return "Invalid game id\n";
+        } else {
+            Game game = games.get(gameId);
+            boolean playerInGame = isPlayerInGame(password, gameId);
+            if (game.isGameFull() && !playerInGame) {
+                return "The game is full!\n";
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Check if player is in this game with game id "gameId"
+     * @param password The client's password.
+     * @param gameId   The id of the game.
+     * @return True if player in game with gameId "gameId"
+     * Otherwise, return false.
+     */
+    private boolean isPlayerInGame(String password, int gameId) {
+        Game game = games.get(gameId);
+        List<Game> inGame = clientGames.get(password);
+        boolean playerInGame = inGame.contains(game);
+        return playerInGame;
+    }
+
+    private Player getPlayerWithPassword(String password, int GameId) {
+        Game game = games.get(GameId);
+        for (Player p: clientInfo.get(password)) {
+            if (game.containsPlayer(p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add the player to game with gameId "gameId"
+     *
+     * @param password The password provided by the user.
+     * @param gameId   The game id which represents a open game.
+     */
+    private synchronized String addPlayerToGame(String password, int gameId, Socket socket, JSONCommunicator jc) {
+        String success = checkValidOpenGame(password, gameId);
+        if (success != null) {
+            return success;
+        }
+        if (isPlayerInGame(password, gameId)) {
+            // Mark the player as enter the game.
+            Player p = getPlayerWithPassword(password, gameId);
+            assert (p!=null);
+            p.joinGame();
+        } else {
+            // Create a new player, add it to game.
+            Player newPlayer = new Player(socket, jc);
+            clientInfo.get(password).add(newPlayer);
+            game.addPlayer(newPlayer);
+        }
+        return null;
     }
 
     /**
@@ -200,4 +315,5 @@ public class Server {
             threadPool.execute(new RequestHandleTask(jc, s));
         }
     }
+
 }
