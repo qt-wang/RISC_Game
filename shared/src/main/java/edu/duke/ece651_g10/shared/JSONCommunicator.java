@@ -56,4 +56,20 @@ public class JSONCommunicator {
         bw.write(jsonString + "\n");
         bw.flush();
     }
+
+
+    /**
+     * Generate a server response, which has:
+     * type, prompt, reason.
+     * @param prompt The prompt of the
+     * @param reason
+     * @param type
+     * @return
+     */
+    public JSONObject generateServerResponse(String prompt, String reason, String type) {
+        JSONObject response = new JSONObject().put("type", type);
+        response = response.put("prompt", prompt);
+        response = response.put("reason", reason);
+        return response;
+    }
 }

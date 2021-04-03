@@ -32,7 +32,6 @@ public class Server {
     private GameFactory gameFactory;
 
     // Each game has a specific identification.
-    // HashMap<Integer, Game> games;
     Game game;
     HashMap<Integer, Game> games;
 

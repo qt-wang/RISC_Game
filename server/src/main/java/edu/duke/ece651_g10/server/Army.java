@@ -13,4 +13,8 @@ public interface Army {
     public void increaseUnits(int numberOfUnits);
 
     public int getArmyUnits();
+
+    public int getLevel();
+
+    public int getBonus();
 }
