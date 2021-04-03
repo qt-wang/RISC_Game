@@ -14,7 +14,7 @@ public class ConnectedTerritoryCheckerTest {
   public void test_check_my_rule() {
     // Mock
     GameMap mockGameMap = mock(GameMap.class);
-    Order mockOrder1 = mock(Order.class);
+    TerritoryToTerritoryOrder mockOrder1 = mock(TerritoryToTerritoryOrder.class);
     Player mockPlayer1 = mock(Player.class);
     Player mockPlayer2 = mock(Player.class);
 

@@ -23,27 +23,27 @@ public class V1OrderProcessor implements OrderProcessor{
      */
     public void acceptOrder(Order order){
         if(order instanceof MoveOrder){
-            order.execute();
+          ((MoveOrder)order).execute();
         } else if(order instanceof AttackOrder){
             //If this order is an attack order, decrease the unit number in the source territory at
             //very beginning.
-            order.getSourceTerritory().decreaseUnit(order.getNumUnit());
+          ((AttackOrder)order).getSourceTerritory().decreaseUnit(((AttackOrder)order).getNumUnit());
             //If the owner of source territory did not attack others before, then create a new item
             //for the hashmap.
-            if(attacksInOneTurn.get(order.getSourceTerritory().getOwner()) == null) {
+            if(attacksInOneTurn.get(((AttackOrder)order).getSourceTerritory().getOwner()) == null) {
                 Vector<AttackOrder> vector = new Vector<>();
                 vector.addElement((AttackOrder) order);
-                attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
+                attacksInOneTurn.put(((AttackOrder)order).getSourceTerritory().getOwner(), vector);
             }
             //If the owner of source territory attacked others before, then put this order to his
             //vector of orders and then merge with other orders if necessary.
             else {
-                Vector<AttackOrder> vector = attacksInOneTurn.get(order.getSourceTerritory().getOwner());
+                Vector<AttackOrder> vector = attacksInOneTurn.get(((AttackOrder)order).getSourceTerritory().getOwner());
                 vector.addElement((AttackOrder) order);
                 if(vector.size() > 1) {
                     merge(vector);
                 }
-                attacksInOneTurn.put(order.getSourceTerritory().getOwner(), vector);
+                attacksInOneTurn.put(((AttackOrder)order).getSourceTerritory().getOwner(), vector);
             }
         }
     }

@@ -1,17 +1,14 @@
 package edu.duke.ece651_g10.server;
 
-public class MoveOrder extends Order{
-    private Territory source;
+public class MoveOrder extends TerritoryToTerritoryOrder{
+  /*private Territory source;
     private Territory dest;
     private int unitNum;
-    GameMap gMap;
+    GameMap gMap;*/
 //    // HashSet<Unit> units;
 
     public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap){  //need to change Territory to string
-        super(playerID);
-        this.source = gMap.getTerritory(source);
-        this.dest = gMap.getTerritory(dest);
-        this.unitNum = unitNum;
+      super(playerID, source, dest, unitNum, gMap);
     }
 
     /**
@@ -23,25 +20,34 @@ public class MoveOrder extends Order{
         source.decreaseUnit(unitNum);
         dest.increaseUnit(unitNum);
     }
-/*
-    private void checkValidMove(){
-        RuleChecker rule = new PlayerSelfOrderChecker(new SelfTerritoryChecker(new SufficientUnitChecker(null)));
-        rule.checkOrder(this, gMap);
-    }*/
-    public int getNumUnit(){
-        return unitNum;
-    }
 
-    public Territory getSourceTerritory(){
+   public Territory getSourceTerritory() {
         return source;
     }
 
-    public Territory getTargetTerritory(){
+    public int getNumUnit() {
+        return unitNum;
+    }
+
+    public Territory getTargetTerritory() {
         return dest;
     }
 
-    public void addUnits(int number){
+    public void addUnits(int number) {
         unitNum += number;
     }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
 

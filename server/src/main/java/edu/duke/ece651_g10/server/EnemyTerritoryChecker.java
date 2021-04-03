@@ -3,13 +3,13 @@ package edu.duke.ece651_g10.server;
 /**
  * The RuleChekcer to check whether the target Territory belongs to the enemy
  */
-public class EnemyTerritoryChecker extends RuleChecker<Order> {
+public class EnemyTerritoryChecker extends RuleChecker<TerritoryToTerritoryOrder> {
   /**
    * The constructor of the the EnemyTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public EnemyTerritoryChecker(RuleChecker<Order> next) {
+  public EnemyTerritoryChecker(RuleChecker<TerritoryToTerritoryOrder> next) {
     super(next);
   }
 
@@ -23,7 +23,7 @@ public class EnemyTerritoryChecker extends RuleChecker<Order> {
    *         reason casuing the invalid placement
    */
   @Override
-  protected String checkMyRule(Order order, GameMap gameMap) {
+  protected String checkMyRule(TerritoryToTerritoryOrder order, GameMap gameMap) {
     if (gameMap.getOwnership().get(order.getTargetTerritory()).getPlayerID() == order.getPlayerID()) {
       return "The target territory does not belong to the enemy.";
     }

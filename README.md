@@ -27,11 +27,13 @@ RuleChecker "1" <-- "1" Server
     Client "1" --> "1" View
     MoveOrder "1" <|-- "1" Order
     AttackOrder "1" <|-- "1" Order
+    UpgradeUnitOrder "1" <|-- "1" Order
+    UpgradeTechOrder "1" <|-- "1" Order
     OrderProcessor "1" --> "n" Order
     AddUnitOrder "1" <|-- "1" Order
     Server "1" --> "1" OrderProcessor
     AttackOrder "1" --> "n" Dice
-
+    Player "1" --> "1" Resources
 
     class Server{
         -int numUnitPerPlayer
@@ -45,32 +47,51 @@ RuleChecker "1" <-- "1" Server
     }
 
     class OrderProcessor {
-        -HashMap~Territory,List~Order~~ attackOrders
-        +parseOrder()
-        +mergeOrder()
-        +issueOrders()
-        +executeOrders()
+        -HashMap<Player, Vector<Order>> attacksInOneTurn
+        +acceptOrder(Order order)
+        +executeEndTurnOrders()
+        -merge(Vector<Order> vector)
+        -Vector<Order> obtainAllAttackOrders()
     }
-
+    
     class Order {
         -int playerID
         +execute()
+        +getPlayerID()
+    }
+
+    class MoveOrder {
+        -Territory source
+        -Territory dest
+        -int unitNum
+        -GameMap gMap
         +getNumUnit()
         +getSourceTerritory()
         +getTargetTerritory()
     }
 
-    class MoveOrder {
-        -Territory source
-        -Territory destination
+    class AttackOrder {
+        -Territory attacker
+        -Territory defender
         -int unitNum
-        -HashSet~Unit~ units
+        -Player owner
+        -GameMap gMap
+        +getNumUnit()
+        +getSourceTerritory()
+        +getTargetTerritory()
+    }
+    
+    class UpgradeUnitOrder {
+        -int level
+        -GameMap gMap
+        -String source
+        -int unitNum
+        +execute()
     }
 
-    class AttackOrder {
-        -HashMap~Territory,HashSet~Unit~~ attacker
-        -Territory defender
-        -int unitNumTotal
+    class UpgradeTechOrder {
+        -GameMap gMap
+        +execute()
     }
 
     class AddUnitOrder{
@@ -161,5 +182,14 @@ RuleChecker "1" <-- "1" Server
     class Unit {
         -Player owner
         -Territory position 
-    }       
+    }  
+    
+    class Resources{
+        -int foodResource
+        -int techResource
+        -int techLevel
+        +consumeFood()
+        +consumeTech()
+        
+    }
 ```

@@ -4,14 +4,14 @@ package edu.duke.ece651_g10.server;
  * The RuleChecker to check whether the source Territory and target Territory
  * are adjacent to each other
  */
-public class AdjacentTerritoryChecker extends RuleChecker<Order> {
+public class AdjacentTerritoryChecker extends RuleChecker<TerritoryToTerritoryOrder> {
 
   /**
    * The constructor of the the AdjacentTerritoryChecker
    *
    * @param next The next RuleChecker
    */
-  public AdjacentTerritoryChecker(RuleChecker<Order> next) {
+  public AdjacentTerritoryChecker(RuleChecker<TerritoryToTerritoryOrder> next) {
     super(next);
   }
 
@@ -25,7 +25,7 @@ public class AdjacentTerritoryChecker extends RuleChecker<Order> {
    *         reason casuing the invalid placement
    */
   @Override
-  protected String checkMyRule(Order order, GameMap gameMap) {
+  protected String checkMyRule(TerritoryToTerritoryOrder order, GameMap gameMap) {
     if (!order.getSourceTerritory().getNeighbours().contains(order.getTargetTerritory())) {
       return "The territories are not adjacent to each other.";
     }
