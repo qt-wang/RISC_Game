@@ -1,16 +1,15 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChecker to check whether the palyer can upgrade maximum technology in
- * this turn
+ * The RuleChecker to check whether the technology upgrade is in the range
  */
-public class CanUpgradeTechChecker extends RuleChecker<ZeroTerritoryOrder> {
+public class TechUpgradeRangeChecker extends RuleChecker<ZeroTerritoryOrder> {
   /**
-   * The constructor of the CanUpgradeTechChecker
+   * The constructor of the TechUpgradeRangeChecker
    * 
    * @param next The next RuleChecker
    */
-  public CanUpgradeTechChecker(RuleChecker<ZeroTerritoryOrder> next) {
+  public TechUpgradeRangeChecker(RuleChecker<ZeroTerritoryOrder> next) {
     super(next);
   }
 
@@ -25,8 +24,8 @@ public class CanUpgradeTechChecker extends RuleChecker<ZeroTerritoryOrder> {
    */
   @Override
   protected String checkMyRule(ZeroTerritoryOrder order, GameMap gameMap) {
-    if (!order.getPlayer().getCanUpgradeInThisTurn()) {
-      return "The player can not upgrade in this turn.";
+    if (!order.getMaxTechLevel().containsKey(order.getPlayer().getTechnologyLevel())) {
+      return "The player current technology level is not in upgrade range";
     }
     return null;
   }
