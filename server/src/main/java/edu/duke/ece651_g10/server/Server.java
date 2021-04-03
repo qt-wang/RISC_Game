@@ -35,6 +35,7 @@ public class Server {
     // Each game has a specific identification.
     // HashMap<Integer, Game> games;
     Game game;
+    HashMap<Integer, Game> games;
 
     // Add a map from client to multiple players.
     // Add a map from client to multiple games.
@@ -56,8 +57,6 @@ public class Server {
      */
     private void setServerSocket(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        // This operation will cause the read from the socket block forever if there are
-        // no content within the socket.
         //serverSocket.setSoTimeout(0);
     }
 
@@ -141,10 +140,14 @@ public class Server {
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = mapFactory.createGameMap(3, 3);
         this.threadPool = Executors.newCachedThreadPool();
-        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, this.threadPool, this);
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
+        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, this.threadPool, this);
+        // Create multiple games.
+        for (int i = 0; i < 5;  i++) {
+
+        }
     }
 
     /**

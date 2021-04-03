@@ -46,6 +46,8 @@ public class Game implements Runnable {
 
     Server refServer;
 
+    //TODO: may need to add State, so that the server can detect ended game.
+    //public enum State {Waiting, Running, Ending};
     /**
      * Construct a game based on the arguments given in the argument list.
      *
@@ -294,8 +296,8 @@ public class Game implements Runnable {
             Player logOutPlayer = players.get(playerId);
             // Now make game not to monitor on the socket.
             logOutPlayer.leaveGame();
-            this.serverTaskPool.execute(this.refServer.new RequestHandleTask(logOutPlayer.getJCommunicator(), logOutPlayer.getSocket()));
             sendServerValidResponse(playerId);
+            this.serverTaskPool.execute(this.refServer.new RequestHandleTask(logOutPlayer.getJCommunicator(), logOutPlayer.getSocket()));
         }
     }
 
@@ -422,7 +424,15 @@ public class Game implements Runnable {
      * Allow the player to logout in this phase.
      */
     private void logOutPhase(int playerId, WaitGroup waitGroup) throws IOException {
+
         while (!waitGroup.getState()) {
+            /**
+             * If current player is not join this game,
+             * then do not try to receive from its port.
+             */
+            if (!players.get(playerId).getInGameStatus()) {
+                continue;
+            }
             // Use non-blocking read to read a json object.
             JSONObject jsonObject = tryReceiveJSONObject(playerId);
             // Handle the logic.
@@ -517,9 +527,16 @@ public class Game implements Runnable {
                 public void run() {
                     try {
                         task.run();
-                        // player commit in this game.
+                        /**
+                         * At this point, player commit in this round.
+                         * ie. Commit after initial units distribution
+                         * or Done in round operations.
+                         */
                         waitGroup.decrease();
-                        // Logout phase added?
+                        /**
+                         * Add version 2, LogOut phase.
+                         * The player is free to logout after they commit.
+                         */
                         logOutPhase(currentPlayer, waitGroup);
                         barrier.await();
                     } catch (InterruptedException e) {
