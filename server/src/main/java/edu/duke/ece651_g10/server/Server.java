@@ -2,9 +2,7 @@ package edu.duke.ece651_g10.server;
 
 
 import edu.duke.ece651_g10.shared.JSONCommunicator;
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class implements the server of the client-server model.
@@ -31,6 +28,8 @@ public class Server {
 
     // The factory used to create the map.
     private GameMapFactory mapFactory;
+
+    private GameFactory gameFactory;
 
     // Each game has a specific identification.
     // HashMap<Integer, Game> games;
@@ -57,7 +56,6 @@ public class Server {
      */
     private void setServerSocket(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        //serverSocket.setSoTimeout(0);
     }
 
     /**
@@ -71,6 +69,7 @@ public class Server {
     private static JSONObject generatePongJSON(String prompt) {
         return new JSONObject().put("type", "pong").put("prompt", prompt);
     }
+
 
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
@@ -135,36 +134,22 @@ public class Server {
      */
     public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
-        this.mapFactory = factory;
-        RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
-        RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
-        GameMap map = mapFactory.createGameMap(3, 3);
+        gameFactory = new V2GameFactory(this);
+//        this.mapFactory = factory;
+//        RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
+//        RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
+//        GameMap map = mapFactory.createGameMap(3, 3);
         this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
-        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, this.threadPool, this);
+//        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, this.threadPool, this);
         // Create multiple games.
+        //TODO: shall we only have fixed number of games? what if game ends?
         for (int i = 0; i < 5;  i++) {
-
+            games.put(i, gameFactory.createRandomGame());
         }
     }
-
-    /**
-     * Create a new game, which should run in a new thread.
-     * For later use.
-     *
-     * @param numPlayer
-     * @param numUnitPerPlayer
-     * @param numTerritoryPerPlayer
-     * @param moveChecker
-     * @param attackRuleChecker
-     * @param orderProcessor
-     */
-    private void createGame(int numPlayer, int numUnitPerPlayer, int numTerritoryPerPlayer, RuleChecker moveChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor) {
-
-    }
-
 
     /**
      * Keep receive new orders, handle these orders.
