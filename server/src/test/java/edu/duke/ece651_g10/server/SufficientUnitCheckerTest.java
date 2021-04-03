@@ -18,7 +18,7 @@ public class SufficientUnitCheckerTest {
     when(mockOrder2.getSourceTerritory()).thenReturn(mockTerritory);
     when(mockTerritory.getNumUnit()).thenReturn(4);
 
-    RuleChecker checker = new SufficientUnitChecker(null);
+    RuleChecker<TerritoryToTerritoryOrder> checker = new SufficientUnitChecker(null);
     String res = "The territory does not have enough units.";
     assertEquals(null, checker.checkMyRule(mockOrder1, null));
     assertEquals(res, checker.checkMyRule(mockOrder2, null));

@@ -11,7 +11,20 @@ public abstract class ZeroTerritoryOrder extends Order {
    }
 
   public abstract void execute();
+
+  // Added by yt136
+  public Player getPlayer() {
+    return player;
+  }
   
 }
+
+
+
+
+
+
+
+
 
 
