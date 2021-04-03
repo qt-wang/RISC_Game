@@ -1,11 +1,9 @@
 package edu.duke.ece651_g10.server;
 
-public class UpgradeTechOrder extends Order {
-  private GameMap gMap;
+public class UpgradeTechOrder extends ZeroTerritoryOrder {
 
   public UpgradeTechOrder(int playerID, GameMap gMap){
-    super(playerID);
-    this.gMap = gMap;
+    super(playerID, gMap);
   }
 
   public void execute(){
