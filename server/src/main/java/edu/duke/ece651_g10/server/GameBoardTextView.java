@@ -11,7 +11,6 @@ public class GameBoardTextView implements GameBoardView{
 
     private GameMap gameMap;
 
-    //TODO:Build the constructor.
     public GameBoardTextView(GameMap gameMap) {
         this.gameMap = gameMap;
     }

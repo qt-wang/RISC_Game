@@ -52,26 +52,28 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        RuleChecker<TerritoryToTerritoryOrder> moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
-        RuleChecker<TerritoryToTerritoryOrder> attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
-        Server server;
-        GameMapFactory factory;
-        String selectMap = "Please enter the map you want to choose:\n" +
-                "1. Fixed game map (3 players, 3 territory for each player)\n" +
-                "2. Random map (select player numbers and territory numbers)";
-        int mapType = readInteger(selectMap, input, System.out, 1, 2);
-        if (mapType == 1) {
-            factory = new FixedGameMapFactory();
-            server = new Server(12345, 3, 12, 4, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
-        } else {
-            factory = new V1GameMapFactory(new PseudoNumberGenerator());
-            String numPlayers = "Please select the number of players allowed in this game (2 - 5)";
-            int players = readInteger(numPlayers, input, System.out, 2, 5);
-            String selectTerritory = "Please enter the number of territories for each player (2- 20)";
-            int territories = readInteger(selectTerritory, input, System.out, 2, 20);
-            server = new Server(12345, players, 25, territories, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
-        }
-        server.run();
+//        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+//        RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
+//        RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
+//        Server server;
+//        GameMapFactory factory;
+//        String selectMap = "Please enter the map you want to choose:\n" +
+//                "1. Fixed game map (3 players, 3 territory for each player)\n" +
+//                "2. Random map (select player numbers and territory numbers)";
+//        int mapType = readInteger(selectMap, input, System.out, 1, 2);
+//        if (mapType == 1) {
+//            factory = new FixedGameMapFactory();
+//            server = new Server(12345, 3, 12, 4, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
+//        } else {
+//            factory = new V1GameMapFactory(new PseudoNumberGenerator());
+//            String numPlayers = "Please select the number of players allowed in this game (2 - 5)";
+//            int players = readInteger(numPlayers, input, System.out, 2, 5);
+//            String selectTerritory = "Please enter the number of territories for each player (2- 20)";
+//            int territories = readInteger(selectTerritory, input, System.out, 2, 20);
+//            server = new Server(12345, players, 25, territories, factory, moveRuleChecker, attackRuleChecker, new V1OrderProcessor());
+//        }
+//        server.run();
+        PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
+        Server server = new Server(12345, new FixedGameMapFactory(), passwordGenerator);
     }
 }

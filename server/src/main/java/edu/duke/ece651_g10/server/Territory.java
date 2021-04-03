@@ -23,6 +23,7 @@ public interface Territory {
 
     /**
      * Set the territory's unit number to unit.
+     *
      * @param unit
      */
     public void setUnitNumber(int unit);
@@ -70,4 +71,45 @@ public interface Territory {
      * @return The owner of the territory.
      */
     public Player getOwner();
+
+    /**
+     * Get the territory's food resource generation rate.
+     *
+     * @return territory's food resource generation rate.
+     */
+    public int getFoodResourceGenerationRate();
+
+    /**
+     * Get the territory's technology resource generation rate.
+     *
+     * @return territory's technology resource generation rate.
+     */
+    public int getTechnologyResourceGenerationRate();
+
+
+    /**
+     * Set the territories food resource generation rate.
+     *
+     * @param rate The rate to generate food resource.
+     */
+    public void setFoodResourceGenerationRate(int rate);
+
+    /**
+     * Set the territory's technology resource generation rate.
+     *
+     * @param rate The rate to generate technology resource.
+     */
+    public void setTechnologyResourceGenerationRate(int rate);
+
+    /**
+     * Set the size of the current territory.
+     */
+    public void setSize(int size);
+
+    /**
+     * Get the size of current territory.
+     *
+     * @return The size of current territory.
+     */
+    public int getSize();
 }
