@@ -17,7 +17,7 @@ import java.util.function.Function;
  * This class represents a game that is running on the server.
  * The server may have multiple games that are concurrently running on the server.
  */
-public class Game implements Runnable{
+public class Game implements Runnable {
 
     // Indicates the players in this game.
     // Each player has a unique integer represent its identity.
@@ -232,6 +232,29 @@ public class Game implements Runnable{
         sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n", "test"));
     }
 
+    //TODO: Implement this function.
+
+    /**
+     * Check whether receive the quit command from the JSON object object.
+     *
+     * @param object The json object received from the players.
+     * @return True if the received object represents a quit command.
+     * Otherwise, return false.
+     */
+    private boolean checkQuitCommand(JSONObject object) {
+        return false;
+    }
+
+    /**
+     * Handle the quit command:
+     * Possible things:
+     * 1. mark the player as quit the logic.
+     * 2. Ask the server to begin to monitor on the server.
+     */
+    private void handleQuitCommand() {
+
+    }
+
     /**
      * Play one turn of the game.
      * Initially, the player should be in the game.
@@ -245,6 +268,10 @@ public class Game implements Runnable{
      * 4. Execute all the commands.
      * 5. Change the ownership of the territories, add one unit to each territory.
      * 6. Distributes the result.
+     * TODO: Implement this.
+     * Extend logic in version 2:
+     * The game can receive logout logic while playing.
+     * However, after the player commit, he cannot logout.
      *
      * @param playerId The player who will receive the playOneTurn message.
      */
@@ -351,6 +378,17 @@ public class Game implements Runnable{
         }
     }
 
+    /**
+     * Allow the player to logout in this phase.
+     */
+    private void logOutPhase(int playerId, WaitGroup waitGroup) {
+        while (!waitGroup.getState()) {
+            // Check the ready field of the bufferedReader.
+            // Ensure that it will not block.
+        }
+    }
+
+
     private class UnitsDistributionTask implements Runnable {
         int playerId;
         //CyclicBarrier barrier;
@@ -381,10 +419,12 @@ public class Game implements Runnable{
             //this.barrier = barrier;
         }
 
+
         @Override
         public void run() {
             try {
                 playOneTurn(playerId);
+                // Can we add a new method at here?
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -409,16 +449,24 @@ public class Game implements Runnable{
         };
     }
 
+
     private void runTasksForAllPlayer(Function<Integer, Runnable> toDo) {
         CyclicBarrier barrier = new CyclicBarrier(players.size() + 1);
+        // Generate a waitGroup.
+        WaitGroup waitGroup = new WaitGroup(players.size());
         for (int i = 1; i <= players.size(); i++) {
             // We create multiple tasks here.
             Runnable task = toDo.apply(i);
+            int currentPlayer = i;
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         task.run();
+                        // player commit in this game.
+                        waitGroup.decrease();
+                        // Logout phase added?
+                        logOutPhase(currentPlayer, waitGroup);
                         barrier.await();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
