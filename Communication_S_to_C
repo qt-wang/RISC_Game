@@ -183,7 +183,7 @@ There are different situations, and different player status:
    This part will talk about how to log out from a game, i.e. point 7.1
 
 The player can only be allowed to logout at these moments:
-1. Before the game starts, ie. all the player is waiting for enough players to login, for placement be be begin.
+1. Before the game starts, ie. all the player is waiting for enough players to login, for placement be be begin (can we?).
 
 2. After commit in one round, then the player is free to logout to operates on another game.
 

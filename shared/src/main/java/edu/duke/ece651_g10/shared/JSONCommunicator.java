@@ -31,6 +31,21 @@ public class JSONCommunicator {
     }
 
     /**
+     * Read a json object from the buffered reader.
+     * This function should not block.
+     *
+     * @return The json object read from the buffered reader.
+     * @throws IOException
+     */
+    public JSONObject nonBlockingRead() throws IOException {
+        String jsonString = null;
+        // This ensures that it will not block.
+        if (br.ready()) {
+            jsonString = br.readLine();
+        }
+        return jsonString == null ? null : new JSONObject(jsonString);
+    }
+    /**
      * send a JSONObject to the server
      *
      * @param obj the JSONObject to be sent

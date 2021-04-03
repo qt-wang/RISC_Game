@@ -71,7 +71,7 @@ public class Player {
 
     // This variable represents whether the player is in current game.
     // If the player log out, then the inGame variable is set to false.
-    private boolean inGame;
+    private volatile boolean inGame;
 
     /**
      * Get the food resource total.

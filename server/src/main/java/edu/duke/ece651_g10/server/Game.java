@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 /**
@@ -44,6 +45,10 @@ public class Game implements Runnable {
 
     private int numUnitPerPlayer;
 
+    private ExecutorService serverTaskPool;
+
+    Server refServer;
+
     /**
      * Construct a game based on the arguments given in the argument list.
      *
@@ -54,7 +59,7 @@ public class Game implements Runnable {
      * @param view              The text board view used to represent this game.
      * @param numUnitPerPlayer  The number of units belong to a player in this game.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer) {
         this.playMap = map;
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
@@ -67,6 +72,8 @@ public class Game implements Runnable {
         synchronized (Game.class) {
             this.gameId = gameIdentifier++;
         }
+        this.serverTaskPool = serverTaskPool;
+        this.refServer = refServer;
     }
 
     public int getGameId() {
@@ -165,6 +172,18 @@ public class Game implements Runnable {
     }
 
     /**
+     * Try to receive a json object from player's buffered reader.
+     *
+     * @param playerId The player from which to read the json object.
+     * @return The created json object, if not ready, return null.
+     * @throws IOException
+     */
+    private JSONObject tryReceiveJSONObject(int playerId) throws IOException {
+        JSONObject obj = players.get(playerId).getJCommunicator().nonBlockingRead();
+        return obj;
+    }
+
+    /**
      * Return whether the obj is a commit message.
      *
      * @param obj The json object from the client.
@@ -242,7 +261,7 @@ public class Game implements Runnable {
      * Otherwise, return false.
      */
     private boolean checkQuitCommand(JSONObject object) {
-        return false;
+        return getMessageType(object).equals("logout");
     }
 
     /**
@@ -250,9 +269,23 @@ public class Game implements Runnable {
      * Possible things:
      * 1. mark the player as quit the logic.
      * 2. Ask the server to begin to monitor on the server.
+     * This method is actually synchronized.
      */
-    private void handleQuitCommand() {
-
+    private void handleQuitCommand(int playerId, WaitGroup waitGroup) {
+        // We check again.
+        if (waitGroup.getState()) {
+            // All the players are ready.
+            // just simply go to the next round.
+            // TODO: Send invalid response
+        } else {
+            // The player is allowed to logout.
+            waitGroup.increase();
+            Player logOutPlayer = players.get(playerId);
+            // Now make game not to monitor on the socket.
+            logOutPlayer.leaveGame();
+            // TODO: Send the valid response back to the client, so that the client is free to logout.
+            this.serverTaskPool.execute(this.refServer.new RequestHandleTask(logOutPlayer.getJCommunicator(), logOutPlayer.getSocket()));
+        }
     }
 
     /**
@@ -381,10 +414,24 @@ public class Game implements Runnable {
     /**
      * Allow the player to logout in this phase.
      */
-    private void logOutPhase(int playerId, WaitGroup waitGroup) {
+    private void logOutPhase(int playerId, WaitGroup waitGroup) throws IOException {
         while (!waitGroup.getState()) {
-            // Check the ready field of the bufferedReader.
-            // Ensure that it will not block.
+            // Use non-blocking read to read a json object.
+            JSONObject jsonObject = tryReceiveJSONObject(playerId);
+            // Handle the logic.
+            if (jsonObject != null) {
+                // Check whether the json object is of type quit.
+                if (checkQuitCommand(jsonObject)) {
+                    // We receive a quit command, we handle the quit command.
+                    // we check again.
+                    synchronized (this) {
+                        handleQuitCommand(playerId, waitGroup);
+                    }
+                } else {
+                    // TODO: Send invalid response back to the player.
+                }
+            }
+            // Else do nothing.
         }
     }
 
@@ -471,6 +518,8 @@ public class Game implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (BrokenBarrierException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }

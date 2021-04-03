@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class implements the server of the client-server model.
@@ -44,6 +45,9 @@ public class Server {
 
     PasswordGenerator serverPasswordGenerator;
 
+    ExecutorService threadPool;
+
+
     /**
      * Setup the server socket.
      *
@@ -65,7 +69,7 @@ public class Server {
      * @param prompt the information
      * @return the constructed JSONObject
      */
-    private JSONObject generatePongJSON(String prompt) {
+    private static JSONObject generatePongJSON(String prompt) {
         return new JSONObject().put("type", "pong").put("prompt", prompt);
     }
 
@@ -73,12 +77,12 @@ public class Server {
      * An inner class which is used to handle the multiple connection request from multiple clients.
      * One client connection use one thread to handle it?
      */
-    private class RequestHandleTask implements Runnable {
+    class RequestHandleTask implements Runnable {
         JSONCommunicator jc;
         Socket socket;
         Boolean running;
 
-        //TODO: later abstract out this as a mehod?
+        //TODO: later abstract out this as a method?
         private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
 
@@ -137,9 +141,11 @@ public class Server {
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = mapFactory.createGameMap(3, 3);
-        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3);
+        this.threadPool = Executors.newCachedThreadPool();
+        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, this.threadPool, this);
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
+        this.threadPool = Executors.newCachedThreadPool();
     }
 
     /**
@@ -166,7 +172,6 @@ public class Server {
      * newServer.run() will automatically start the game server and run multiple games automatically.
      */
     public void run() throws IOException {
-        ExecutorService threadPool = Executors.newCachedThreadPool();
         // Keep listening for new commands forever.
         while (true) {
             Socket s = this.serverSocket.accept();
