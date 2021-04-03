@@ -3,34 +3,25 @@ package edu.duke.ece651_g10.server;
 public class UpgradeUnitOrder extends OneTerritoryOrder {
   private int level;
 
-  public UpgradeUnitOrder(int playerID, String source, int  unitNum, GameMap gMap, int  level, Player player) {
+  public UpgradeUnitOrder(int playerID, String source, int unitNum, GameMap gMap, int level, Player player) {
     super(playerID, source, unitNum, gMap, player);
     this.level = level;
   }
 
-  public void execute(){
-    //gMap.upgradeUnit(playerID, dest, unitNum, level);
+  public void execute() {
+    // gMap.upgradeUnit(playerID, dest, unitNum, level);
   }
 
-  public Territory getSourceTerritory(){
+  public Territory getSourceTerritory() {
     return source;
   }
 
-  public  int getNumUnit(){
+  public int getNumUnit() {
     return unitNum;
   }
 
-  public int getLevel(){
+  public int getLevel() {
     return level;
   }
-  
+
 }
-
-
-
-
-
-
-
-
-

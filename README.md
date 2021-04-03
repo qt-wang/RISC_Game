@@ -18,6 +18,13 @@ RuleChecker "1" <-- "1" Server
     EnemyTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
     ConnectedTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
     TerritoryExistChecker "1" <|-- "1" RuleChecker~T extends Order~
+    AttackFoodChecker "1" <|-- "1" RuleChecker~T extends Order~
+    CanUpgradeTechChecker "1" <|-- "1" RuleChecker~T extends Order~
+    TechUpgradeRangeChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SufficientTechResourceChecker "1" <|-- "1" RuleChecker~T extends Order~
+    UnitUpgradeRangeChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SelfUpgradeOrderChecker "1" <|-- "1" RuleChecker~T extends Order~
+    UnitUpgradeTechChecker "1" <|-- "1" RuleChecker~T extends Order~
     Server "1" --> "n" Player
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
@@ -47,11 +54,11 @@ RuleChecker "1" <-- "1" Server
     }
 
     class OrderProcessor {
-        -HashMap<Player, Vector<Order>> attacksInOneTurn
-        +acceptOrder(Order order)
+        -HashMap~Player, Vector~Order~~ attacksInOneTurn
+        +acceptOrder()
         +executeEndTurnOrders()
-        -merge(Vector<Order> vector)
-        -Vector<Order> obtainAllAttackOrders()
+        -merge()
+        -Vector~Order~ obtainAllAttackOrders()
     }
     
     class Order {
@@ -148,6 +155,34 @@ RuleChecker "1" <-- "1" Server
 
     }
 
+    class AttackFoodChecker{
+
+    }
+
+    class CanUpgradeTechChecker{
+
+    }
+
+    class TechUpgradeRangeChecker{
+
+    }
+
+    class SufficientTechResourceChecker{
+
+    }
+
+    class UnitUpgradeRangeChecker{
+
+    }
+
+    class SelfUpgradeOrderChecker{
+
+    }
+
+    class UnitUpgradeTechChecker{
+
+    }
+
     class Player {
         -int ID
         +pickTerritory()
@@ -179,17 +214,19 @@ RuleChecker "1" <-- "1" Server
         +getNumUnit()
     }
 
-    class Unit {
-        -Player owner
-        -Territory position 
-    }  
-    
     class Resources{
         -int foodResource
         -int techResource
         -int techLevel
         +consumeFood()
-        +consumeTech()
-        
+        +consumeTech()   
     }
+
+    class Unit {
+        -Player owner
+        -Territory position 
+    }  
+    
+
+
 ```
