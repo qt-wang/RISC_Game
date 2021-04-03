@@ -57,6 +57,14 @@ public class JSONCommunicator {
         bw.flush();
     }
 
+    public void sendServerValidResponse() throws IOException {
+        send(generateServerResponse("valid\n", "", "connection"));
+    }
+
+    public void sendServerInvalidResponse(String reason) throws IOException {
+        send(generateServerResponse("invalid\n", reason, "connection"));
+    }
+
 
     /**
      * Generate a server response, which has:
@@ -66,7 +74,7 @@ public class JSONCommunicator {
      * @param type
      * @return
      */
-    public JSONObject generateServerResponse(String prompt, String reason, String type) {
+    public static JSONObject generateServerResponse(String prompt, String reason, String type) {
         JSONObject response = new JSONObject().put("type", type);
         response = response.put("prompt", prompt);
         response = response.put("reason", reason);

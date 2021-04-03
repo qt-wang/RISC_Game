@@ -13,6 +13,9 @@ public class V1GameMap implements GameMap {
 
     HashMap<Integer, HashSet<Territory>> initialGroups;
 
+    int totalPlayers;
+
+    int territoriesPerPlayer;
     /**
      * Generate a Version 1 game map.
      *
@@ -23,6 +26,12 @@ public class V1GameMap implements GameMap {
     public V1GameMap(HashSet<Territory> territories, HashMap<Integer, HashSet<Territory>> initialGroups) {
         this.territories = territories;
         this.initialGroups = initialGroups;
+        this.totalPlayers = initialGroups.size();
+        if (totalPlayers == 0) {
+            territoriesPerPlayer = 0;
+        } else {
+            this.territoriesPerPlayer = initialGroups.get(1).size();
+        }
     }
 
     @Override
@@ -82,6 +91,16 @@ public class V1GameMap implements GameMap {
             }
         }
         return result;
+    }
+
+    @Override
+    public int getTotalPlayers() {
+        return totalPlayers;
+    }
+
+    @Override
+    public int getNumberOfTerritoriesPerPlayer() {
+        return territoriesPerPlayer;
     }
 }
 

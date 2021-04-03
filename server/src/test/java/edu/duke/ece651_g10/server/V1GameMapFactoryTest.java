@@ -44,6 +44,8 @@ class V1GameMapFactoryTest {
         PseudoNumberGenerator rand = new PseudoNumberGenerator();
         V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
         GameMap map = factory.createGameMap(5, 3);
+        assertEquals(5, map.getTotalPlayers());
+        assertEquals(3, map.getNumberOfTerritoriesPerPlayer());
         HashMap<Integer, HashSet<Territory>> test = map.getInitialGroups();
         for (Map.Entry<Integer, HashSet<Territory>> entry : test.entrySet()) {
             int sizeTotal = 0;

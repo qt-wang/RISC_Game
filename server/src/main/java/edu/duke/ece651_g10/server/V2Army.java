@@ -16,26 +16,26 @@ public class V2Army implements Army{
 
     @Override
     public void decreaseUnits(int numberOfUnits) {
-
+        this.units -= numberOfUnits;
     }
 
     @Override
     public void increaseUnits(int numberOfUnits) {
-
+        this.units += numberOfUnits;
     }
 
     @Override
     public int getArmyUnits() {
-        return 0;
+        return this.units;
     }
 
     @Override
     public int getLevel() {
-        return 0;
+        return this.level;
     }
 
     @Override
     public int getBonus() {
-        return 0;
+        return this.bonus;
     }
 }

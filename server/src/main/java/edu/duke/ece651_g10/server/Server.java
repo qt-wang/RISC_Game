@@ -3,10 +3,12 @@ package edu.duke.ece651_g10.server;
 
 import edu.duke.ece651_g10.shared.JSONCommunicator;
 import org.json.JSONObject;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +43,10 @@ public class Server {
 
     HashMap<String, Socket> clientSocket;
 
+    /**
+     * Map from client's password -> A list of games where the players are in.
+     */
+    HashMap<String, List<Game>> clientGames;
 
     PasswordGenerator serverPasswordGenerator;
 
@@ -71,6 +77,21 @@ public class Server {
 
 
     /**
+     * Append all the game information related to client with password "password" to the JSON object.
+     *
+     * @param password The provided password from the client.
+     */
+    void appendGameInformation(String password, JSONObject object) {
+        List<Game> games = clientGames.get(password);
+        int size = games.size();
+        object.put("numberOfGames", size);
+        for (int i = 0; i < size; i ++) {
+
+        }
+    }
+
+
+    /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
      * One client connection use one thread to handle it?
      */
@@ -90,12 +111,29 @@ public class Server {
             assert (str.equals("connection"));
             String subType = obj.getString("sub");
             switch (str) {
-                case "needPass":
+                case "needPass": {
                     // The user needs a password.
+                    // Generate the password.
                     String password = serverPasswordGenerator.generate();
-                    clientSocket.put(password, socket);
-                    // Now send the password back.
+                    clientGames.put(password, new LinkedList<>());
+                    JSONObject response = JSONCommunicator.generateServerResponse("valid", "", "connection");
+                    jc.send(response);
                     break;
+                }
+                case "providePass": {
+                    // Get its password.
+                    String providedPassword = obj.getString("password");
+                    // Check whether the password is stored in it.
+                    if (clientGames.containsKey(providedPassword)) {
+                        // Valid, generate the response JSON object.
+                        JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+
+                    } else {
+                        // Send invalid response back to it.
+                        jc.sendServerInvalidResponse("Invalid password\n");
+                    }
+                    break;
+                }
             }
         }
 
@@ -134,18 +172,12 @@ public class Server {
     public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
         gameFactory = new V2GameFactory(this);
-//        this.mapFactory = factory;
-//        RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
-//        RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
-//        GameMap map = mapFactory.createGameMap(3, 3);
         this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
-//        game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, this.threadPool, this);
-        // Create multiple games.
         //TODO: shall we only have fixed number of games? what if game ends?
-        for (int i = 0; i < 5;  i++) {
+        for (int i = 0; i < 5; i++) {
             games.put(i, gameFactory.createRandomGame());
         }
     }

@@ -5,13 +5,15 @@ public abstract class TerritoryToTerritoryOrder extends Order{
     protected Territory dest;
     protected int unitNum;
     protected GameMap gMap;
+    protected Player player;
 
-    public TerritoryToTerritoryOrder(int playerID, String source, String dest, int unitNum, GameMap gMap) {
+    public TerritoryToTerritoryOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p) {
         super(playerID);
         this.gMap = gMap;
         this.source = gMap.getTerritory(source);
         this.dest = gMap.getTerritory(dest);
         this.unitNum = unitNum;
+        this.player = p;
     }
 
   public abstract Territory getSourceTerritory();

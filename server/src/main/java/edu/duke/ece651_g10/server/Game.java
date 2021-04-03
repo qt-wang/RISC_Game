@@ -38,13 +38,23 @@ public class Game implements Runnable {
 
     private OrderProcessor orderProcessor;
 
+    /**
+     * These two variables keep the game states.
+     * i.e. whether the game is:
+     * 1. waiting for enough players.
+     * 2. running.
+     * 3. ending.
+     */
     private boolean gameEnds;
+
+    private boolean gameBegins;
 
     private int numUnitPerPlayer;
 
     private ExecutorService serverTaskPool;
 
     Server refServer;
+
 
     //TODO: may need to add State, so that the server can detect ended game.
     //public enum State {Waiting, Running, Ending};
@@ -73,6 +83,7 @@ public class Game implements Runnable {
         }
         this.serverTaskPool = serverTaskPool;
         this.refServer = refServer;
+        this.gameBegins = false;
     }
 
     public int getGameId() {
@@ -222,15 +233,16 @@ public class Game implements Runnable {
 
 
     private void sendServerValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateServerResponse("valid\n", "", "connection"));
+        players.get(playerId).getJCommunicator().sendServerValidResponse();
     }
 
     private void sendServerInvalidResponse(int playerId, String reason) throws IOException {
         sendToPlayer(playerId, generateServerResponse("invalid\n", reason, "connection"));
+        players.get(playerId).getJCommunicator().sendServerInvalidResponse(reason);
     }
 
     private void sendValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "test"));
+        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "connection"));
     }
 
     /**
@@ -247,7 +259,7 @@ public class Game implements Runnable {
                     destT = obj.getString("destTerritory");
             int unitNum = obj.getInt("unitNumber");
             if (orderType.equals("move")) {
-                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap);
+                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
                 return order;
             } else if (orderType.equals("attack")) {
                 Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
@@ -626,5 +638,22 @@ public class Game implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Present the game info to the outer world.
+     * Currently, display the following information:
+     * gameId
+     * numberOfTerritories
+     * currentPlayers
+     * totalPlayers
+     * @return
+     */
+    public JSONObject presentGameInfo() {
+        JSONObject response = new JSONObject();
+        response.put("gameId", gameId);
+        response.put("numberOfTerritories", playMap.getNumberOfTerritoriesPerPlayer());
+        //response.put("currentPlayer", )
+        return null;
     }
 }

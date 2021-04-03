@@ -13,7 +13,6 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
     //private Territory attacker;
     //private Territory defender;
     //private  int unitNum;
-    private Player owner;
   //private GameMap gMap;
 
     /**
@@ -23,13 +22,12 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
      * @param num is the unit number that the attacker sends to the defender.
      */
     public AttackOrder(int playerID, String att, String def, int num, GameMap gMap, Player player){
-      super(playerID, att, def, num, gMap);
+      super(playerID, att, def, num, gMap, player);
         /*this.owner = player;
         this.attacker = gMap.getTerritory(att);
         this.defender = gMap.getTerritory(def);
         this.unitNum = num;
         this.gMap = gMap;*/
-        this.owner = player;
     }
 
     /**
@@ -45,7 +43,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
         //System.out.println(defender.getNumUnit());
         if(dest.getNumUnit() == 0){
             attackerWin = true;
-            dest.setOwner(owner);
+            dest.setOwner(this.player);
             dest.increaseUnit(unitNum);
             return;
         }
@@ -69,7 +67,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
                 defenderWin = true;
             }
             if(dest.getNumUnit() == 0){
-                dest.setOwner(owner);
+                dest.setOwner(this.player);
                 dest.increaseUnit(unitNum);
                 attackerWin = true;
             }

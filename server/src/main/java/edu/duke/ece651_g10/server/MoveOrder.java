@@ -6,9 +6,8 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
     private int unitNum;
     GameMap gMap;*/
 //    // HashSet<Unit> units;
-
-    public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap){  //need to change Territory to string
-      super(playerID, source, dest, unitNum, gMap);
+    public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p){  //need to change Territory to string
+      super(playerID, source, dest, unitNum, gMap, p);
     }
 
     /**

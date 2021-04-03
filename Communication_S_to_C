@@ -23,22 +23,33 @@ For instance, after a user provide the password, display all the games the user 
     sub="providePass"
     password="xxxxxxxx"
 }
+
+If invalid, only respond the following:
+{
+    type="connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+}
 Server response:
 {
     type="connection"
     prompt = "valid/invalid"
     reason = "xxxxx" (if invalid, valid set it to "")
     numberOfGames = 3      (for instance)
-    game0 = {
+    0 = {
         gameId = "xxxxxxx" (unique game identifier, currently just a int)
         numberOfTerritories = x  (Number of territories per player, provide some map info to player)
-        currentPlayers = x (A number indicate current players in this game.)
+        currentPlayers = x (A number indicate current players in this game. i.e. how many players participate this game.)
         totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+        // running: the current game is running.
+        // waiting: the current game is waiting to begin.
+        // ending: the game has ended.
+        status = "running/waiting/ending"
     }
-    game1 = {
+    1 = {
         ........
     }
-    game2 = {
+    2 = {
         ........
     }
 }
