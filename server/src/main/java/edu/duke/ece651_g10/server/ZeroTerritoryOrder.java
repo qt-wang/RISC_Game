@@ -5,18 +5,18 @@ import java.util.HashMap;
 public abstract class ZeroTerritoryOrder extends Order {
   protected GameMap gMap;
   protected Player player;
-  final HashMap<Integer, Integer> maxTechLevel;
+  final HashMap<Integer, Integer> maxTechLevelTable;
 
   public ZeroTerritoryOrder(int playerID, GameMap gMap, Player player) {
         super(playerID);
         this.gMap = gMap;
         this.player = player;
-        this.maxTechLevel = new HashMap<Integer, Integer>();
-        this.maxTechLevel.put(1, 50);
-        this.maxTechLevel.put(2, 75);
-        this.maxTechLevel.put(3, 125);
-        this.maxTechLevel.put(4, 200);
-        this.maxTechLevel.put(5, 300);
+        this.maxTechLevelTable = new HashMap<Integer, Integer>();
+        this.maxTechLevelTable.put(1, 50);
+        this.maxTechLevelTable.put(2, 75);
+        this.maxTechLevelTable.put(3, 125);
+        this.maxTechLevelTable.put(4, 200);
+        this.maxTechLevelTable.put(5, 300);
    }
 
   public abstract void execute();
@@ -26,8 +26,8 @@ public abstract class ZeroTerritoryOrder extends Order {
     return player;
   }
 
-  public HashMap<Integer, Integer> getMaxTechLevel() {
-    return maxTechLevel;
+  public HashMap<Integer, Integer> getMaxTechLevelTable() {
+    return maxTechLevelTable;
   }
   
 }

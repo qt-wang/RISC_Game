@@ -1,16 +1,16 @@
 package edu.duke.ece651_g10.server;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.HashMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
-
 import org.junit.jupiter.api.Test;
 
-public class TechUpgradeRangeCheckerTest {
+public class SufficientTechResourceCheckerTest {
   @Test
-  public void test_check_may_rule() {
+  public void test_check_my_rule() {
     // Mock
     ZeroTerritoryOrder mockOrder1 = mock(ZeroTerritoryOrder.class);
     ZeroTerritoryOrder mockOrder2 = mock(ZeroTerritoryOrder.class);
@@ -23,14 +23,16 @@ public class TechUpgradeRangeCheckerTest {
     maxTechLevel.put(4, 200);
     maxTechLevel.put(5, 300);
     when(mockPlayer1.getTechnologyLevel()).thenReturn(5);
-    when(mockPlayer2.getTechnologyLevel()).thenReturn(6);
+    when(mockPlayer2.getTechnologyLevel()).thenReturn(5);
+    when(mockPlayer1.getTechnologyResourceTotal()).thenReturn(300);
+    when(mockPlayer2.getTechnologyResourceTotal()).thenReturn(299);
     when(mockOrder1.getPlayer()).thenReturn(mockPlayer1);
     when(mockOrder2.getPlayer()).thenReturn(mockPlayer2);
     when(mockOrder1.getMaxTechLevelTable()).thenReturn(maxTechLevel);
     when(mockOrder2.getMaxTechLevelTable()).thenReturn(maxTechLevel);
 
-    RuleChecker<ZeroTerritoryOrder> checker = new TechUpgradeRangeChecker(null);
-    String res = "The player current technology level is not in upgrade range";
+    RuleChecker<ZeroTerritoryOrder> checker = new SufficientTechResourceChecker(null);
+    String res = "The player does not have enough technology to upgrade technology.";
     assertEquals(null, checker.checkMyRule(mockOrder1, null));
     assertEquals(res, checker.checkMyRule(mockOrder2, null));
   }

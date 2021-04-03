@@ -24,7 +24,7 @@ public class TechUpgradeRangeChecker extends RuleChecker<ZeroTerritoryOrder> {
    */
   @Override
   protected String checkMyRule(ZeroTerritoryOrder order, GameMap gameMap) {
-    if (!order.getMaxTechLevel().containsKey(order.getPlayer().getTechnologyLevel())) {
+    if (!order.getMaxTechLevelTable().containsKey(order.getPlayer().getTechnologyLevel())) {
       return "The player current technology level is not in upgrade range";
     }
     return null;
