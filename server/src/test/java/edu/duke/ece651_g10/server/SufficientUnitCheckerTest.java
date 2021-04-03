@@ -9,8 +9,8 @@ public class SufficientUnitCheckerTest {
   @Test
   public void test_check_my_rule() {
     // Mock
-    Order mockOrder1 = mock(Order.class);
-    Order mockOrder2 = mock(Order.class);
+    TerritoryToTerritoryOrder mockOrder1 = mock(TerritoryToTerritoryOrder.class);
+    TerritoryToTerritoryOrder mockOrder2 = mock(TerritoryToTerritoryOrder.class);
     Territory mockTerritory = mock(Territory.class);
     when(mockOrder1.getNumUnit()).thenReturn(3);
     when(mockOrder2.getNumUnit()).thenReturn(5);
