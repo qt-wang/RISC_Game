@@ -5,7 +5,7 @@ package edu.duke.ece651_g10.server;
  * upgrade the maximum technology
  */
 public class SufficientTechResourceChecker extends RuleChecker<ZeroTerritoryOrder> {
-/**
+  /**
    * The constructor of the SufficientTechResourceChecker
    * 
    * @param next The next RuleChecker
@@ -25,18 +25,10 @@ public class SufficientTechResourceChecker extends RuleChecker<ZeroTerritoryOrde
    */
   @Override
   protected String checkMyRule(ZeroTerritoryOrder order, GameMap gameMap) {
-    if (order.getMaxTechLevelTable().get(order.getPlayer().getTechnologyLevel()) > order.getPlayer().getTechnologyResourceTotal()) {
+    if (order.getMaxTechLevelTable().get(order.getPlayer().getTechnologyLevel()) > order.getPlayer()
+        .getTechnologyResourceTotal()) {
       return "The player does not have enough technology to upgrade technology.";
     }
     return null;
   }
 }
-
-
-
-
-
-
-
-
-
