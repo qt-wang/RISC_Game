@@ -215,6 +215,25 @@ public class ClientTest {
   }
 
   @Test
+  public void test_logout_game() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    BufferedReader input = new BufferedReader(new StringReader("\n123\n\n"));
+    PrintStream output = new PrintStream(bytes, true);
+    SocketClient mockSocketClient = mock(SocketClient.class);
+    JSONObject jsonObject = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n")
+        .put("password", "123");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    Client client1 = new Client(output, input, mockSocketClient);
+    jsonObject = new JSONObject().put("type", "logout");
+    when(mockSocketClient.receive()).thenReturn(jsonObject);
+    client1.setCurrentJSON(mockSocketClient.receive());
+    client1.commandMap.get("logout").run();
+    assertEquals("logout", client1.getCurrentMessageType());
+    client1.commandMap.get("logout").run();
+    assertEquals("logout", client1.getCurrentMessageType());
+  }
+
+  @Test
   public void test_play_game_end() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     BufferedReader input = new BufferedReader(new StringReader("\n"));
@@ -252,9 +271,12 @@ public class ClientTest {
         .put("prompt", "test string").put("password", "123");
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
-    JSONObject json1 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n").put("password", "");
-    JSONObject json2 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "invalid\n").put("password", "");
-    JSONObject json3 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n").put("password", "");
+    JSONObject json1 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n")
+        .put("password", "");
+    JSONObject json2 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "invalid\n")
+        .put("password", "");
+    JSONObject json3 = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n")
+        .put("password", "");
 
     when(mockSocketClient.receive()).thenAnswer(new Answer<JSONObject>() {
       private int count = 0;
@@ -282,7 +304,7 @@ public class ClientTest {
     HashSet<String> legalOrderSet = new HashSet<String>();
     legalOrderSet.add("M");
     legalOrderSet.add("D");
-    BufferedReader input = new BufferedReader(new StringReader("\nM\nDurham\nOrange\n42\nD\n"));
+    BufferedReader input = new BufferedReader(new StringReader("\n123123\nM\nDurham\nOrange\n42\nD\n"));
     PrintStream output = new PrintStream(bytes, true);
     SocketClient mockSocketClient = mock(SocketClient.class);
     JSONObject jsonObject = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "A")
@@ -290,7 +312,7 @@ public class ClientTest {
     when(mockSocketClient.receive()).thenReturn(jsonObject);
     Client client1 = new Client(output, input, mockSocketClient);
     JSONObject json1 = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "L").put("prompt",
-        "123\n");
+        "invalid\n");
     JSONObject json2 = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "L").put("prompt",
         "invalid\n");
     JSONObject json3 = new JSONObject().put("type", "info").put("playerID", 1).put("playerStatus", "L").put("prompt",
