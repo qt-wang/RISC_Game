@@ -27,7 +27,6 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
     public int getNumUnit() {
         return unitNum;
     }
-
     public Territory getTargetTerritory() {
         return dest;
     }
