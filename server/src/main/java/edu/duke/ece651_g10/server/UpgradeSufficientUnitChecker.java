@@ -1,16 +1,16 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChecker to check whether the palyer's has corresponded technology
+ * The RuleChecker to check whether the palyer's has sufficient units in certain
  * level to upgrade his or her units
  */
-public class UnitUpgradeTechChecker extends RuleChecker<OneTerritoryOrder> {
+public class UpgradeSufficientUnitChecker extends RuleChecker<OneTerritoryOrder> {
   /**
-   * The constructor of the UnitUpgradeTechChecker
+   * The constructor of the UpgradeSufficientUnitChecker
    * 
    * @param next The next RuleChecker
    */
-  public UnitUpgradeTechChecker(RuleChecker<OneTerritoryOrder> next) {
+  public UpgradeSufficientUnitChecker(RuleChecker<OneTerritoryOrder> next) {
     super(next);
   }
 
@@ -25,8 +25,8 @@ public class UnitUpgradeTechChecker extends RuleChecker<OneTerritoryOrder> {
    */
   @Override
   protected String checkMyRule(OneTerritoryOrder order, GameMap gameMap) {
-    if (gameMap.getOwnership().get(order.getSourceTerritory()).getTechnologyLevel() <= order.getLevel()) {
-      return "The player's technology level is not high enough to upgrade the units";
+    if (order.getNumUnit() > order.getSourceTerritory().getArmyWithLevel(order.getLevel()).getArmyUnits()) {
+      return "The player does not have enough units to upgrade in the current level";
     }
     return null;
   }
