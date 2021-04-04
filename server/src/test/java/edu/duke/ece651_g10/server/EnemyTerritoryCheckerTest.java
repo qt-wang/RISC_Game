@@ -31,7 +31,7 @@ public class EnemyTerritoryCheckerTest {
     when(mockOrder2.getPlayerID()).thenReturn(2);
 
     String res = "The target territory does not belong to the enemy.";
-    RuleChecker checker = new EnemyTerritoryChecker(null);
+    RuleChecker<TerritoryToTerritoryOrder> checker = new EnemyTerritoryChecker(null);
     assertEquals(res, checker.checkMyRule(mockOrder2, mockGameMap));
     assertEquals(null, checker.checkMyRule(mockOrder1, mockGameMap));
   }

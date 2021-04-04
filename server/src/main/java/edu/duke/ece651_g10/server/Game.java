@@ -545,6 +545,7 @@ public class Game implements Runnable {
                          * or Done in round operations.
                          */
                         waitGroup.decrease();
+
                         /**
                          * Add version 2, LogOut phase.
                          * The player is free to logout after they commit.

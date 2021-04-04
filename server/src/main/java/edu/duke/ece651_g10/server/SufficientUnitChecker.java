@@ -6,7 +6,7 @@ package edu.duke.ece651_g10.server;
 public class SufficientUnitChecker extends RuleChecker<TerritoryToTerritoryOrder> {
 
   /**
-   * The constructor of the the SufficientUnitChecker
+   * The constructor of the SufficientUnitChecker
    *
    * @param next The next RuleChecker
    */
