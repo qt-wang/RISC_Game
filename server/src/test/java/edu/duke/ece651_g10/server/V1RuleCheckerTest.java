@@ -1,6 +1,7 @@
 package edu.duke.ece651_g10.server;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,8 @@ public class V1RuleCheckerTest {
     GameMap gMap = factory.createGameMap(3, 3);
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap);
+    Player p = mock(Player.class);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
     AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
     AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
     V1OrderProcessor op = new V1OrderProcessor();   

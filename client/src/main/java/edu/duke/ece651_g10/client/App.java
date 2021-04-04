@@ -30,6 +30,11 @@ public class App {
     this.client = new Client(System.out, input, socketClient);
   }
 
+  /**
+   * The main function of the App
+   *
+   * @param args The argument of when user run the client program in the shell
+   */
   public static void main(String[] args) throws IOException {
 //    boolean endGame = false;
 //    BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -44,5 +49,22 @@ public class App {
 //    }
 //    //app.client
     Application.launch(Game.class,args);
+    // BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    // App app = new App(input, "127.0.0.1", 12345);
+    // while (true) {
+    //   app.client.setCurrentJSON(app.socketClient.receive());
+    //   app.client.commandMap.get(app.client.getCurrentMessageType()).run();
+    // }
   }
 }
+
+
+
+
+
+
+
+
+
+
+

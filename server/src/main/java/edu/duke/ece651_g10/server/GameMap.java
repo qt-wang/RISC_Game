@@ -52,6 +52,14 @@ public interface GameMap {
      */
     public Set<Territory> getTerritoriesForPlayer(Player p);
 
+    /**
+     * Get the number of total players allowed in this game map.
+     * @return
+     */
+    public int getTotalPlayers();
+
+    public int getNumberOfTerritoriesPerPlayer();
+
 }
 
 

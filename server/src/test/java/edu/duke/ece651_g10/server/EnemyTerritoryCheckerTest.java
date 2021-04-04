@@ -13,8 +13,8 @@ public class EnemyTerritoryCheckerTest {
   public void test_check_my_rule() {
     // Mock
     GameMap mockGameMap = mock(GameMap.class);
-    Order mockOrder1 = mock(Order.class);
-    Order mockOrder2 = mock(Order.class);
+    TerritoryToTerritoryOrder mockOrder1 = mock(TerritoryToTerritoryOrder.class);
+    TerritoryToTerritoryOrder mockOrder2 = mock(TerritoryToTerritoryOrder.class);
     Player mockPlayer1 = mock(Player.class);
     Player mockPlayer2 = mock(Player.class);
     HashMap<Territory, Player> ownership = new HashMap<Territory, Player>();
@@ -31,7 +31,7 @@ public class EnemyTerritoryCheckerTest {
     when(mockOrder2.getPlayerID()).thenReturn(2);
 
     String res = "The target territory does not belong to the enemy.";
-    RuleChecker checker = new EnemyTerritoryChecker(null);
+    RuleChecker<TerritoryToTerritoryOrder> checker = new EnemyTerritoryChecker(null);
     assertEquals(res, checker.checkMyRule(mockOrder2, mockGameMap));
     assertEquals(null, checker.checkMyRule(mockOrder1, mockGameMap));
   }

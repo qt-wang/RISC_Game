@@ -12,4 +12,17 @@ class V1TerritoryTest {
         Territory t = new V1Territory("test");
         assertEquals(t.getName(), "test");
     }
+
+    @Test
+    public void test_getter_setter() {
+        Territory t = new V1Territory("test");
+        assertEquals(t.getFoodResourceGenerationRate(), 0);
+        assertEquals(t.getTechnologyResourceGenerationRate(), 0);
+
+        t.setFoodResourceGenerationRate(100);
+        assertEquals(100, t.getFoodResourceGenerationRate());
+
+        t.setTechnologyResourceGenerationRate(120);
+        assertEquals(120, t.getTechnologyResourceGenerationRate());
+    }
 }

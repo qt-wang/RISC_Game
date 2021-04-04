@@ -12,8 +12,8 @@ public class AdjacentTerritoryCheckerTest {
   @Test
   public void test_check_order() {
     // Mock
-    Order mockOrder1 = mock(Order.class);
-    Order mockOrder2 = mock(Order.class);
+    TerritoryToTerritoryOrder mockOrder1 = mock(TerritoryToTerritoryOrder.class);
+    TerritoryToTerritoryOrder mockOrder2 = mock(TerritoryToTerritoryOrder.class);
     Territory mockTerritory1 = mock(Territory.class);
     Territory mockTerritory2 = mock(Territory.class);
     Territory mockTerritory3 = mock(Territory.class);

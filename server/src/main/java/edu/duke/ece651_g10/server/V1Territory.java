@@ -1,9 +1,6 @@
 package edu.duke.ece651_g10.server;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class represents one territory of the map.
@@ -14,40 +11,57 @@ public class V1Territory implements Territory {
 
     @Override
     public void setUnitNumber(int unit) {
-        this.ownedUnits = unit;
+        ownedUnits = new LinkedList<>();
+        for (int i = 0; i < unit; i ++) {
+            ownedUnits.add(new V1Unit());
+        }
     }
 
 
     @Override
     public void decreaseUnit(int unit) {
-        this.ownedUnits -= unit;
+        for (int i = 0; i < unit; i ++) {
+            ownedUnits.remove(0);
+        }
     }
 
 
     @Override
     public void increaseUnit(int unit) {
-        this.ownedUnits += unit;
+        for (int i = 0; i < unit; i ++) {
+            ownedUnits.add(new V1Unit());
+        }
     }
 
 
-    private String name;
+    private final String name;
     private Player owner;
     private HashMap<Player, Integer> units;
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
-    private int ownedUnits;
+    private List<Unit> ownedUnits;
+
+
+    // Version 2 variables.
+    private int size;
+    private int foodResourceGenerationRate;
+    private int technologyResourceGenerationRate;
+    LinkedList<Army> armies;
 
     @Override
     public void setOwner(Player player) {
         this.owner = player;
     }
 
-    //TODO:Change this later.
     public V1Territory(String name) {
         this.name = name;
         neighbours = new HashSet<>();
         units = new HashMap<>();
+        ownedUnits = new LinkedList<>();
+        size = 0;
+        foodResourceGenerationRate = 0;
+        technologyResourceGenerationRate = 0;
     }
 
 
@@ -58,12 +72,17 @@ public class V1Territory implements Territory {
 
     @Override
     public int getNumUnit() {
-        return ownedUnits;
+        return ownedUnits.size();
     }
 
     @Override
     public Set<Territory> getNeighbours() {
         return neighbours;
+    }
+
+    @Override
+    public Army getArmyWithLevel(int level) {
+        return armies.get(level);
     }
 
     @Override
@@ -76,6 +95,42 @@ public class V1Territory implements Territory {
     @Override
     public Player getOwner(){
         return owner;
+    }
+
+    @Override
+    public int getFoodResourceGenerationRate() {
+        return foodResourceGenerationRate;
+    }
+
+    @Override
+    public int getTechnologyResourceGenerationRate() {
+        return technologyResourceGenerationRate;
+    }
+
+    @Override
+    public void setFoodResourceGenerationRate(int rate) {
+        this.foodResourceGenerationRate = rate;
+    }
+
+    @Override
+    public void setTechnologyResourceGenerationRate(int rate) {
+        this.technologyResourceGenerationRate = rate;
+    }
+
+    @Override
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    @Override
+    public int getSize() {
+        return this.size;
+    }
+
+
+    @Override
+    public int getUnitNumber(int level) {
+        return armies.get(level).getArmyUnits();
     }
 }
 

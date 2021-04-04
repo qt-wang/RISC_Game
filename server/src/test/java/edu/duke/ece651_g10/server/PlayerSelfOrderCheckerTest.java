@@ -13,8 +13,8 @@ public class PlayerSelfOrderCheckerTest {
   public void test_check_my_rule() {
     // Mock
     GameMap mockGameMap = mock(GameMap.class);
-    Order mockOrder1 = mock(Order.class);
-    Order mockOrder2 = mock(Order.class);
+    TerritoryToTerritoryOrder mockOrder1 = mock(TerritoryToTerritoryOrder.class);
+    TerritoryToTerritoryOrder mockOrder2 = mock(TerritoryToTerritoryOrder.class);
     Player mockPlayer1 = mock(Player.class);
     Player mockPlayer2 = mock(Player.class);
     HashMap<Territory, Player> ownership = new HashMap<Territory, Player>();
@@ -31,7 +31,7 @@ public class PlayerSelfOrderCheckerTest {
     when(mockOrder2.getPlayerID()).thenReturn(2);
 
     String res = "The source territory does not belong to the player.";
-    RuleChecker checker = new PlayerSelfOrderChecker(null);
+    RuleChecker<TerritoryToTerritoryOrder> checker = new PlayerSelfOrderChecker(null);
     assertEquals(res, checker.checkMyRule(mockOrder2, mockGameMap));
     assertEquals(null, checker.checkMyRule(mockOrder1, mockGameMap));
   }

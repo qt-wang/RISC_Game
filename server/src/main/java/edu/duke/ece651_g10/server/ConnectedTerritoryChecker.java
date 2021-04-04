@@ -5,7 +5,7 @@ import java.util.HashSet;
 /**
  * The RuleChecker to check whether two territories connected with each other
  */
-public class ConnectedTerritoryChecker extends RuleChecker {
+public class ConnectedTerritoryChecker extends RuleChecker<TerritoryToTerritoryOrder> {
   final HashSet<Territory> waypoints;
 
   /**
@@ -13,7 +13,7 @@ public class ConnectedTerritoryChecker extends RuleChecker {
    *
    * @param next The next RuleChecker
    */
-  public ConnectedTerritoryChecker(RuleChecker next) {
+  public ConnectedTerritoryChecker(RuleChecker<TerritoryToTerritoryOrder> next) {
     super(next);
     this.waypoints = new HashSet<Territory>();
   }
@@ -56,7 +56,7 @@ public class ConnectedTerritoryChecker extends RuleChecker {
    *         reason casuing the invalid placement
    */
   @Override
-  protected String checkMyRule(Order order, GameMap gameMap) {
+  protected String checkMyRule(TerritoryToTerritoryOrder order, GameMap gameMap) {
     if (!searchConnection(order.getSourceTerritory(), order.getTargetTerritory(), order.getPlayerID(), gameMap)) {
       waypoints.clear();
       return "The source territory and target territory are not connected.";
@@ -65,3 +65,10 @@ public class ConnectedTerritoryChecker extends RuleChecker {
     return null;
   }
 }
+
+
+
+
+
+
+

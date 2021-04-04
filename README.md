@@ -11,18 +11,22 @@
 classDiagram
  
 RuleChecker "1" <-- "1" Server
-    SufficientUnitChecker "1" <|-- "1" RuleChecker
-    AdjacentTerritoryChecker "1" <|-- "1" RuleChecker
-    SelfTerritoryChecker "1" <|-- "1" RuleChecker
-    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker
-    EnemyTerritoryChecker "1" <|-- "1" RuleChecker
-    ConnectedTerritoryChecker "1" <|-- "1" RuleChecker
-    ResourceChecker "1" <|-- "1" RuleChecker
-    AttackResourceChecker "1" <|-- "1" ResourceChecker
-    MoveResourceChecker "1" <|-- "1" ResourceChecker
-    UpgradeResourceChecker "1" <|-- "1" ResourceChecker
-    ResourceChecker "1" --> "1" ShortestPath
-    InputChecker "1" <-- "1" Client
+    SufficientUnitChecker "1" <|-- "1" RuleChecker~T extends Order~
+    AdjacentTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SelfTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    PlayerSelfOrderChecker "1" <|-- "1" RuleChecker~T extends Order~
+    EnemyTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    ConnectedTerritoryChecker "1" <|-- "1" RuleChecker~T extends Order~
+    TerritoryExistChecker "1" <|-- "1" RuleChecker~T extends Order~
+    AttackFoodChecker "1" <|-- "1" RuleChecker~T extends Order~
+    CanUpgradeTechChecker "1" <|-- "1" RuleChecker~T extends Order~
+    TechUpgradeRangeChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SufficientTechResourceChecker "1" <|-- "1" RuleChecker~T extends Order~
+    UnitUpgradeRangeChecker "1" <|-- "1" RuleChecker~T extends Order~
+    SelfUpgradeOrderChecker "1" <|-- "1" RuleChecker~T extends Order~
+    UnitUpgradeTechChecker "1" <|-- "1" RuleChecker~T extends Order~
+    UpgradeSufficientUnitChecker "1" <|-- "1" RuleChecker~T extends Order~
+    TechResourceUnitChecker "1" <|-- "1" RuleChecker~T extends Order~
     Server "1" --> "n" Player
     Server "1" --> "1" Map
     Map "1" --> "n" Territory
@@ -32,15 +36,13 @@ RuleChecker "1" <-- "1" Server
     Client "1" --> "1" View
     MoveOrder "1" <|-- "1" Order
     AttackOrder "1" <|-- "1" Order
+    UpgradeUnitOrder "1" <|-- "1" Order
+    UpgradeTechOrder "1" <|-- "1" Order
     OrderProcessor "1" --> "n" Order
-    OrderProcessor "1" --> "1" ShortestPath
-    Client "1" --> "n" Order
-    UpgradeOrder "1" <|-- "1" Order
-    UnitUpgradeOrder "1" <|-- "1" UpgradeOrder
-    TechnologyUpgradeOrder "1" <|-- "1" UpgradeOrder
+    AddUnitOrder "1" <|-- "1" Order
     Server "1" --> "1" OrderProcessor
     AttackOrder "1" --> "n" Dice
-
+    Player "1" --> "1" Resources
 
 
     class Server{
@@ -59,33 +61,51 @@ RuleChecker "1" <-- "1" Server
     }
 
     class OrderProcessor {
-        -HashMap~Territory,List~Order~~ attackOrders
-        +parseOrder()
-        +mergeOrder()
-        +issueOrders()
-        +executeOrders()
+        -HashMap~Player, Vector~Order~~ attacksInOneTurn
+        +acceptOrder()
+        +executeEndTurnOrders()
+        -merge()
+        -Vector~Order~ obtainAllAttackOrders()
     }
-
+    
     class Order {
         -int playerID
         +execute()
-        +getNumUnit()
-        +getSourceTerritory()
-        +getTargetTerritory()
         +getPlayerID()
     }
 
     class MoveOrder {
         -Territory source
-        -Territory destination
+        -Territory dest
         -int unitNum
-        -HashSet~Unit~ units
+        -GameMap gMap
+        +getNumUnit()
+        +getSourceTerritory()
+        +getTargetTerritory()
     }
 
     class AttackOrder {
-        -HashMap~Territory,HashSet~Unit~~ attacker
+        -Territory attacker
         -Territory defender
-        -int unitNumTotal
+        -int unitNum
+        -Player owner
+        -GameMap gMap
+        +getNumUnit()
+        +getSourceTerritory()
+        +getTargetTerritory()
+    }
+    
+    class UpgradeUnitOrder {
+        -int level
+        -GameMap gMap
+        -String source
+        -int unitNum
+        +execute()
+    }
+
+    class UpgradeTechOrder {
+        -GameMap gMap
+        +execute()
     }
 
     class UpgradeOrder {
@@ -107,17 +127,15 @@ RuleChecker "1" <-- "1" Server
 
     class Client {
         -int PlayerID
-        -bool couldCommand
-        -bool isDisconnected
-        +checkRule()
-        +sendOrders()
-        +displyResult()
-        +createAccount()
-        +login()
-        +logout()
+        -HashSet~String~ normalOrderSet
+        -HashMap~String, String~ orderKeyMap
+        -HashMap~String, Runnable~ commandMap
+        +connectGame()
+        +doPlacement()
+        +playGame()
     }
 
-    class RuleChecker {
+    class RuleChecker~T extends Order~ {
         -RuleChecker nextRule
         -checkMyRule()
         +checkOrder()
@@ -147,23 +165,43 @@ RuleChecker "1" <-- "1" Server
 
     }
 
-    class ResourceChecker {
-        -HashMap~String, HashMap~int, int~ ~ ResourceCost 
-    }
-
-    class AttackResourceChecker {
+    class TerritoryExistChecker {
 
     }
 
-    class MoveResourceChecker {
+    class AttackFoodChecker{
 
     }
 
-    class UpgradeResourceChecker {
-        
+    class CanUpgradeTechChecker{
+
     }
 
-    class InputChecker {
+    class TechUpgradeRangeChecker{
+
+    }
+
+    class SufficientTechResourceChecker{
+
+    }
+
+    class UnitUpgradeRangeChecker{
+
+    }
+
+    class SelfUpgradeOrderChecker{
+
+    }
+
+    class UnitUpgradeTechChecker{
+
+    }
+
+    class UpgradeSufficientUnitChecker{
+
+    }
+
+    class TechResourceUnitChecker{
 
     }
 
@@ -202,9 +240,20 @@ RuleChecker "1" <-- "1" Server
         +getNumUnit()
     }
 
+    class Resources{
+        -int foodResource
+        -int techResource
+        -int techLevel
+        +consumeFood()
+        +consumeTech()   
+    }
+
     class Unit {
         -Player owner
         -int level
         -Territory position 
-    }       
+    }  
+    
+
+
 ```

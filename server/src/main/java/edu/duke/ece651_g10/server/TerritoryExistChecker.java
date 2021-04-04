@@ -1,15 +1,16 @@
 package edu.duke.ece651_g10.server;
+
 /**
  * The RuleChecker to check whether the source Territory and target Territory
  * are adjacent to each other
  */
-public class TerritoryExistChecker extends RuleChecker {
-/**
+public class TerritoryExistChecker extends RuleChecker<TerritoryToTerritoryOrder> {
+  /**
    * The constructor of the the TerritoryExistChekcer
    *
    * @param next The next RuleChecker
    */
-  public TerritoryExistChecker(RuleChecker next) {
+  public TerritoryExistChecker(RuleChecker<TerritoryToTerritoryOrder> next) {
     super(next);
   }
 
@@ -23,7 +24,7 @@ public class TerritoryExistChecker extends RuleChecker {
    *         reason casuing the invalid placement
    */
   @Override
-  protected String checkMyRule(Order order, GameMap gameMap) {
+  protected String checkMyRule(TerritoryToTerritoryOrder order, GameMap gameMap) {
     if (order.getSourceTerritory() == null) {
       return "The source territory does not exist.";
     } else if (order.getTargetTerritory() == null) {
@@ -32,11 +33,6 @@ public class TerritoryExistChecker extends RuleChecker {
     return null;
   }
 }
-
-
-
-
-
 
 
 

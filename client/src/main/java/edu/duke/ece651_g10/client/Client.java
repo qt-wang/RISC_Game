@@ -17,28 +17,34 @@ public class Client {
     final PrintStream out;
     final BufferedReader inputReader;
 
+    private JSONObject currentJSON;
     public String playerStatus;
 
-    private boolean endGame;
-    final int playerID;
+    int playerID;
     final HashSet<String> normalOrderSet;
     final HashMap<String, String> orderKeyValue;
+    final HashMap<String, Runnable> commandMap;
     public SocketClient socketClient;
 
     /**
      * The constructor of the Client
+     *
+     * @param out          The print stream
+     * @param input        The buffered reader
+     * @param socketClient the socket client
      */
     public Client(PrintStream out, BufferedReader input, SocketClient socketClient) throws IOException {
         this.playerStatus = "A";
         this.out = out;
         this.inputReader = input;
         this.socketClient = socketClient;
-        socketClient.send(generateInfoJSON("Testing, server, can you hear me?\n"));
-        JSONObject ans = socketClient.receive();
-        String prompt = ans.getString("prompt");
+        socketClient.send(generatePingJSON("Testing, server, can you hear me?\n"));
+        //JSONObject ans = socketClient.receive();
+        setCurrentJSON(socketClient.receive());
+        String prompt = currentJSON.getString("prompt");
         System.out.println(prompt);
-        this.playerID = getPlayerId(ans);
-        endGame = false;
+        //FGC added
+        //this.playerID = getPlayerId(ans);
 
         this.normalOrderSet = new HashSet<String>();
         normalOrderSet.add("M");
@@ -48,6 +54,53 @@ public class Client {
         orderKeyValue.put("M", "move");
         orderKeyValue.put("A", "attack");
         orderKeyValue.put("D", "commit");
+
+        this.commandMap = new HashMap<String, Runnable>();
+        commandMap.put("placement", () -> {
+            try {
+                doPlacement();
+            } catch (IOException e) {
+                out.println("Meet IO exception.");
+            }
+        });
+        commandMap.put("play", () -> {
+            try {
+                playGame();
+            } catch (IOException e) {
+                out.println("Meet IO exception.");
+            }
+        });
+        commandMap.put("connection", () -> {
+            try {
+                //Changed by FGC
+                //FGCConnection();
+                connectGame();
+            } catch (IOException e) {
+                out.println("Meet IO exception.");
+            }
+        });
+        //FGCAdded
+        // Send a needPass to construct the connection.
+        //socketClient.send(generateConnectJSON(""));
+        connectGame();
+    }
+
+    public void setCurrentJSON(JSONObject currentJSON) {
+        this.currentJSON = currentJSON;
+    }
+
+    /**
+     * generate a JSONObject of type: connection
+     *
+     * @param password the password to join the game
+     * @return the constructed JSONOBject
+     */
+    public JSONObject generateConnectJSON(String password) throws IOException {
+        if (!password.equals("")) {
+            return new JSONObject().put("type", "connection").put("needPass", false).put("password", password);
+        } else {
+            return new JSONObject().put("type", "connection").put("needPass", true);
+        }
     }
 
     /**
@@ -58,6 +111,18 @@ public class Client {
      */
     public JSONObject generateInfoJSON(String prompt) {
         return new JSONObject().put("type", "inform").put("prompt", prompt);
+    }
+
+    /**
+     * FGCAdded
+     * Generate a JSONobject of type:ping
+     * ping is used to test the connection with the server.
+     *
+     * @param prompt The information
+     * @return the constructed JSON object.
+     */
+    public JSONObject generatePingJSON(String prompt) {
+        return new JSONObject().put("type", "ping").put("prompt", prompt);
     }
 
     /**
@@ -95,6 +160,21 @@ public class Client {
     public String getMessageType(JSONObject obj) {
         try {
             String ans = obj.getString("type");
+            return ans;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * get the String mapped to "type" in the JSONObject
+     *
+     * @return the content or null if not exists
+     */
+    public String getCurrentMessageType() {
+        try {
+            String ans = currentJSON.getString("type");
             return ans;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -173,7 +253,6 @@ public class Client {
      */
     public String readAction(String prompt, HashSet<String> legalInputSet) throws IOException {
         String action = readString(prompt);
-        //TODO: Read null at here.
         if (!legalInputSet.contains(action.toUpperCase())) {
             out.println("Please input valid actions.");
             return readAction(prompt, legalInputSet);
@@ -254,15 +333,43 @@ public class Client {
         return orderString;
     }
 
+
+    private void FGCConnection() throws IOException {
+        // Receive the password.
+        //JSONObject object = socketClient.receive();
+        String password = currentJSON.getString("password");
+
+        System.out.println(password);
+        // Send a JSON object which contains the password.
+        socketClient.send(generateConnectJSON(password));
+    }
+
+    /**
+     * Connect to one of the game
+     * FGC changed.
+     */
+    public void connectGame() throws IOException {
+        out.println(getPrompt(this.currentJSON));
+        String prompt = "If you already join a game, please input the password.\n if you want to join a new game, please press Enter.";
+        String password = readString(prompt);
+        sendOrderToServer(generateConnectJSON(password));
+        System.out.println(currentJSON);
+        setCurrentJSON(socketClient.receive());
+        password = currentJSON.getString("password");
+        if (getPrompt(this.currentJSON).equals("invalid\n")) {
+            connectGame();
+        }
+        sendOrderToServer(generateConnectJSON(password));
+    }
+
     /**
      * Place the units at beginning of the game
-     *
-     * @return Always return true
      */
-    public boolean doPlacement() throws IOException {
-        out.println(getPrompt(socketClient.receive()));
+    public void doPlacement() throws IOException {
+        out.println(getPrompt(this.currentJSON));
+        //FGC added
+        this.playerID = getPlayerId(this.currentJSON);
         String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
-        //out.println(prompt);
         HashSet<String> legalOrderSet = new HashSet<String>();
         legalOrderSet.add("M");
         legalOrderSet.add("D");
@@ -271,28 +378,23 @@ public class Client {
             orderString.clear();
             orderString = sendOrder(prompt, legalOrderSet);
         }
-        return true;
     }
 
     /**
      * Play the game after the placement phase
-     *
-     * @return Return the boolean whether the game is end
      */
-    public boolean playGame() throws IOException {
-        JSONObject receivedJSON = socketClient.receive();
-        out.println(getPrompt(receivedJSON));
-        if (getPlayerStatus(receivedJSON).equals("L")) {
+    public void playGame() throws IOException {
+        out.println(getPrompt(this.currentJSON));
+        if (getPlayerStatus(this.currentJSON).equals("L")) {
             sendOrderToServer(generateCommitJSON());
             while (getPrompt(socketClient.receive()).equals("invalid\n")) {
                 sendOrderToServer(generateCommitJSON());
             }
-        } else if (getPlayerStatus(receivedJSON).equals("E")) {
-            endGame = true;
+        } else if (getPlayerStatus(this.currentJSON).equals("E")) {
+            out.println("Game over.");
         } else {
             String prompt = "You are the Player " + String.valueOf(playerID)
                     + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
-            //out.println(prompt);
             HashSet<String> legalOrderSet = new HashSet<String>();
             legalOrderSet.add("M");
             legalOrderSet.add("A");
@@ -302,6 +404,5 @@ public class Client {
                 orderString = sendOrder(prompt, legalOrderSet);
             }
         }
-        return endGame;
     }
 }

@@ -1,0 +1,231 @@
+Interaction between client and server:
+0. Ping and Pong message, send automatically when the client connect to the server.
+
+1. Client ask for a password.
+{
+    type="connection"
+    sub = "needPass"
+}
+
+Server response (let the user enter one open game):
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+    password = "xxxxxxxxx"
+}
+
+
+2. Client provide a password.
+For instance, after a user provide the password, display all the games the user participant.
+{
+    type="connection"
+    sub="providePass"
+    password="xxxxxxxx"
+}
+
+If invalid, only respond the following:
+{
+    type="connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+}
+Server response:
+{
+    type="connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+    numberOfGames = 3      (for instance)
+    0 = {
+        gameId = "xxxxxxx" (unique game identifier, currently just a int)
+        numberOfTerritories = x  (Number of territories per player, provide some map info to player)
+        currentPlayers = x (A number indicate current players in this game. i.e. how many players participate this game.)
+        totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+        // running: the current game is running.
+        // waiting: the current game is waiting to begin.
+        // ending: the game has ended.
+        status = "running/waiting/ending"
+    }
+    1 = {
+        ........
+    }
+    2 = {
+        ........
+    }
+}
+
+
+4. Client wants to list all his game:
+{
+    type = "connection"
+    sub = "listMyGame"
+    password = "xxxxxxx"
+}
+Server response:
+{
+    type="connection"
+    prompt="valid/invalid"
+    reason="xxxxxx"        (if invalid, then provide a reason to tell the client.)
+    numberOfGames = 3      (for instance)
+    game0 = {
+        gameId = "xxxxxxx" (unique game identifier, currently just a int)
+        numberOfTerritories = x  (Number of territories per player, provide some map info to player)
+        currentPlayers = x (A number indicate current players in this game.)
+        totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+    }
+    game1 = {
+        ........
+    }
+    game2 = {
+        ........
+    }
+}
+
+
+5. Client wants to enter a new open game:
+might needs to be divided in two phases.
+Client sends:
+{
+    type = "connection"
+    sub = "listOpenGame"         (list all the open games that the player currently not in)
+    password = "xxxxxx" 
+}
+
+Server response:
+{
+    type="connection"
+    prompt="valid/invalid"
+    reason="xxxxxx"        (if invalid, then provide a reason to tell the client.)
+    numberOfGames = 3      (for instance)
+    game0 = {
+        gameId = "xxxxxxx" (unique game identifier, currently just a int)
+        numberOfTerritories = x  (Number of territories per player, provide some map info to player)
+        currentPlayers = x (A number indicate current players in this game.)
+        totalPlayers = x (If currentPlayers == totalPlayers, then the game starts)
+    }
+    game1 = {
+        ........
+    }
+    game2 = {
+        ........
+    }
+}
+
+
+Send a json request to join a new game.
+{
+    type="connection"
+    sub="joinGame"
+    password = "xxxxxx"
+    gameId = "xxxxxx"
+}
+
+Server response:
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+}
+
+// Client use the cache to build the GUI for the client user.
+
+// Now the player will wait, until enough players enter the game (for new game:).
+// After enough players enter the game:
+{
+    type = "placement"
+    needAction = false
+    playerID = xxxxxx
+    prompt = "prompt"
+    playerStatus: "L/E/A"
+}
+...... the game will start the same to version 1.
+
+
+6. Client wants to enter a previous game.
+Client is only allowed to join a previous game at these moments:
+   -- 1. Waiting for placement to begun.
+   -- 2. Waiting for another round to begin.
+Send a json request to join a previous game.
+{
+    type="connection"
+    sub="joinGame"
+    password = "xxxxxx"
+    gameId = "xxxxxx"
+}
+
+Server response:
+//Maybe, we can send the player's connection status to the client, so the client can makeup their decision, whether to wait or logout to play another game.
+Server response:
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+}
+//TODO:One question here: how to resume previous state, use buffer in client?
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxxx"
+    playerStatus = {
+        // nc - not commit | c - commit (connected) | dc - commit, but disconnected
+        0 = "nc"/"c"/"dc"
+        1 = "xxxx"
+        2 = "xxxx"
+        3 = "xxxx"
+    }
+}
+
+Server must respond the game information for the new round, it could be in the do placement phase, or in the
+play phase.
+There are different situations, and different player status:
+  -- The new round is placement phase
+     Only one case, all the players must alive at this time:
+     Just display the placement information when all the players connected back.
+
+  -- The new round is play phase.
+     The player can be in either two status:
+     * Alive, we must wait the player to join to begin the next round.
+     * Lose, this player is not required to join the game to begin the next round.
+       -- temp, might be difficult to implement.
+
+  -- The new round is the result round (ie. A player win the game).
+     In this case, the previous round's alive players are in the game.
+     We just distribute this to all the players, and end this game.
+
+
+
+7. Client wants to switch game (more detail needed).
+   -- Divided into two steps:
+     -- 1. Logout from the current game.
+     -- 2. Enter a previous game, the same to point 6.
+   This part will talk about how to log out from a game, i.e. point 7.1
+
+The player can only be allowed to logout at these moments:
+1. Before the game starts, ie. all the player is waiting for enough players to login, for placement be be begin (can we?).
+
+2. After commit in one round, then the player is free to logout to operates on another game.
+
+Logout needs to send specific message to the Game, so that the game knows that the player choose to logout.
+{
+     type = "logout"
+     password = "xxxxxx" (if difficult, then can not send.)
+     playerID = xxxx (if difficult, then can not send.)
+}
+
+
+// If valid then the client is free to logout.
+// Otherwise, present the information.
+// The json send back from the server actually contains a lot more redundant information, but the following must has.
+server response:
+{
+    type = "connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx"
+}
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+

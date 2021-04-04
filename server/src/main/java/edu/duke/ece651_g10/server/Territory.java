@@ -23,6 +23,7 @@ public interface Territory {
 
     /**
      * Set the territory's unit number to unit.
+     *
      * @param unit
      */
     public void setUnitNumber(int unit);
@@ -70,4 +71,61 @@ public interface Territory {
      * @return The owner of the territory.
      */
     public Player getOwner();
+
+    /**
+     * Get the territory's food resource generation rate.
+     *
+     * @return territory's food resource generation rate.
+     */
+    public int getFoodResourceGenerationRate();
+
+    /**
+     * Get the territory's technology resource generation rate.
+     *
+     * @return territory's technology resource generation rate.
+     */
+    public int getTechnologyResourceGenerationRate();
+
+
+    /**
+     * Set the territories food resource generation rate.
+     *
+     * @param rate The rate to generate food resource.
+     */
+    public void setFoodResourceGenerationRate(int rate);
+
+    /**
+     * Set the territory's technology resource generation rate.
+     *
+     * @param rate The rate to generate technology resource.
+     */
+    public void setTechnologyResourceGenerationRate(int rate);
+
+    /**
+     * Set the size of the current territory.
+     */
+    public void setSize(int size);
+
+    /**
+     * Get the size of current territory.
+     *
+     * @return The size of current territory.
+     */
+    public int getSize();
+
+
+    /**
+     * Get how many units in specific level.
+     * @param level  The level for units.  level in the range [0, 6]
+     * @return The number of units in this level.
+     */
+    public int getUnitNumber(int level);
+
+
+    /**
+     * Get the army from territory with level specified by "level".
+     * @param level The level of army
+     * @return  The army object.
+     */
+    public Army getArmyWithLevel(int level);
 }
