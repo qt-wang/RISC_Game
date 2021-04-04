@@ -97,9 +97,9 @@ public class Client {
      */
     public JSONObject generateConnectJSON(String password) throws IOException {
         if (!password.equals("")) {
-            return new JSONObject().put("type", "connection").put("needPass", false).put("password", password);
+            return new JSONObject().put("type", "connection").put("sub", "providePass").put("password", password);
         } else {
-            return new JSONObject().put("type", "connection").put("needPass", true);
+            return new JSONObject().put("type", "connection").put("sub", "needPass");
         }
     }
 
