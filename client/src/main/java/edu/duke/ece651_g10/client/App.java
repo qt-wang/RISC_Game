@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 /**
  * The App class
@@ -42,7 +44,8 @@ public class App extends Application {
         launch(args);
     }
 
-    public void start(Stage primaryStage) throws IOException {
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         primaryStage.show();
     }
 }

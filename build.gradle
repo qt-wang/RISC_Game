@@ -7,6 +7,7 @@
 plugins {
     id 'com.bmuschko.clover' version '2.2.3'
 }
+
 subprojects{
     apply plugin: "java"
     apply plugin: "com.bmuschko.clover"
@@ -53,6 +54,7 @@ subprojects{
     artifacts {
         testPkg testCode
     }
+
 }
 
 // Project specific stuff
