@@ -18,6 +18,11 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
         //checkValidMove();
         source.decreaseUnit(unitNum);
         dest.increaseUnit(unitNum);
+        //找到source要移动的level的army， 减少数量。
+        //找到dest要移动的level的army，增加数量。
+        //通过minCostCalculator 计算从source至dest的最小cost。 可能在MoveOrder中新建一个属性叫ShortestPath，
+        //是一个类， 类里面有一个方法叫minCostCalculator计算最小cost。或者直接在MoveOrder中加一个方法来计算minCost？
+        //从player的foodResource中减去损耗。
     }
 
    public Territory getSourceTerritory() {
