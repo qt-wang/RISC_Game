@@ -5,20 +5,13 @@ import java.lang.Math;
 
 public class ShortestPath {
     GameMap gMap;
-
-    public ShortestPath(GameMap gMap){
+  
+  public ShortestPath(GameMap gMap){
         this.gMap = gMap;
     }
 
-    /**
-     * This function calculates the minimum food cost from source territory to target territory
-     * when doing move order.
-     * @param source this is the source territory
-     * @param target this is the target territory
-     * @return the minimum food cost from source territory to target territory.
-     */
-    public int minCost(Territory source, Territory target){
-        Player player = source.getOwner();
+  public int minCost(Territory source, Territory target){
+      Player player = source.getOwner();
         HashMap<String, Integer> distanceTable = new HashMap<>();
         HashMap<String, Territory> territoryTable = new HashMap<>();
         Vector<String> visited = new Vector<>();

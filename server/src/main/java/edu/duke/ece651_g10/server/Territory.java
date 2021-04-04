@@ -129,5 +129,3 @@ public interface Territory {
      */
     public Army getArmyWithLevel(int level);
 }
-
-}
