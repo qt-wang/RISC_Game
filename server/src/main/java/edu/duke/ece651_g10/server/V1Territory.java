@@ -47,7 +47,7 @@ public class V1Territory implements Territory {
     private int size;
     private int foodResourceGenerationRate;
     private int technologyResourceGenerationRate;
-
+    LinkedList<Army> armies;
 
     @Override
     public void setOwner(Player player) {
@@ -78,6 +78,11 @@ public class V1Territory implements Territory {
     @Override
     public Set<Territory> getNeighbours() {
         return neighbours;
+    }
+
+    @Override
+    public Army getArmyWithLevel(int level) {
+        return armies.get(level);
     }
 
     @Override
@@ -120,6 +125,12 @@ public class V1Territory implements Territory {
     @Override
     public int getSize() {
         return this.size;
+    }
+
+
+    @Override
+    public int getUnitNumber(int level) {
+        return armies.get(level).getArmyUnits();
     }
 }
 

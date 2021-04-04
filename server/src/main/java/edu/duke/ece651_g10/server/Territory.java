@@ -112,4 +112,20 @@ public interface Territory {
      * @return The size of current territory.
      */
     public int getSize();
+
+
+    /**
+     * Get how many units in specific level.
+     * @param level  The level for units.  level in the range [0, 6]
+     * @return The number of units in this level.
+     */
+    public int getUnitNumber(int level);
+
+
+    /**
+     * Get the army from territory with level specified by "level".
+     * @param level The level of army
+     * @return  The army object.
+     */
+    public Army getArmyWithLevel(int level);
 }
