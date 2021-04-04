@@ -82,7 +82,7 @@ public class Client {
         //FGCAdded
         // Send a needPass to construct the connection.
         //socketClient.send(generateConnectJSON(""));
-        connectGame();
+        //connectGame();
     }
 
     public void setCurrentJSON(JSONObject currentJSON) {

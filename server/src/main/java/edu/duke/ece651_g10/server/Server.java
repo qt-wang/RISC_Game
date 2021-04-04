@@ -214,6 +214,7 @@ public class Server {
      */
     public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
+        games = new HashMap<>();
         gameFactory = new V2GameFactory(this);
         this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
