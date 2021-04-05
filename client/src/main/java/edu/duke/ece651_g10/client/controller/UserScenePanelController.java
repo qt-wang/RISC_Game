@@ -67,7 +67,7 @@ public class UserScenePanelController implements Initializable {
             client.setListedGames(listedGames);
             // Set the default value for the choice box and label.
             JSONObject defaultJSON = client.getListedGames().get(0);
-            choiceBox.setValue(Integer.toString(defaultJSON.getInt("gameId")));
+            choiceBox.setValue(defaultJSON.getInt("gameId"));
             setLabelText(defaultJSON);
         }
     }
