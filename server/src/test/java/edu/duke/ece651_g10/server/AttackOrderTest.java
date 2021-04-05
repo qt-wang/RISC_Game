@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.server;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AttackOrderTest {
@@ -54,6 +55,18 @@ public class AttackOrderTest {
     assertEquals("Narnia", mOrder.getTargetTerritory().getName());
   }
 
+  @Test
+  public void test_attack(){
+    FixedGameMapFactory factory = new FixedGameMapFactory();
+    GameMap gMap = factory.createGameMap(3);
+    Player player = new Player(null, null);
+    gMap.getTerritory("Elantris").increaseUnit(5, 0);
+    gMap.getTerritory("Elantris").increaseUnit(6, 3);
+    gMap.getTerritory("Narnia").increaseUnit(3, 4);
+    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
+    mOrder.execute();
+    assertEquals(0, gMap.getTerritory("Narnia").getArmyWithLevel(3).getArmyUnits());
+  }
 }
 
 
