@@ -18,6 +18,20 @@ public class FixedGameMapFactory implements GameMapFactory{
         Territory Mordor = new V1Territory("Mordor");
         Territory Gondor = new V1Territory("Gondor");
 
+
+
+        //
+        Narnia.setSize(8);
+        Midkemia.setSize(3);
+        Oz.setSize(12);
+        Scadrial.setSize(10);
+        Elantris.setSize(7);
+        Roshar.setSize(4);
+        Gondor.setSize(14);
+        Mordor.setSize(9);
+        Hogwarts.setSize(5);
+        //
+
         Elantris.addNeighbour(Narnia);
         //Narnia.addNeighbour(Elantris);
         Elantris.addNeighbour(Midkemia);

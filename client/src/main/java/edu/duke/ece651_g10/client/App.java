@@ -3,6 +3,10 @@
  */
 package edu.duke.ece651_g10.client;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 
 import java.io.IOException;
@@ -29,6 +33,7 @@ import org.json.JSONObject;
 /**
  * The App class
  */
+
 public class App extends Application {
 //    final Client client;
 //    final SocketClient socketClient;
