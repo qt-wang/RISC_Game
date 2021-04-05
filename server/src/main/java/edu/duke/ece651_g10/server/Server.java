@@ -232,7 +232,7 @@ public class Server {
         clientGames = new HashMap<>();
         //TODO: shall we only have fixed number of games? what if game ends?
         for (int i = 0; i < 5; i++) {
-            games.put(i, gameFactory.createRandomGame());
+            games.put(i, gameFactory.createFixedGame(3));
         }
     }
 

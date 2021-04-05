@@ -27,7 +27,7 @@ public class V1OrderProcessor implements OrderProcessor{
         } else if(order instanceof AttackOrder){
             //If this order is an attack order, decrease the unit number in the source territory at
             //very beginning.
-          ((AttackOrder)order).getSourceTerritory().decreaseUnit(((AttackOrder)order).getNumUnit());
+          ((AttackOrder)order).getSourceTerritory().decreaseUnit(((AttackOrder)order).getNumUnit(), 0);
             //If the owner of source territory did not attack others before, then create a new item
             //for the hashmap.
             if(attacksInOneTurn.get(((AttackOrder)order).getSourceTerritory().getOwner()) == null) {

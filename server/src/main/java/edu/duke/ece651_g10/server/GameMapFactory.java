@@ -10,8 +10,7 @@ public interface GameMapFactory {
      * A map should contain a list of territories.
      * Each territory should have its neighbors, and form a connected graph.
      * @param numberOfPlayers      The number of Players within the game.
-     * @param territoriesPerPlayer The territories belong to each player.
      * @return The map generated for this game.
      */
-    public GameMap createGameMap(int numberOfPlayers, int territoriesPerPlayer);
+    public GameMap createGameMap(int numberOfPlayers);
 }

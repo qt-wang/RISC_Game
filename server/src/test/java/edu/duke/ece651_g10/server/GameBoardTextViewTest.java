@@ -23,7 +23,7 @@ class GameBoardTextViewTest {
         when(mockPlayer3.getPlayerID()).thenReturn(3);
 
         GameMapFactory f1 = new FixedGameMapFactory();
-        GameMap map = f1.createGameMap(0,3);
+        GameMap map = f1.createGameMap(3);
         HashMap<Integer, HashSet<Territory>> groups = map.getInitialGroups();
         int player = 1;
         while (player != 4) {

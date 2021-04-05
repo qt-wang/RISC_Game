@@ -8,7 +8,7 @@ public class UpgradeUnitOrderTest {
   @Test
   public void test_upgradeUnit() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
   }
 

@@ -64,7 +64,7 @@ public class ConnectedTerritoryCheckerTest {
     when(mockPlayer2.getPlayerID()).thenReturn(2);
     when(mockOrder1.getPlayerID()).thenReturn(1);
 
-    RuleChecker checker = new ConnectedTerritoryChecker(null);
+    RuleChecker<TerritoryToTerritoryOrder> checker = new ConnectedTerritoryChecker(null);
     String res = "The source territory and target territory are not connected.";
     assertEquals(null, checker.checkMyRule(mockOrder1, mockGameMap));
 

@@ -3,7 +3,6 @@ package edu.duke.ece651_g10.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -213,156 +212,157 @@ public class Client {
         }
     }
 
-    /**
-     * get the player's id from the JSONObject
-     *
-     * @param obj a JSONObject
-     * @return the player's id or null if not exists
-     */
-    public Integer getPlayerId(JSONObject obj) {
-        try {
-            int ans = obj.getInt("playerID");
-            return ans;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
-    /**
-     * get the player status field from the json object
-     *
-     * @param obj the json object
-     * @return the string representing the player's status
-     */
-    public String getPlayerStatus(JSONObject obj) {
-        try {
-            String ans = obj.getString("playerStatus");
-            return ans;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
+  /**
+   * get the player's id from the JSONObject
+   *
+   * @param obj a JSONObject
+   * @return the player's id or null if not exists
+   */
+  public Integer getPlayerId(JSONObject obj) {
+    try {
+      int ans = obj.getInt("playerID");
+      return ans;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
     }
+  }
 
-    /**
-     * get the Prompt field from the json object
-     *
-     * @param obj the json object
-     * @return the prompt string
-     */
-    public String getPrompt(JSONObject obj) {
-        try {
-            String ans = obj.getString("prompt");
-            return ans;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
+  /**
+   * get the player status field from the json object
+   *
+   * @param obj the json object
+   * @return the string representing the player's status
+   */
+  public String getPlayerStatus(JSONObject obj) {
+    try {
+      String ans = obj.getString("playerStatus");
+      return ans;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
     }
+  }
 
-    /**
-     * Read the input from the user
-     *
-     * @param prompt The String will print in the terminal before the user inputs
-     *               data
-     * @return the string that user input
-     */
-    public String readString(String prompt) throws IOException {
-        out.println(prompt);
-        String str = inputReader.readLine();
-        return str;
+  /**
+   * get the Prompt field from the json object
+   *
+   * @param obj the json object
+   * @return the prompt string
+   */
+  public String getPrompt(JSONObject obj) {
+    try {
+      String ans = obj.getString("prompt");
+      return ans;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
     }
+  }
 
-    /**
-     * Read the action from the user
-     *
-     * @param prompt        The String will print in the terminal before the user
-     *                      inputs data
-     * @param legalInputSet The set of legal input
-     * @return the valid action
-     */
-    public String readAction(String prompt, HashSet<String> legalInputSet) throws IOException {
-        String action = readString(prompt);
-        if (!legalInputSet.contains(action.toUpperCase())) {
-            out.println("Please input valid actions.");
-            return readAction(prompt, legalInputSet);
-        }
-        return action.toUpperCase();
-    }
+  /**
+   * Read the input from the user
+   *
+   * @param prompt The String will print in the terminal before the user inputs
+   *               data
+   * @return the string that user input
+   */
+  public String readString(String prompt) throws IOException {
+    out.println(prompt);
+    String str = inputReader.readLine();
+    return str;
+  }
 
-    /**
-     * Read the number from the user
-     *
-     * @param prompt The String will print in the terminal before the user inputs
-     *               data
-     * @return A number
-     */
-    public String readInteger(String prompt) throws IOException {
-        try {
-            int number = Integer.parseInt(readString(prompt));
-            return String.valueOf(number);
-        } catch (NumberFormatException e) {
-            out.println("Please input valid integer.");
-            return readInteger(prompt);
-        }
+  /**
+   * Read the action from the user
+   *
+   * @param prompt        The String will print in the terminal before the user
+   *                      inputs data
+   * @param legalInputSet The set of legal input
+   * @return the valid action
+   */
+  public String readAction(String prompt, HashSet<String> legalInputSet) throws IOException {
+    String action = readString(prompt);
+    if (!legalInputSet.contains(action.toUpperCase())) {
+      out.println("Please input valid actions.");
+      return readAction(prompt, legalInputSet);
     }
+    return action.toUpperCase();
+  }
 
-    /**
-     * Generate the order string based on the user input
-     *
-     * @param prompt        The String will print in the terminal before the user
-     *                      inputs data
-     * @param legalOrderSet The order set
-     * @return the ArrayList of the String describes the order
-     */
-    public ArrayList<String> generateOrderString(String prompt, HashSet<String> legalOrderSet) throws IOException {
-        ArrayList<String> orderStringList = new ArrayList<String>();
-        String orderType = readAction(prompt, legalOrderSet);
-        orderStringList.add(orderType);
-        if (normalOrderSet.contains(orderType)) {
-            orderStringList.add(readString("Please input your source territory name:"));
-            orderStringList.add(readString("Please input your target territory name:"));
-            orderStringList.add(readInteger("Please input the number of nuit:"));
-        } else {
-            for (int i = 0; i < 3; i++) {
-                orderStringList.add("");
-            }
-        }
-        return orderStringList;
+  /**
+   * Read the number from the user
+   *
+   * @param prompt The String will print in the terminal before the user inputs
+   *               data
+   * @return A number
+   */
+  public String readInteger(String prompt) throws IOException {
+    try {
+      int number = Integer.parseInt(readString(prompt));
+      return String.valueOf(number);
+    } catch (NumberFormatException e) {
+      out.println("Please input valid integer.");
+      return readInteger(prompt);
     }
+  }
 
-    /**
-     * Send order to server
-     *
-     * @param orderJSON The order JSON describes the Order
-     */
-    public void sendOrderToServer(JSONObject orderJSON) throws IOException {
-        socketClient.send(orderJSON);
+  /**
+   * Generate the order string based on the user input
+   *
+   * @param prompt        The String will print in the terminal before the user
+   *                      inputs data
+   * @param legalOrderSet The order set
+   * @return the ArrayList of the String describes the order
+   */
+  public ArrayList<String> generateOrderString(String prompt, HashSet<String> legalOrderSet) throws IOException {
+    ArrayList<String> orderStringList = new ArrayList<String>();
+    String orderType = readAction(prompt, legalOrderSet);
+    orderStringList.add(orderType);
+    if (normalOrderSet.contains(orderType)) {
+      orderStringList.add(readString("Please input your source territory name:"));
+      orderStringList.add(readString("Please input your target territory name:"));
+      orderStringList.add(readInteger("Please input the number of nuit:"));
+    } else {
+      for (int i = 0; i < 3; i++) {
+        orderStringList.add("");
+      }
     }
+    return orderStringList;
+  }
 
-    /**
-     * Send order
-     *
-     * @param prompt the information will print in the terminal before user input
-     * @return the ArrayList of the String describes the order
-     */
-    public ArrayList<String> sendOrder(String prompt, HashSet<String> legalOrderSet) throws IOException {
-        ArrayList<String> orderString = generateOrderString(prompt, legalOrderSet);
-        if (normalOrderSet.contains(orderString.get(0))) {
-            JSONObject orderJSON = generateOrderJSON(orderKeyValue.get(orderString.get(0)), orderString.get(1),
-                    orderString.get(2), Integer.parseInt(orderString.get(3)));
-            sendOrderToServer(orderJSON);
-        } else {
-            JSONObject orderJSON = generateCommitJSON();
-            sendOrderToServer(orderJSON);
-        }
-        if (getPrompt(socketClient.receive()).equals("invalid\n")) {
-            out.println("Your last order is invalid, please input your order again");
-            orderString = sendOrder(prompt, legalOrderSet);
-        }
-        return orderString;
+  /**
+   * Send order to server
+   *
+   * @param orderJSON The order JSON describes the Order
+   */
+  public void sendOrderToServer(JSONObject orderJSON) throws IOException {
+    socketClient.send(orderJSON);
+  }
+
+  /**
+   * Send order
+   *
+   * @param prompt the information will print in the terminal before user input
+   * @return the ArrayList of the String describes the order
+   */
+  public ArrayList<String> sendOrder(String prompt, HashSet<String> legalOrderSet) throws IOException {
+    ArrayList<String> orderString = generateOrderString(prompt, legalOrderSet);
+    if (normalOrderSet.contains(orderString.get(0))) {
+      JSONObject orderJSON = generateOrderJSON(orderKeyValue.get(orderString.get(0)), orderString.get(1),
+          orderString.get(2), Integer.parseInt(orderString.get(3)));
+      sendOrderToServer(orderJSON);
+    } else {
+      JSONObject orderJSON = generateCommitJSON();
+      sendOrderToServer(orderJSON);
     }
+    if (getPrompt(socketClient.receive()).equals("invalid\n")) {
+      out.println("Your last order is invalid, please input your order again");
+      orderString = sendOrder(prompt, legalOrderSet);
+    }
+    return orderString;
+  }
 
     public void sendJoinGameJSON(int gameId) throws IOException {
         JSONObject object = new JSONObject();
@@ -370,75 +370,88 @@ public class Client {
         this.socketClient.send(object);
     }
 
-    private void FGCConnection() throws IOException {
-        // Receive the password.
-        //JSONObject object = socketClient.receive();
-        String password = currentJSON.getString("password");
 
-        System.out.println(password);
-        // Send a JSON object which contains the password.
-        socketClient.send(generateConnectJSON(password));
-    }
 
-    /**
-     * Connect to one of the game
-     * FGC changed.
-     */
-    public void connectGame() throws IOException {
-        out.println(getPrompt(this.currentJSON));
-        String prompt = "If you already join a game, please input the password.\n if you want to join a new game, please press Enter.";
-        String password = readString(prompt);
-        sendOrderToServer(generateConnectJSON(password));
-        System.out.println(currentJSON);
-        setCurrentJSON(socketClient.receive());
-        password = currentJSON.getString("password");
-        if (getPrompt(this.currentJSON).equals("invalid\n")) {
-            connectGame();
-        }
-        sendOrderToServer(generateConnectJSON(password));
-    }
+  private void FGCConnection() throws IOException {
+    // Receive the password.
+    // JSONObject object = socketClient.receive();
+    String password = currentJSON.getString("password");
 
-    /**
-     * Place the units at beginning of the game
-     */
-    public void doPlacement() throws IOException {
-        out.println(getPrompt(this.currentJSON));
-        //FGC added
-        this.playerID = getPlayerId(this.currentJSON);
-        String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
-        HashSet<String> legalOrderSet = new HashSet<String>();
-        legalOrderSet.add("M");
-        legalOrderSet.add("D");
-        ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
-        while (!orderString.get(0).equals("D")) {
-            orderString.clear();
-            orderString = sendOrder(prompt, legalOrderSet);
-        }
-    }
+    System.out.println(password);
+    // Send a JSON object which contains the password.
+    socketClient.send(generateConnectJSON(password));
+  }
 
-    /**
-     * Play the game after the placement phase
-     */
-    public void playGame() throws IOException {
-        out.println(getPrompt(this.currentJSON));
-        if (getPlayerStatus(this.currentJSON).equals("L")) {
-            sendOrderToServer(generateCommitJSON());
-            while (getPrompt(socketClient.receive()).equals("invalid\n")) {
-                sendOrderToServer(generateCommitJSON());
-            }
-        } else if (getPlayerStatus(this.currentJSON).equals("E")) {
-            out.println("Game over.");
-        } else {
-            String prompt = "You are the Player " + String.valueOf(playerID)
-                    + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
-            HashSet<String> legalOrderSet = new HashSet<String>();
-            legalOrderSet.add("M");
-            legalOrderSet.add("A");
-            legalOrderSet.add("D");
-            ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
-            while (!orderString.get(0).equals("D")) {
-                orderString = sendOrder(prompt, legalOrderSet);
-            }
-        }
+  /**
+   * Connect to one of the game FGC changed.
+   */
+  public void connectGame() throws IOException {
+    out.println(getPrompt(this.currentJSON));
+    String prompt = "If you already join a game, please input the password.\n if you want to join a new game, please press Enter.";
+    String password = readString(prompt);
+    sendOrderToServer(generateConnectJSON(password));
+    System.out.println(currentJSON);
+    setCurrentJSON(socketClient.receive());
+    password = currentJSON.getString("password");
+    if (getPrompt(this.currentJSON).equals("invalid\n")) {
+      connectGame();
     }
+    sendOrderToServer(generateConnectJSON(password));
+  }
+
+  /**
+   * Logout the current game
+   */
+  public void logoutGame() throws IOException {
+    out.println(getPrompt(currentJSON));
+    String prompt = "If you want to logout, please input a non-empty string, otherwise directly press Enter.";
+    String response = readString(prompt);
+    if (!response.equals("")) {
+      sendOrderToServer(new JSONObject().put("type", "logout"));
+    }
+  }
+
+  /**
+   * Place the units at beginning of the game
+   */
+  public void doPlacement() throws IOException {
+    out.println(getPrompt(this.currentJSON));
+    // FGC added
+    this.playerID = getPlayerId(this.currentJSON);
+    String prompt = "You can move your units now.\n   (M)ove\n   (D)one";
+    HashSet<String> legalOrderSet = new HashSet<String>();
+    legalOrderSet.add("M");
+    legalOrderSet.add("D");
+    ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
+    while (!orderString.get(0).equals("D")) {
+      orderString.clear();
+      orderString = sendOrder(prompt, legalOrderSet);
+    }
+  }
+
+  /**
+   * Play the game after the placement phase
+   */
+  public void playGame() throws IOException {
+    out.println(getPrompt(this.currentJSON));
+    if (getPlayerStatus(this.currentJSON).equals("L")) {
+      sendOrderToServer(generateCommitJSON());
+      while (getPrompt(socketClient.receive()).equals("invalid\n")) {
+        sendOrderToServer(generateCommitJSON());
+      }
+    } else if (getPlayerStatus(this.currentJSON).equals("E")) {
+      out.println("Game over.");
+    } else {
+      String prompt = "You are the Player " + String.valueOf(playerID)
+          + ", What would you like to do?\n   (M)ove\n   (A)ttack\n   (D)one";
+      HashSet<String> legalOrderSet = new HashSet<String>();
+      legalOrderSet.add("M");
+      legalOrderSet.add("A");
+      legalOrderSet.add("D");
+      ArrayList<String> orderString = sendOrder(prompt, legalOrderSet);
+      while (!orderString.get(0).equals("D")) {
+        orderString = sendOrder(prompt, legalOrderSet);
+      }
+    }
+  }
 }
