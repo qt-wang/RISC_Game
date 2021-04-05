@@ -13,7 +13,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
-import java.awt.event.ActionEvent;
+import javafx.event.ActionEvent;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -32,14 +34,28 @@ public class UserScenePanelController implements Initializable {
     @FXML
     Button button;
 
+    @FXML
+    Button listOpenGameButton;
+
+    @FXML
+    Button createGameButton;
+
+    @FXML
+    Button listExistingGameButton;
+
     public UserScenePanelController(Client client, Stage primaryStage, JSONObject object) {
         this.client = client;
         this.primaryStage = primaryStage;
         this.object = object;
     }
 
-    public void onChangeSelection(ActionEvent ae) {
-        System.out.println("changed action");
+    // Send json to the server, and receive the corresponding json from server.
+    public void onClickListOpenGameButton(ActionEvent ae) throws IOException {
+        client.sendListOpenGameJSON();
+        JSONObject object = client.socketClient.receive();
+        System.out.println(object);
+        choiceBox.getItems().clear();
+        setChoiceBoxDefaultValue(object);
     }
 
     private void setLabelText(JSONObject object) {
@@ -56,9 +72,38 @@ public class UserScenePanelController implements Initializable {
         choiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                System.out.println(newValue);
+                // Based on the value of newValue, display the gameinfo for newValue.
+                for (JSONObject object: client.getListedGames().values()) {
+                    int gameId = object.getInt("gameId");
+                    if (gameId == newValue.intValue()) {
+                        setLabelText(object);
+                        break;
+                    }
+                }
             }
         });
+    }
+
+    private void setChoiceBoxDefaultValue(JSONObject object) {
+        int numberOfGames = object.getInt("numberOfGames");
+        if (numberOfGames != 0) {
+            HashMap<Integer, JSONObject> listedGames = new HashMap<>();
+            for (int i = 0; i < numberOfGames; i ++) {
+                JSONObject temp = object.getJSONObject(Integer.toString(i));
+                choiceBox.getItems().add(temp.getInt("gameId"));
+                listedGames.put(i, temp);
+            }
+            client.setListedGames(listedGames);
+            // Set the default value for the choice box and label.
+            JSONObject defaultJSON = client.getListedGames().get(0);
+            choiceBox.setValue(defaultJSON.getInt("gameId"));
+            setLabelText(defaultJSON);
+        } else {
+            button.setDisable(true);
+            choiceBox.getItems().clear();
+            choiceBox.setDisable(true);
+            labelIntro.setText("There is currently no open games.");
+        }
     }
 
     @Override
@@ -76,17 +121,7 @@ public class UserScenePanelController implements Initializable {
             button.setDisable(false);
             choiceBox.setDisable(false);
             // Store the information into the client.
-            HashMap<Integer, JSONObject> listedGames = new HashMap<>();
-            for (int i = 0; i < numberOfGames; i ++) {
-                JSONObject temp = this.object.getJSONObject(Integer.toString(i));
-                choiceBox.getItems().add(temp.getInt("gameId"));
-                listedGames.put(i, temp);
-            }
-            client.setListedGames(listedGames);
-            // Set the default value for the choice box and label.
-            JSONObject defaultJSON = client.getListedGames().get(0);
-            choiceBox.setValue(defaultJSON.getInt("gameId"));
-            setLabelText(defaultJSON);
+            setChoiceBoxDefaultValue(this.object);
         }
     }
 }

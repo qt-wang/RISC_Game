@@ -27,6 +27,7 @@ public class Client {
     final HashMap<String, Runnable> commandMap;
     public SocketClient socketClient;
     HashMap<Integer, JSONObject> listedGames;
+    private String password;
 
     public SocketClient getSocketClient() {
         return socketClient;
@@ -84,10 +85,6 @@ public class Client {
                 out.println("Meet IO exception.");
             }
         });
-        //FGCAdded
-        // Send a needPass to construct the connection.
-        //socketClient.send(generateConnectJSON(""));
-        //connectGame();
     }
 
     public void setListedGames(HashMap<Integer, JSONObject> listedGames) {
@@ -116,6 +113,10 @@ public class Client {
         }
     }
 
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     /**S
      * Send password to server.
@@ -147,6 +148,12 @@ public class Client {
      */
     public JSONObject generatePingJSON(String prompt) {
         return new JSONObject().put("type", "ping").put("prompt", prompt);
+    }
+
+
+    public void sendListOpenGameJSON() throws IOException {
+        JSONObject object = new JSONObject().put("type", "connection").put("sub", "listOpenGame").put("password", password);
+        this.socketClient.send(object);
     }
 
     /**

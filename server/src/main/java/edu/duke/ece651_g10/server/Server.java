@@ -101,11 +101,14 @@ public class Server {
      */
     void appendOpenGameInformation(String password, JSONObject object) {
         Set<Game> inGames = new HashSet<>(clientGames.get(password));
+        int count = 0;
         for (int i = 0; i < games.size(); i++) {
-            if (!games.get(i).isGameFull() && inGames.contains(games.get(i))) {
+            if (!games.get(i).isGameFull() && !inGames.contains(games.get(i))) {
+                count += 1;
                 object.put(Integer.toString(i), games.get(i).presentGameInfo());
             }
         }
+        object.put("numberOfGames", count);
     }
 
     /**
