@@ -16,8 +16,8 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
      */
     public void execute(){
         //checkValidMove();
-        source.decreaseUnit(unitNum);
-        dest.increaseUnit(unitNum);
+        source.decreaseUnit(unitNum, 0);
+        dest.increaseUnit(unitNum, 0);
     }
 
    public Territory getSourceTerritory() {

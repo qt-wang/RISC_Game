@@ -32,16 +32,18 @@ public interface Territory {
      * Increase the owner's soldier number by unit.
      *
      * @param unit The number of units to increase.
+     * @param level The level of the unit.
      */
-    public void increaseUnit(int unit);
+    public void increaseUnit(int unit, int level);
 
 
     /**
      * Decrease the owner's soldier number by unit.
      *
      * @param unit The number of units to decrease.
+     * @param level The level to decrease.
      */
-    public void decreaseUnit(int unit);
+    public void decreaseUnit(int unit, int level);
 
     /**
      * Get all the neighbours of the territory.

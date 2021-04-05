@@ -11,7 +11,7 @@ public class AttackOrderTest {
     GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
    
-    gMap.getTerritory("Elantris").increaseUnit(1);
+    gMap.getTerritory("Elantris").increaseUnit(1, 0);
     AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
     assertEquals(1, mOrder.getPlayerID());
     assertEquals(1, mOrder.getNumUnit());
@@ -21,7 +21,7 @@ public class AttackOrderTest {
     mOrder2.execute();
     assertEquals(1, gMap.getTerritory("Elantris").getNumUnit());
 
-    gMap.getTerritory("Scadrial").increaseUnit(2);
+    gMap.getTerritory("Scadrial").increaseUnit(2, 0);
     AttackOrder mOrder3 = new AttackOrder(1, "Scadrial", "Elantris", 1, gMap, player);
     mOrder3.addUnits(1);
     assertEquals(2, mOrder3.getNumUnit());
@@ -37,7 +37,7 @@ public class AttackOrderTest {
     FixedGameMapFactory factory = new FixedGameMapFactory();
     GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
-    gMap.getTerritory("Elantris").increaseUnit(5);
+    gMap.getTerritory("Elantris").increaseUnit(5, 0);
     AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
     mOrder.execute();
     assertEquals("Elantris", mOrder.getSourceTerritory().getName());
@@ -48,7 +48,7 @@ public class AttackOrderTest {
     FixedGameMapFactory factory = new FixedGameMapFactory();
     GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
-    gMap.getTerritory("Elantris").increaseUnit(5);
+    gMap.getTerritory("Elantris").increaseUnit(5, 0);
     AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
     mOrder.execute();
     assertEquals("Narnia", mOrder.getTargetTerritory().getName());

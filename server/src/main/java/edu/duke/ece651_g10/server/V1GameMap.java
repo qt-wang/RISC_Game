@@ -78,7 +78,7 @@ public class V1GameMap implements GameMap {
     @Override
     public void addUnitToEachTerritory() {
         for (Territory t: territories) {
-            t.increaseUnit(1);
+            t.increaseUnit(1, 0);
         }
     }
 

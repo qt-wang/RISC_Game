@@ -11,7 +11,7 @@ public class V1RuleCheckerTest {
     FixedGameMapFactory factory = new FixedGameMapFactory();
     GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
-    gMap.getTerritory("Elantris").increaseUnit(5);
+    gMap.getTerritory("Elantris").increaseUnit(5, 0);
     Player p = mock(Player.class);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
     AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);

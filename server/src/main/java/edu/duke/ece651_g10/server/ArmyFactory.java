@@ -4,6 +4,8 @@ package edu.duke.ece651_g10.server;
  * Army factory, used to generate specific level armies.
  */
 public interface ArmyFactory {
+    public Army generateLZeroArmy(int units);
+
     public Army generateLOneArmy(int units);
 
     public Army generateLTwoArmy(int units);
@@ -16,5 +18,4 @@ public interface ArmyFactory {
 
     public Army generateLSixArmy(int units);
 
-    public Army generateLSevenArmy(int units);
 }
