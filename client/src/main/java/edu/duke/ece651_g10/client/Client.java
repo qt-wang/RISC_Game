@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,10 @@ public class Client {
     final HashMap<String, Runnable> commandMap;
     public SocketClient socketClient;
 
+
+    public SocketClient getSocketClient() {
+        return socketClient;
+    }
     /**
      * The constructor of the Client
      *
