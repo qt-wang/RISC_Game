@@ -1,5 +1,6 @@
 package edu.duke.ece651_g10.client.controller;
 
+import edu.duke.ece651_g10.client.App;
 import edu.duke.ece651_g10.client.Client;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -53,9 +54,23 @@ public class UserScenePanelController implements Initializable {
     public void onClickListOpenGameButton(ActionEvent ae) throws IOException {
         client.sendListOpenGameJSON();
         JSONObject object = client.socketClient.receive();
-        System.out.println(object);
         choiceBox.getItems().clear();
         setChoiceBoxDefaultValue(object);
+    }
+
+    // Send join game to the server, receive response from server.
+    public void onClickJoinGameButton(ActionEvent ae) throws IOException {
+        int gameId = (int) choiceBox.getValue();
+        this.client.sendJoinGameJSON(gameId);
+        JSONObject object = this.client.getSocketClient().receive();
+        Boolean valid = object.getString("prompt").equals("valid\n");
+        if (!valid) {
+            // provide a information to show it.
+            Stage stage = App.createDialogStage(primaryStage, "Error", object.getString("reason"));
+            stage.show();
+        } else {
+            //TODO: Handle the logic to log the user into the game.
+        }
     }
 
     private void setLabelText(JSONObject object) {

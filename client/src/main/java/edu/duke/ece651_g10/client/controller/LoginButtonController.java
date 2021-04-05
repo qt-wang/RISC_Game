@@ -42,13 +42,8 @@ public class LoginButtonController {
             System.out.println(password);
 
             // Display a window to tell the user its password.
-            final Stage dialog = App.createChildStage(primaryStage, "password");
-            VBox dialogBox = new VBox(20);
-            Text info = new Text("Your password is:" + password);
-            info.setFont(Font.font(20));
-            dialogBox.getChildren().add(info);
-            Scene dialogScene = new Scene(dialogBox, 300, 200);
-            dialog.setScene(dialogScene);
+            String content = "Your password is:" + password;
+            final Stage dialog = App.createDialogStage(primaryStage, "Password", content);
             dialog.show();
         } catch (IOException exception) {
             exception.printStackTrace();

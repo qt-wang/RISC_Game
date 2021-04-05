@@ -65,6 +65,17 @@ public class App extends Application {
         launch(args);
     }
 
+    public static Stage createDialogStage(Stage primaryStage, String title, String content) {
+        Stage stage = createChildStage(primaryStage, title);
+        VBox dialogBox = new VBox(20);
+        Text info = new Text(content);
+        info.setFont(Font.font(20));
+        dialogBox.getChildren().add(info);
+        Scene dialogScene = new Scene(dialogBox, 300, 200);
+        stage.setScene(dialogScene);
+        return stage;
+    }
+
     public static Stage createChildStage(Stage primaryStage, String title) {
         Stage stage = new Stage();
         stage.setTitle(title);

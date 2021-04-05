@@ -364,6 +364,11 @@ public class Client {
         return orderString;
     }
 
+    public void sendJoinGameJSON(int gameId) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("type", "connection").put("sub", "joinGame").put("password", this.password).put("gameId", gameId);
+        this.socketClient.send(object);
+    }
 
     private void FGCConnection() throws IOException {
         // Receive the password.

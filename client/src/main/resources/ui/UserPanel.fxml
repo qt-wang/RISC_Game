@@ -62,7 +62,7 @@
                   </VBox>
                   <VBox alignment="CENTER" prefHeight="64.0" prefWidth="300.0">
                      <children>
-                        <Button fx:id="button" mnemonicParsing="false" text="Join" />
+                        <Button fx:id="button" onAction="#onClickJoinGameButton" mnemonicParsing="false" text="Join" />
                      </children>
                   </VBox>
                </children>

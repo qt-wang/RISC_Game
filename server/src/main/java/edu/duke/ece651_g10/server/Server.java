@@ -81,7 +81,7 @@ public class Server {
      * @param object   The object to append the new information.
      */
     void appendGameInformation(String password, JSONObject object) {
-        //TODO: change this back
+        //TODO: change this back !!!!!!!
         List<Game> games = new LinkedList<>();
         games.add(this.games.get(0));
         games.add(this.games.get(1));
@@ -173,7 +173,7 @@ public class Server {
                 }
                 case "joinGame": {
                     String providedPassword = obj.getString("password");
-                    int gameId = Integer.parseInt(obj.getString("gameId"));
+                    int gameId = obj.getInt("gameId");
                     String reason = addPlayerToGame(providedPassword, gameId, socket, jc);
                     if (reason == null) {
                         // We should not monitor on this port anymore.
@@ -302,7 +302,7 @@ public class Server {
             // Create a new player, add it to game.
             Player newPlayer = new Player(socket, jc);
             clientInfo.get(password).add(newPlayer);
-            game.addPlayer(newPlayer);
+            games.get(gameId).addPlayer(newPlayer);
         }
         return null;
     }
