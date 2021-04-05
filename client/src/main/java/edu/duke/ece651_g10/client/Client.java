@@ -93,7 +93,7 @@ public class Client {
      * generate a JSONObject of type: connection
      *
      * @param password the password to join the game
-     * @return the constructed JSONOBject
+     * @return the constructed JSONObject
      */
     public JSONObject generateConnectJSON(String password) throws IOException {
         if (!password.equals("")) {
@@ -102,6 +102,17 @@ public class Client {
             return new JSONObject().put("type", "connection").put("sub", "needPass");
         }
     }
+
+
+    /**S
+     * Send password to server.
+     * @param password
+     * @return
+     */
+    public JSONObject sendPasswordToServer(String password) {
+        return new JSONObject().put("type", "connection").put("sub", "providePass").put("password", password);
+    }
+
 
     /**
      * generate a JSONObject of type: inform
