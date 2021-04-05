@@ -36,7 +36,20 @@ class FixedGameMapFactoryTest {
 
     @Test
     public void test_five_people_map() {
-        GameMapFactory factory = new FixedGameMapFactory();
-        GameMap map = factory.createGameMap(5,3);
+        FixedGameMapFactory factory = new FixedGameMapFactory();
+        GameMap map = factory.createFivePeopleMap();
+
+        HashSet<Territory> group = map.getInitialGroups().get(1);
+        int foodTotal = 0;
+        int techTotal = 0;
+        int sizeTotal = 0;
+        for (Territory t: group) {
+            foodTotal += t.getFoodResourceGenerationRate();
+            techTotal += t.getTechnologyResourceGenerationRate();
+            sizeTotal += t.getSize();
+        }
+        assertEquals(120, foodTotal);
+        assertEquals(45, techTotal);
+        assertEquals(90, sizeTotal);
     }
 }
