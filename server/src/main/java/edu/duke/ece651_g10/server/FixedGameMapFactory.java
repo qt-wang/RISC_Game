@@ -198,7 +198,7 @@ public class FixedGameMapFactory implements GameMapFactory {
         territories.addAll(group2);
         territories.addAll(group3);
         V1GameMap result = new V1GameMap(territories, groups);
-        setupTerritoryAttributes(result, 80, 45, 100);
+        //setupTerritoryAttributes(result, 80, 45, 100);
         return result;
     }
 

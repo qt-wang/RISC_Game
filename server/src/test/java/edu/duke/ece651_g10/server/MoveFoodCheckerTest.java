@@ -12,7 +12,7 @@ public class MoveFoodCheckerTest {
     Player mockPlayer = mock(Player.class);
     when(mockPlayer.getFoodResourceTotal()).thenReturn(55);
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gameMap = factory.createGameMap(3, 3);
+    GameMap gameMap = factory.createGameMap(3);
     gameMap.getTerritory("Narnia").setOwner(mockPlayer);
     gameMap.getTerritory("Oz").setOwner(mockPlayer);
     gameMap.getTerritory("Elantris").setOwner(mockPlayer);
