@@ -1,6 +1,8 @@
 package edu.duke.ece651_g10.client.controller;
 
 import edu.duke.ece651_g10.client.Client;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -11,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
+import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -35,6 +38,10 @@ public class UserScenePanelController implements Initializable {
         this.object = object;
     }
 
+    public void onChangeSelection(ActionEvent ae) {
+        System.out.println("changed action");
+    }
+
     private void setLabelText(JSONObject object) {
         int gameId = object.getInt("gameId");
         int currentPlayers = object.getInt("currentPlayer");
@@ -45,9 +52,20 @@ public class UserScenePanelController implements Initializable {
         labelIntro.setText(displayInfo);
     }
 
+    private void setOnActionForChoiceBox() {
+        choiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                System.out.println(newValue);
+            }
+        });
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         int numberOfGames = this.object.getInt("numberOfGames");
+        // Set the action handler for choice box.
+        setOnActionForChoiceBox();
         if (numberOfGames == 0) {
             button.setDisable(true);
             labelIntro.setFont(Font.font(20));
