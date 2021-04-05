@@ -11,19 +11,8 @@ public class ShortestPathTest {
     GameMap gMap = factory.createGameMap(3, 3);
     Player player = new Player(null, null);
     ShortestPath sp = new ShortestPath(gMap);
-    assertEquals(23, sp.minCost(gMap.getTerritory("Narnia"),  gMap.getTerritory("Oz")));
-     assertEquals(11, sp.minCost(gMap.getTerritory("Elantris"),  gMap.getTerritory("Roshar")));
+    assertEquals(23, sp.minCost(gMap.getTerritory("Narnia"), gMap.getTerritory("Oz")));
+    assertEquals(11, sp.minCost(gMap.getTerritory("Elantris"), gMap.getTerritory("Roshar")));
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
