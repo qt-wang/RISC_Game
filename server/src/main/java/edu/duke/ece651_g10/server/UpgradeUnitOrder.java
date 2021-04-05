@@ -10,6 +10,13 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
 
   public void execute() {
     // gMap.upgradeUnit(playerID, dest, unitNum, level);
+    Army fromArmy = source.getArmyWithLevel(level);
+    Army toArmy = source.getArmyWithLevel(level + 1);
+    fromArmy.decreaseUnits(unitNum);
+    toArmy.increaseUnits(unitNum);
+    int foodCost = getFoodCost();
+    int newFoodResource = player.getFoodResourceTotal() - foodCost;
+    player.setFoodResourceTotal(newFoodResource);
   }
 
   public Territory getSourceTerritory() {
@@ -24,4 +31,19 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
     return level;
   }
 
+  public int getFoodCost(){
+    return unitUpgradeTable.get(level + 1);
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
