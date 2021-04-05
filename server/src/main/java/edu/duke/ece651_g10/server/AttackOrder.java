@@ -47,7 +47,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
             dest.increaseUnit(unitNum);
             return;
         }
-        //attacker.decreaseUnit(unitNum);
+        //attacker.decreaseUnit(unitNum );
         if(dest.getNumUnit() == 0){
             attackerWin = true;
             dest.setOwner(source.getOwner());
