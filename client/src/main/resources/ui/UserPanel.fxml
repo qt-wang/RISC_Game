@@ -47,7 +47,7 @@
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
                               <Label text="Select game:" />
-                              <ChoiceBox prefWidth="150.0" />
+                              <ChoiceBox fx:id="choiceBox" prefWidth="150.0" />
                            </children>
                         </HBox>
                      </children>
@@ -57,12 +57,12 @@
                         <Insets top="15.0" />
                      </VBox.margin>
                      <children>
-                        <Label contentDisplay="RIGHT" text="Label" />
+                        <Label fx:id="labelIntro" contentDisplay="RIGHT" text="Label" />
                      </children>
                   </VBox>
                   <VBox alignment="CENTER" prefHeight="64.0" prefWidth="300.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Join" />
+                        <Button fx:id="button" mnemonicParsing="false" text="Join" />
                      </children>
                   </VBox>
                </children>

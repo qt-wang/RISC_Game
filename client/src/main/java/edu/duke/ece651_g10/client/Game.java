@@ -33,7 +33,7 @@ public class Game extends Application {
             return controllers.get(c);
         });
         AnchorPane ap = loader.load();
-        Scene scene = new Scene(ap,1600,900);
+        Scene scene = new Scene(ap,600,400);
         scene.getStylesheets().add(cssResource.toString());
         primaryStage.setScene(scene);
         primaryStage.show();

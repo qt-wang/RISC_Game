@@ -97,7 +97,7 @@ public class LoginButtonController {
                         // Change scene, and login the user.
                         System.out.println("Login successfully");
                         dialog.close();
-                        primaryStage.setScene(factory.createUserScene());
+                        primaryStage.setScene(factory.createUserScene(response));
                         // Set the new scene for the primaryStage.
                     }
                 } catch (IOException e) {

@@ -26,7 +26,7 @@ public class Client {
     final HashMap<String, String> orderKeyValue;
     final HashMap<String, Runnable> commandMap;
     public SocketClient socketClient;
-
+    HashMap<Integer, JSONObject> listedGames;
 
     public SocketClient getSocketClient() {
         return socketClient;
@@ -88,6 +88,14 @@ public class Client {
         // Send a needPass to construct the connection.
         //socketClient.send(generateConnectJSON(""));
         //connectGame();
+    }
+
+    public void setListedGames(HashMap<Integer, JSONObject> listedGames) {
+        this.listedGames = listedGames;
+    }
+
+    public HashMap<Integer, JSONObject> getListedGames() {
+        return this.listedGames;
     }
 
     public void setCurrentJSON(JSONObject currentJSON) {
