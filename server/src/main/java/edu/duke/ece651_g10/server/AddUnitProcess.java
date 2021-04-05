@@ -20,7 +20,7 @@ public class AddUnitProcess{
      */
     public void addOneUnit() {
         for(Territory territory : territoryList){
-            territory.increaseUnit(1);
+            territory.increaseUnit(0, 1);
         }
     }
 }

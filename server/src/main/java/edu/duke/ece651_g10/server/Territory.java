@@ -33,7 +33,7 @@ public interface Territory {
      *
      * @param unit The number of units to increase.
      */
-    public void increaseUnit(int unit);
+    public void increaseUnit(int level, int unit);
 
 
     /**
@@ -41,7 +41,7 @@ public interface Territory {
      *
      * @param unit The number of units to decrease.
      */
-    public void decreaseUnit(int unit);
+    public void decreaseUnit(int level, int unit);
 
     /**
      * Get all the neighbours of the territory.

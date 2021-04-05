@@ -19,18 +19,20 @@ public class V1Territory implements Territory {
 
 
     @Override
-    public void decreaseUnit(int unit) {
-        for (int i = 0; i < unit; i ++) {
+    public void decreaseUnit(int level, int unit) {
+        armies.get(level).decreaseUnits(unit);
+        /*for (int i = 0; i < unit; i ++) {
             ownedUnits.remove(0);
-        }
+        }*/
     }
 
 
     @Override
-    public void increaseUnit(int unit) {
-        for (int i = 0; i < unit; i ++) {
+    public void increaseUnit(int level, int unit) {
+        armies.get(level).increaseUnits(unit);
+        /*for (int i = 0; i < unit; i ++) {
             ownedUnits.add(new V1Unit());
-        }
+        }*/
     }
 
 
@@ -40,7 +42,7 @@ public class V1Territory implements Territory {
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
-    private List<Unit> ownedUnits;
+    //private List<Unit> ownedUnits;
 
 
     // Version 2 variables.
@@ -54,14 +56,34 @@ public class V1Territory implements Territory {
         this.owner = player;
     }
 
+    private void initiateArmies(){
+        V2ArmyFactory af = new V2ArmyFactory();
+        Army level0Army = af.generateLZeroArmy(0);
+        armies.add(level0Army);
+        Army level1Army = af.generateLOneArmy(0);
+        armies.add(level1Army);
+        Army level2Army = af.generateLTwoArmy(0);
+        armies.add(level2Army);
+        Army level3Army = af.generateLThreeArmy(0);
+        armies.add(level3Army);
+        Army level4Army = af.generateLFourArmy(0);
+        armies.add(level4Army);
+        Army level5Army = af.generateLFiveArmy(0);
+        armies.add(level5Army);
+        Army level6Army = af.generateLSixArmy(0);
+        armies.add(level6Army);
+    }
+
     public V1Territory(String name) {
         this.name = name;
         neighbours = new HashSet<>();
         units = new HashMap<>();
-        ownedUnits = new LinkedList<>();
+        //ownedUnits = new LinkedList<>();
         size = 0;
         foodResourceGenerationRate = 0;
         technologyResourceGenerationRate = 0;
+        this.armies = new LinkedList<>();
+        initiateArmies();
     }
 
 
@@ -72,7 +94,11 @@ public class V1Territory implements Territory {
 
     @Override
     public int getNumUnit() {
-        return ownedUnits.size();
+        int sum = 0;
+        for(int i = 0; i < armies.size(); i++){
+            sum += armies.get(i).getArmyUnits();
+        }
+        return sum;
     }
 
     @Override
