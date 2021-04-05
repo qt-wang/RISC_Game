@@ -5,7 +5,6 @@ package edu.duke.ece651_g10.server;
  */
 public interface GameFactory {
 
-    public Game createFixedGame();
+    public Game createFixedGame(int people);
 
-    public Game createRandomGame();
 }

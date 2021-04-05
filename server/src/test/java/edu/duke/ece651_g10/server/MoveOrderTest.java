@@ -9,7 +9,7 @@ public class MoveOrderTest {
   @Test
   public void test_MoveOrderExecute() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5);
     Player p = mock(Player.class);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
@@ -20,7 +20,7 @@ public class MoveOrderTest {
   @Test
   public void test_getSourceTerritory(){
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5);
     Player p = mock(Player.class);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
@@ -31,7 +31,7 @@ public class MoveOrderTest {
   @Test
   public void test_getTargetTerritory(){
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5);
     Player p = mock(Player.class);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
@@ -42,7 +42,7 @@ public class MoveOrderTest {
   @Test
   public void test_getNumUnit(){
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5);
     Player p = mock(Player.class);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);

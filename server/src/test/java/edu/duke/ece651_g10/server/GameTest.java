@@ -14,7 +14,7 @@ class GameTest {
     private Game createTestGame() {
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
-        GameMap map = new FixedGameMapFactory().createGameMap(3, 3);
+        GameMap map = new FixedGameMapFactory().createGameMap(3);
         Server mockServer = mock(Server.class);
         Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, Executors.newCachedThreadPool(), mockServer);
         return game;

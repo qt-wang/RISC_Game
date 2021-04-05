@@ -8,7 +8,7 @@ public class PlayerTest {
   @Test
   public void test_player() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     assertEquals(player.getSocket(), player.getSocket());
     assertEquals(player.getSocketNumber(), player.getSocketNumber());

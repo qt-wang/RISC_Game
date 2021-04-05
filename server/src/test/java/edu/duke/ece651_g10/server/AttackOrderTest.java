@@ -8,7 +8,7 @@ public class AttackOrderTest {
   @Test
   public void test_execute() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
    
     gMap.getTerritory("Elantris").increaseUnit(1);
@@ -35,7 +35,7 @@ public class AttackOrderTest {
   @Test
   public void test_getSourceTerritory() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5);
     AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
@@ -46,7 +46,7 @@ public class AttackOrderTest {
    @Test
   public void test_getTargetTerritory() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5);
     AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);

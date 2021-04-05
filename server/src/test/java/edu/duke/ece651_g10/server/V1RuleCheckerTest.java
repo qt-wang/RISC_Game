@@ -9,7 +9,7 @@ public class V1RuleCheckerTest {
   @Test
   public void test_V1RuleChecker() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5);
     Player p = mock(Player.class);
