@@ -8,7 +8,7 @@ public class ShortestPathTest {
   @Test
   public void test_minCost() {
     FixedGameMapFactory factory = new FixedGameMapFactory();
-    GameMap gMap = factory.createGameMap(3, 3);
+    GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     ShortestPath sp = new ShortestPath(gMap);
     assertEquals(23, sp.minCost(gMap.getTerritory("Narnia"), gMap.getTerritory("Oz")));

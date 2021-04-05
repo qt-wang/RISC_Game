@@ -8,31 +8,24 @@ import java.util.*;
  */
 public class V1Territory implements Territory {
 
-
+    @Deprecated
     @Override
     public void setUnitNumber(int unit) {
-        ownedUnits = new LinkedList<>();
-        for (int i = 0; i < unit; i ++) {
-            ownedUnits.add(new V1Unit());
-        }
+        //armies.get(0).increaseUnits(unit);
+        armies.get(0).decreaseUnits(armies.get(0).getArmyUnits());
+        armies.get(0).increaseUnits(unit);
     }
 
 
     @Override
-    public void decreaseUnit(int level, int unit) {
+    public void decreaseUnit(int unit, int level) {
         armies.get(level).decreaseUnits(unit);
-        /*for (int i = 0; i < unit; i ++) {
-            ownedUnits.remove(0);
-        }*/
     }
 
 
     @Override
-    public void increaseUnit(int level, int unit) {
+    public void increaseUnit(int unit, int level) {
         armies.get(level).increaseUnits(unit);
-        /*for (int i = 0; i < unit; i ++) {
-            ownedUnits.add(new V1Unit());
-        }*/
     }
 
 
@@ -42,7 +35,7 @@ public class V1Territory implements Territory {
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
-    //private List<Unit> ownedUnits;
+//    private List<Unit> ownedUnits;
 
 
     // Version 2 variables.
@@ -78,11 +71,10 @@ public class V1Territory implements Territory {
         this.name = name;
         neighbours = new HashSet<>();
         units = new HashMap<>();
-        //ownedUnits = new LinkedList<>();
         size = 0;
         foodResourceGenerationRate = 0;
         technologyResourceGenerationRate = 0;
-        this.armies = new LinkedList<>();
+        armies = new LinkedList<>();
         initiateArmies();
     }
 
@@ -95,7 +87,7 @@ public class V1Territory implements Territory {
     @Override
     public int getNumUnit() {
         int sum = 0;
-        for(int i = 0; i < armies.size(); i++){
+        for (int i = 0; i < armies.size();i ++) {
             sum += armies.get(i).getArmyUnits();
         }
         return sum;

@@ -44,21 +44,21 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
         if(dest.getNumUnit() == 0){
             attackerWin = true;
             dest.setOwner(this.player);
-            dest.increaseUnit(unitNum);
+            dest.increaseUnit(unitNum, 0);
             return;
         }
         //attacker.decreaseUnit(unitNum );
         if(dest.getNumUnit() == 0){
             attackerWin = true;
             dest.setOwner(source.getOwner());
-            dest.increaseUnit(unitNum);
+            dest.increaseUnit(unitNum,0);
         }
         while(!attackerWin && !defenderWin){
             long seed = System.currentTimeMillis();
             int attDice = dice.roll(seed);
             int defDice = dice.roll(seed+1000);
             if(attDice > defDice){     //attacker wins a round
-                dest.decreaseUnit(1);
+                dest.decreaseUnit(1, 0);
             }
             else{                      //defender wins a round
                 unitNum -= 1;
@@ -68,7 +68,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
             }
             if(dest.getNumUnit() == 0){
                 dest.setOwner(this.player);
-                dest.increaseUnit(unitNum);
+                dest.increaseUnit(unitNum,0);
                 attackerWin = true;
             }
         }*/

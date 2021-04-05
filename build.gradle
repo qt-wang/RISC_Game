@@ -7,6 +7,7 @@
 plugins {
     id 'com.bmuschko.clover' version '2.2.3'
 }
+
 subprojects{
     apply plugin: "java"
     apply plugin: "com.bmuschko.clover"
@@ -53,6 +54,7 @@ subprojects{
     artifacts {
         testPkg testCode
     }
+
 }
 
 // Project specific stuff
@@ -82,7 +84,6 @@ tasks.register("run-client") {
     group = 'Run Client/Server'
     description = 'Run the Client'
 }
-
 task resolveDependencies {
    doLast {
        project.rootProject.allprojects.each { subProject ->

@@ -123,7 +123,7 @@ public class Server {
             }
             assert (str.equals("connection"));
             String subType = obj.getString("sub");
-            switch (str) {
+            switch (subType) {
                 case "needPass": {
                     // The user needs a password.
                     // Generate the password.
@@ -131,6 +131,7 @@ public class Server {
                     clientGames.put(password, new LinkedList<>());
                     clientInfo.put(password, new LinkedList<>());
                     JSONObject response = JSONCommunicator.generateServerResponse("valid", "", "connection");
+                    response.put("password", password);
                     jc.send(response);
                     break;
                 }
@@ -214,15 +215,17 @@ public class Server {
      */
     public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
+        games = new HashMap<>();
         gameFactory = new V2GameFactory(this);
         this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
         clientInfo = new HashMap<>();
+        clientGames = new HashMap<>();
         //TODO: shall we only have fixed number of games? what if game ends?
         for (int i = 0; i < 5; i++) {
-            games.put(i, gameFactory.createRandomGame());
+            games.put(i, gameFactory.createFixedGame(3));
         }
     }
 
