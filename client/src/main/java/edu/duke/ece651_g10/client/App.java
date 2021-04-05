@@ -86,6 +86,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("RISC");
         SocketClient socketClient = new SocketClient("127.0.0.1", 12345);
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         Client client = new Client(System.out, input, socketClient);

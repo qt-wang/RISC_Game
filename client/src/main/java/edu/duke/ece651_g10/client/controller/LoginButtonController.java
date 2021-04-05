@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.client.controller;
 
 import edu.duke.ece651_g10.client.App;
 import edu.duke.ece651_g10.client.Client;
+import edu.duke.ece651_g10.client.SceneFactory;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,10 +23,11 @@ import java.io.IOException;
 public class LoginButtonController {
     Client client;
     Stage primaryStage;
-
-    public LoginButtonController(Client client, Stage primaryStage) {
+    SceneFactory factory;
+    public LoginButtonController(Client client, Stage primaryStage, SceneFactory factory) {
         this.client = client;
         this.primaryStage = primaryStage;
+        this.factory = factory;
     }
 
     public void onCreate(ActionEvent e) {
@@ -94,6 +96,8 @@ public class LoginButtonController {
                     } else {
                         // Change scene, and login the user.
                         System.out.println("Login successfully");
+                        dialog.close();
+                        primaryStage.setScene(factory.createUserScene());
                         // Set the new scene for the primaryStage.
                     }
                 } catch (IOException e) {
