@@ -52,6 +52,14 @@ public interface GameMap {
      */
     public Set<Territory> getTerritoriesForPlayer(Player p);
 
+
+    /**
+     * Get all the territories that do not belong to player p.
+     * @param p  The player that is used to test.
+     * @return   All the territories that do not belong to player p.
+     */
+    public Set<Territory> getTerritoriesNotBelongToPlayer(Player p);
+
     /**
      * Get the number of total players allowed in this game map.
      * @return

@@ -16,7 +16,7 @@ class GameTest {
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = new FixedGameMapFactory().createGameMap(3);
         Server mockServer = mock(Server.class);
-        Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, Executors.newCachedThreadPool(), mockServer);
+        Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
         return game;
     }
 
@@ -64,7 +64,7 @@ class GameTest {
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         Server mockServer = mock(Server.class);
-        Game game = new Game(mockMap, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), mockView, 20, 3, Executors.newCachedThreadPool(), mockServer);
+        Game game = new Game(mockMap, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), mockView, 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
 
         game.addPlayer(mockPlayer1);
         game.addPlayer(mockPlayer2);
@@ -111,5 +111,22 @@ class GameTest {
         assertEquals(receivedJson.getString("prompt"), "valid\n");
         assertEquals(receivedJson.getString("reason"), "");
         assertEquals(receivedJson.getString("type"), "connection");
+    }
+
+
+    @Test
+    public void test_merge_json() {
+        JSONObject one = new JSONObject();
+        one.put("11", 1);
+        one.put("12", new JSONObject().put("wow", "test"));
+
+        JSONObject two = new JSONObject();
+        two.put("21", 2);
+        two.put("22", new JSONObject().put("22wow", "test"));
+
+        JSONObject merged = Game.mergeJSONObject(one, two);
+        JSONObject test = merged.getJSONObject("12");
+        assertEquals("test", test.getString("wow"));
+        assertEquals(1, merged.getInt("11"));
     }
 }

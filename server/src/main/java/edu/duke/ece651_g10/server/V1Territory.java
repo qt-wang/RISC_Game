@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import org.json.JSONObject;
+
 import java.util.*;
 
 /**
@@ -99,6 +101,19 @@ public class V1Territory implements Territory {
     @Override
     public Army getArmyWithLevel(int level) {
         return armies.get(level);
+    }
+
+    @Override
+    public JSONObject presentTerritoryInformation() {
+        JSONObject result = new JSONObject();
+        JSONObject army = new JSONObject();
+        for (int i = 0;i < this.armies.size(); i ++) {
+            army.put(Integer.toString(i), armies.get(i).getArmyUnits());
+        }
+        result.put("foodResourceGenerationRate", this.foodResourceGenerationRate);
+        result.put("technologyResourceGenerationRate", this.technologyResourceGenerationRate);
+        result.put("armies", army);
+        return result;
     }
 
     @Override

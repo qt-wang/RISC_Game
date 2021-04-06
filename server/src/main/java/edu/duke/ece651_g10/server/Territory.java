@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import org.json.JSONObject;
+
 import java.util.Set;
 
 /**
@@ -130,4 +132,6 @@ public interface Territory {
      * @return  The army object.
      */
     public Army getArmyWithLevel(int level);
+
+    public JSONObject presentTerritoryInformation();
 }

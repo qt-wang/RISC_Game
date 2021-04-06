@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -34,6 +35,10 @@ public class Game implements Runnable {
 
     private RuleChecker attackRuleChecker;
 
+    private RuleChecker upgradeTechChecker;
+
+    private RuleChecker upgradeUnitChecker;
+
     private GameBoardView view;
 
     private OrderProcessor orderProcessor;
@@ -58,6 +63,7 @@ public class Game implements Runnable {
 
     //TODO: may need to add State, so that the server can detect ended game.
     //public enum State {Waiting, Running, Ending};
+
     /**
      * Construct a game based on the arguments given in the argument list.
      *
@@ -68,7 +74,7 @@ public class Game implements Runnable {
      * @param view              The text board view used to represent this game.
      * @param numUnitPerPlayer  The number of units belong to a player in this game.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
         this.playMap = map;
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
@@ -84,6 +90,8 @@ public class Game implements Runnable {
         this.serverTaskPool = serverTaskPool;
         this.refServer = refServer;
         this.gameBegins = false;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
     }
 
     public int getGameId() {
@@ -331,15 +339,23 @@ public class Game implements Runnable {
      */
     private void playOneTurn(int playerId) throws IOException {
         // Record other player's information, this should not change while this turn.
-        String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
+        //String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
         //String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
-        sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+        //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+        Player currentPlayer = players.get(playerId);
+        Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
+        Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
+        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
         boolean receiveCommit = false;
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
-                sendValidResponse(playerId);
+                sendServerValidResponse(playerId);
                 receiveCommit = true;
+                continue;
+            }
+            if (handleInvalidLogOutMessage(obj, playerId)) {
                 continue;
             }
             synchronized (this) {
@@ -349,20 +365,63 @@ public class Game implements Runnable {
                     message = moveRuleChecker.checkOrder(order, playMap);
                 } else if (order instanceof AttackOrder) {
                     message = attackRuleChecker.checkOrder(order, playMap);
-                } else {
-                    assert (false);
+                } else if (order instanceof UpgradeTechOrder) {
+                    message = upgradeTechChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeUnitOrder) {
+                    message = upgradeUnitChecker.checkOrder(order, playMap);
                 }
                 if (message == null) {
-                    sendValidResponse(playerId);
                     orderProcessor.acceptOrder(order);
                     //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
+                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
                 } else {
-                    sendInvalidResponse(playerId);
+                    sendServerInvalidResponse(playerId, message);
                 }
             }
         }
     }
 
+    /**
+     * generate the json object which describe the territories information about it.
+     * The key is the territories' name, the value is the territories' information.
+     *
+     * @param territories The territories needed.
+     * @return
+     */
+    public JSONObject generateTerritoriesInfo(Set<Territory> territories) {
+        JSONObject result = new JSONObject();
+        for (Territory t: territories) {
+            result.put(t.getName(), t.presentTerritoryInformation());
+        }
+        return result;
+    }
+
+    /**
+     * Generate the JSON object needed to update the information about the server.
+     * @param playerId  The player id of the player.
+     * @param sub       Can be "Placement" / "Attack"
+     * @param prompt    Whether the previous command send from client is valid or not.
+     * @param reason    The reason if invalid.
+     * @param fixedJSON The fixed part of the territories' info.
+     * @param variableJSON  The variable part of the territories' info.
+     * @return  The json object sent to the server.
+     */
+    public JSONObject generateClientNeededInformation(int playerId, String sub, String prompt, String reason,
+                                                      JSONObject fixedJSON, JSONObject variableJSON) {
+        JSONObject object = new JSONObject();
+        object.put("type", "Game").put("sub", sub).put("playerId", playerId).put("prompt", prompt).put("reason", reason);
+        // Append the playerStatus
+        boolean isLost = players.get(playerId).getIsLost();
+        object = isLost ? object.put("playerStatus", "L") : object.put("playerStatus", "A");
+        object = gameEnds ? object.put("playerStatus", "E") : object.put("playerStatus", object.get("playerStatus"));
+        Player p = players.get(playerId);
+        object.put("foodResource", p.getFoodResourceTotal());
+        object.put("technologyResource", p.getTechnologyResourceTotal());
+        object.put("technologyLevel", p.getTechnologyLevel());
+        object.put("canUpgrade", p.getCanUpgradeInThisTurn());
+        object.put("TerritoriesInformation", mergeJSONObject(fixedJSON, variableJSON));
+        return object;
+    }
 
     public JSONObject firstPhaseInformation(int playerId) {
         StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
@@ -374,7 +433,8 @@ public class Game implements Runnable {
     /**
      * Handle logout message sent from invalid phase.
      * Such as during normal game play.
-     * @param object  The received JSON object.
+     *
+     * @param object The received JSON object.
      * @return True, if the received message is a logout command.
      * Otherwise, return false.
      */
@@ -385,6 +445,15 @@ public class Game implements Runnable {
             return true;
         }
         return false;
+    }
+
+    static JSONObject mergeJSONObject(JSONObject Obj1, JSONObject Obj2) {
+        JSONObject merged = new JSONObject(Obj1, JSONObject.getNames(Obj1));
+        for(String key : JSONObject.getNames(Obj2))
+        {
+            merged.put(key, Obj2.get(key));
+        }
+        return merged;
     }
 
     /**
@@ -398,12 +467,16 @@ public class Game implements Runnable {
         // Send the view to the user.
         // The player should not see the units distributions of other players.
         boolean receiveCommit = false;
-
-        sendToPlayer(playerId, firstPhaseInformation(playerId));
+        Player currentPlayer = players.get(playerId);
+        Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
+        Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
+        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+        // Get fixed territories, and changeable territories.
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
-                sendValidResponse(playerId);
+                sendServerValidResponse(playerId);
                 receiveCommit = true;
                 continue;
             }
@@ -413,21 +486,18 @@ public class Game implements Runnable {
             synchronized (this) {
                 Order order = toOrder(playerId, obj);
                 if (order == null) {
-                    sendInvalidResponse(playerId);
+                    sendServerInvalidResponse(playerId, "Received null order!");
                     continue;
                 }
                 assert (order instanceof MoveOrder);
-//                sendValidResponse(playerId);
-//                orderProcessor.acceptOrder(order);
-                //String message = ruleChecker.checkOrder(order, this.playMap);
                 String message = moveRuleChecker.checkOrder(order, this.playMap);
                 // If valid, then send valid to user.
                 if (message == null) {
-                    sendValidResponse(playerId);
                     orderProcessor.acceptOrder(order);
-                    //sendToPlayer(playerId, firstPhaseInformation(playerId));
+                    // Send upgrade information back to the client.
+                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
                 } else {
-                    sendInvalidResponse(playerId);
+                    sendServerInvalidResponse(playerId, message);
                 }
             }
         }
@@ -670,6 +740,7 @@ public class Game implements Runnable {
      * numberOfTerritories
      * currentPlayers
      * totalPlayers
+     *
      * @return
      */
     public JSONObject presentGameInfo() {
@@ -691,8 +762,9 @@ public class Game implements Runnable {
 
     /**
      * If the game contains the player p, then return true.
-     * @param p  The player to check.
-     * @return  True if the game contains the player.
+     *
+     * @param p The player to check.
+     * @return True if the game contains the player.
      * Otherwise, return false.
      */
     public boolean containsPlayer(Player p) {

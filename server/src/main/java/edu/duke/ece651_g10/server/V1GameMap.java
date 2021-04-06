@@ -60,6 +60,7 @@ public class V1GameMap implements GameMap {
     }
 
 
+
     @Override
     public Player allBelongsToSamePlayer() {
         Player player = null;
@@ -101,6 +102,17 @@ public class V1GameMap implements GameMap {
     @Override
     public int getNumberOfTerritoriesPerPlayer() {
         return territoriesPerPlayer;
+    }
+
+    @Override
+    public Set<Territory> getTerritoriesNotBelongToPlayer(Player p) {
+        Set<Territory> result = new HashSet<>();
+        for (Territory t: territories) {
+            if (t.getOwner()!=p) {
+                result.add(t);
+            }
+        }
+        return result;
     }
 }
 

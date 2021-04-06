@@ -1,5 +1,6 @@
 package edu.duke.ece651_g10.server;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,6 +14,23 @@ class V1TerritoryTest {
         assertEquals(t.getName(), "test");
     }
 
+
+    @Test
+    public void test_present_territory_info() {
+        Territory t = new V1Territory("test");
+        t.setFoodResourceGenerationRate(20);
+        t.setTechnologyResourceGenerationRate(15);
+        t.increaseUnit(3, 3);;
+        t.increaseUnit(20, 0);
+        JSONObject object = t.presentTerritoryInformation();
+
+        assertEquals(20, object.getInt("foodResourceGenerationRate"));
+        assertEquals(15, object.getInt("technologyResourceGenerationRate"));
+
+        JSONObject army = object.getJSONObject("armies");
+        assertEquals(3, army.getInt("3"));
+        assertEquals(20, army.getInt("0"));
+    }
     @Test
     public void test_getter_setter() {
         Territory t = new V1Territory("test");
