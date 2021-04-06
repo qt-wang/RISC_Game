@@ -20,9 +20,9 @@ public class V2GameFactory implements GameFactory {
 //    }
     @Override
     public Game createFixedGame(int people) {
-        GameMapFactory random = new FixedGameMapFactory();
+        GameMapFactory fixedGameMapFactory = new FixedGameMapFactory();
         int randomUnits = ThreadLocalRandom.current().nextInt(25, 51);
-        GameMap map = random.createGameMap(people);
+        GameMap map = fixedGameMapFactory.createGameMap(people);
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(new AttackFoodChecker(null))))));
         return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), randomUnits, people, this.runServer.threadPool, this.runServer);

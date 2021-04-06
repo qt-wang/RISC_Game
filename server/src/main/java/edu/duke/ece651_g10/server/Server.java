@@ -81,7 +81,11 @@ public class Server {
      * @param object   The object to append the new information.
      */
     void appendGameInformation(String password, JSONObject object) {
-        List<Game> games = clientGames.get(password);
+        //TODO: change this back !!!!!!!
+        List<Game> games = new LinkedList<>();
+        games.add(this.games.get(0));
+        games.add(this.games.get(1));
+        //List<Game> games = clientGames.get(password);
         int size = games.size();
         object.put("numberOfGames", size);
         for (int i = 0; i < size; i++) {
@@ -97,11 +101,14 @@ public class Server {
      */
     void appendOpenGameInformation(String password, JSONObject object) {
         Set<Game> inGames = new HashSet<>(clientGames.get(password));
+        int count = 0;
         for (int i = 0; i < games.size(); i++) {
-            if (!games.get(i).isGameFull() && inGames.contains(games.get(i))) {
+            if (!games.get(i).isGameFull() && !inGames.contains(games.get(i))) {
+                count += 1;
                 object.put(Integer.toString(i), games.get(i).presentGameInfo());
             }
         }
+        object.put("numberOfGames", count);
     }
 
     /**
@@ -166,7 +173,7 @@ public class Server {
                 }
                 case "joinGame": {
                     String providedPassword = obj.getString("password");
-                    int gameId = Integer.parseInt(obj.getString("gameId"));
+                    int gameId = obj.getInt("gameId");
                     String reason = addPlayerToGame(providedPassword, gameId, socket, jc);
                     if (reason == null) {
                         // We should not monitor on this port anymore.
@@ -295,7 +302,7 @@ public class Server {
             // Create a new player, add it to game.
             Player newPlayer = new Player(socket, jc);
             clientInfo.get(password).add(newPlayer);
-            game.addPlayer(newPlayer);
+            games.get(gameId).addPlayer(newPlayer);
         }
         return null;
     }

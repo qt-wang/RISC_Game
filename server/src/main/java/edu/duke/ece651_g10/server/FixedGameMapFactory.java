@@ -23,6 +23,60 @@ public class FixedGameMapFactory implements GameMapFactory {
         }
     }
 
+    GameMap createTwoPeopleMap() {
+        HashMap<String, Territory> territoryHashMap = createTerritories(8);
+        territoryHashMap.get("A").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("A").addNeighbour(territoryHashMap.get("G"));
+        territoryHashMap.get("A").addNeighbour(territoryHashMap.get("H"));
+
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("A"));
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("G"));
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("C"));
+
+        territoryHashMap.get("C").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("C").addNeighbour(territoryHashMap.get("D"));
+
+        territoryHashMap.get("D").addNeighbour(territoryHashMap.get("C"));
+        territoryHashMap.get("D").addNeighbour(territoryHashMap.get("F"));
+        territoryHashMap.get("D").addNeighbour(territoryHashMap.get("E"));
+
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("D"));
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("F"));
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("H"));
+
+        territoryHashMap.get("F").addNeighbour(territoryHashMap.get("D"));
+        territoryHashMap.get("F").addNeighbour(territoryHashMap.get("E"));
+        territoryHashMap.get("F").addNeighbour(territoryHashMap.get("G"));
+
+        territoryHashMap.get("G").addNeighbour(territoryHashMap.get("A"));
+        territoryHashMap.get("G").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("G").addNeighbour(territoryHashMap.get("F"));
+
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("A"));
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("E"));
+
+        HashSet<Territory> group1 = new HashSet<>();
+        group1.add(territoryHashMap.get("A"));
+        group1.add(territoryHashMap.get("G"));
+        group1.add(territoryHashMap.get("H"));
+        group1.add(territoryHashMap.get("E"));
+
+
+        HashSet<Territory> group2 = new HashSet<>();
+        group2.add(territoryHashMap.get("B"));
+        group2.add(territoryHashMap.get("C"));
+        group2.add(territoryHashMap.get("D"));
+        group2.add(territoryHashMap.get("F"));
+
+        HashMap<Integer, HashSet<Territory>> groups = new HashMap<>();
+        groups.put(1, group1);
+        groups.put(2, group2);
+
+        GameMap map = new V1GameMap(new HashSet<>(territoryHashMap.values()), groups);
+        setupTerritoryAttributes(map, 120, 45, 120);
+        return map;
+    }
+
     /**
      * Create a gamemap, which can be used for a game contains four players
      *
@@ -294,6 +348,8 @@ public class FixedGameMapFactory implements GameMapFactory {
     @Override
     public GameMap createGameMap(int numberOfPlayers) {
         switch (numberOfPlayers) {
+            case 2:
+                return createTwoPeopleMap();
             case 3:
                 return createThreePeopleMap();
             case 4:

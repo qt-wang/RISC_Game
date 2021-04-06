@@ -45,6 +45,7 @@ RuleChecker "1" <-- "1" Server
     AttackOrder "1" --> "n" Dice
     Player "1" --> "1" Resources
 
+
     class Server{
         -int numUnitPerPlayer
         -int numTerritoryPerPlayer
@@ -54,6 +55,10 @@ RuleChecker "1" <-- "1" Server
         -checkEndGame()
         +assignTerritory()
         +distributeResults()
+    }
+
+    class ShortestPath {
+        -GameMap map
     }
 
     class OrderProcessor {
@@ -104,9 +109,16 @@ RuleChecker "1" <-- "1" Server
         +execute()
     }
 
-    class AddUnitOrder{
-        -Territory bornTerritory
-        -int unitNum
+    class UpgradeOrder {
+
+    }
+
+    class UnitUpgradeOrder {
+
+    }
+
+    class TechnologyUpgradeOrder {
+
     }
 
     class Dice{
@@ -200,6 +212,9 @@ RuleChecker "1" <-- "1" Server
 
     class Player {
         -int ID
+        -boolean isUpgrade
+        -HashMap~String, int~ resourcesTotal
+        -int technologyLevel
         +pickTerritory()
         +setUnits()
         +commitOrders()
@@ -226,6 +241,7 @@ RuleChecker "1" <-- "1" Server
         -String name
         -HashSet~Territory~ neighbours
         -HashMap~String,List~Unit~~ units 
+        -HashMap~String,int~ resources
         +getNumUnit()
     }
 
@@ -239,6 +255,7 @@ RuleChecker "1" <-- "1" Server
 
     class Unit {
         -Player owner
+        -int level
         -Territory position 
     }  
     

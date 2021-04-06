@@ -47,7 +47,7 @@ public class App {
         }
     }
 
-    public String getGreeting() {
+    public String getGreetings() {
         return "Hello world.";
     }
 

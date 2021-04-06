@@ -16,7 +16,6 @@ application {
     // Define the main class for the application.
     mainClassName = 'edu.duke.ece651_g10.client.App'
 }
-
 dependencies {
     testCompile "org.mockito:mockito-core:2.+"
     testCompile "org.testfx:testfx-core:4.0.16-alpha"
@@ -28,6 +27,5 @@ javafx {
     version = "15.0.1"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
-
 
 

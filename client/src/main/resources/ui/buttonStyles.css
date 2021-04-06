@@ -1,0 +1,54 @@
+.expandable {
+    -fx-max-width: infinity;
+    -fx-max-height: infinity;
+}
+
+.btnA{
+    -fx-shape: "M20 28 L24 16 L16 8 L6 14 L8 26 Z";
+    -fx-background-color: #F30404;
+}
+
+.btnB{
+    -fx-shape: "M22 22 L24 16 L38 10 L38 14 L38 18 Z";
+    -fx-background-color: #F30404;
+}
+.btnD{
+    -fx-shape: "M22 22 L20 28 L32 32 L40 26 L38 18 Z";
+    -fx-background-color: #F30404;
+}
+.btnC{
+    -fx-shape: "";
+    -fx-background-color: #3cf807;
+}
+.btnL{
+    -fx-shape: "";
+    -fx-background-color: #3CF807;
+}
+.btnF{
+    -fx-shape: "";
+    -fx-background-color: #3CF807;
+}
+.btnE{
+    -fx-shape: "M54 30 L52 42 L32 32 L40 26 L38 18 L46 16 L50 24 Z";
+    -fx-background-color: #f6f204;
+}
+.btnH{
+    -fx-shape: "";
+    -fx-background-color: #f6f204;
+}
+.btnG{
+    -fx-shape: "";
+    -fx-background-color: #f6f204;
+}
+.btnI{
+    -fx-shape: "";
+    -fx-background-color: #0398E5;
+}
+.btnJ{
+    -fx-shape: "";
+    -fx-background-color: #0398E5;
+}
+.btnK{
+    -fx-shape: "";
+    -fx-background-color: #0398E5;
+}

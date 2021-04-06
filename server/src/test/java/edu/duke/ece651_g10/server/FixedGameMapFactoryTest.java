@@ -38,8 +38,9 @@ class FixedGameMapFactoryTest {
     public void test_five_people_map() {
         FixedGameMapFactory factory = new FixedGameMapFactory();
         GameMap map = factory.createFivePeopleMap();
-
+        assertEquals(5, map.getInitialGroups().size());
         HashSet<Territory> group = map.getInitialGroups().get(1);
+        assertEquals(3, group.size());
         int foodTotal = 0;
         int techTotal = 0;
         int sizeTotal = 0;
@@ -51,5 +52,22 @@ class FixedGameMapFactoryTest {
         assertEquals(120, foodTotal);
         assertEquals(45, techTotal);
         assertEquals(90, sizeTotal);
+
+
+        map = factory.createTwoPeopleMap();
+        assertEquals(2, map.getInitialGroups().size());
+        group = map.getInitialGroups().get(1);
+        assertEquals(4, group.size());
+
+
+        map = factory.createThreePeopleMap();
+        assertEquals(3, map.getInitialGroups().size());
+        group = map.getInitialGroups().get(1);
+        assertEquals(3, group.size());
+
+        map = factory.createFourPeopleMap();
+        assertEquals(4, map.getInitialGroups().size());
+        group = map.getInitialGroups().get(1);
+        assertEquals(3, group.size());
     }
 }
