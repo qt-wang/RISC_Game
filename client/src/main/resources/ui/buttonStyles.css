@@ -2,53 +2,101 @@
     -fx-max-width: infinity;
     -fx-max-height: infinity;
 }
-
-.btnA{
-    -fx-shape: "M20 28 L24 16 L16 8 L6 14 L8 26 Z";
-    -fx-background-color: #F30404;
+.panel{
+    -fx-background-color: #403e3e;
+}
+.redButton{
+    -fx-background-color: black,#F30404;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
+}
+.redButton:hover{
+    -fx-background-color: #e95555,#F30404;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
+}
+.redButton:pressed{
+    -fx-background-color: #750101,#750101;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
+}
+.greenButton{
+    -fx-background-color: black,#3CF807;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
 
-.btnB{
-    -fx-shape: "M22 22 L24 16 L38 10 L38 14 L38 18 Z";
-    -fx-background-color: #F30404;
+.greenButton:hover{
+    -fx-background-color: #aaf58c,#3CF807;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnD{
-    -fx-shape: "M22 22 L20 28 L32 32 L40 26 L38 18 Z";
-    -fx-background-color: #F30404;
+
+.greenButton:pressed {
+    -fx-background-color: #156201,#156201;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnC{
-    -fx-shape: "";
-    -fx-background-color: #3cf807;
+
+.yellowButton{
+    -fx-background-color: black,#f6f204;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnL{
-    -fx-shape: "";
-    -fx-background-color: #3CF807;
+.yellowButton:hover{
+    -fx-background-color: #f6f48b,#f6f204;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnF{
-    -fx-shape: "";
-    -fx-background-color: #3CF807;
+.yellowButton:pressed{
+    -fx-background-color: #5f5d02,#5f5d02;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnE{
-    -fx-shape: "M54 30 L52 42 L32 32 L40 26 L38 18 L46 16 L50 24 Z";
-    -fx-background-color: #f6f204;
+.blueButton{
+    -fx-background-color: black,#0398E5;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnH{
-    -fx-shape: "";
-    -fx-background-color: #f6f204;
+.blueButton:hover{
+    -fx-background-color: #88caef,#0398E5;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnG{
-    -fx-shape: "";
-    -fx-background-color: #f6f204;
+.blueButton:pressed{
+    -fx-background-color: #065381,#065381;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnI{
-    -fx-shape: "";
-    -fx-background-color: #0398E5;
+.purpleButton{
+    -fx-background-color: black,purple;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnJ{
-    -fx-shape: "";
-    -fx-background-color: #0398E5;
+.purpleButton:hover{
+    -fx-background-color: #dd23dd,purple;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
-.btnK{
-    -fx-shape: "";
-    -fx-background-color: #0398E5;
+.purpleButton:pressed{
+    -fx-background-color: #450045,#450045;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
 }
+
+

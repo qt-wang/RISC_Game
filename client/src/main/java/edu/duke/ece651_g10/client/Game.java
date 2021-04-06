@@ -4,10 +4,7 @@ import edu.duke.ece651_g10.client.controller.NumButtonController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -25,7 +22,10 @@ public class Game extends Application {
 //        primaryStage.show();
 
         URL cssResource = getClass().getResource("/ui/buttonStyles.css");
-        URL fxmlResource = getClass().getResource("/ui/GameMap.fxml");
+        //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+        URL fxmlResource = getClass().getResource("/ui/GameMapFor3.fxml");
+        //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
+        //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         HashMap<Class<?>,Object> controllers = new HashMap<>();
         controllers.put(NumButtonController.class, new NumButtonController());
