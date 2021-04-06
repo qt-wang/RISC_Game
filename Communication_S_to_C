@@ -244,6 +244,9 @@ server response:
 ------------------------------------------------------------------------------------------------------------------------
 Communication with Game
 
+While waiting for new players to start the game, the joined players are not allowed to quit the game.
+
+
 Client communicate server:
 {   Player id
     Player 的相关信息，

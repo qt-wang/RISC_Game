@@ -297,6 +297,11 @@ public class Server {
         return null;
     }
 
+    private void startGame(Game game) {
+        Thread newThread = new Thread(game);
+        newThread.start();
+    }
+
     /**
      * Add the player to game with gameId "gameId"
      *
@@ -315,11 +320,16 @@ public class Server {
             p.joinGame();
         } else {
             // Create a new player, add it to game.
+            // Every time a new player joined, check whether the game can start or not.
             Player newPlayer = new Player(socket, jc);
             clientInfo.get(password).add(newPlayer);
-            games.get(gameId).addPlayer(newPlayer);
+            Game joinedGame = games.get(gameId);
+            joinedGame.addPlayer(newPlayer);
             List<Game> gameList = clientGames.get(password);
-            gameList.add(games.get(gameId));
+            gameList.add(joinedGame);
+            if (joinedGame.canGameStart()) {
+                startGame(joinedGame);
+            }
         }
         return null;
     }

@@ -23,7 +23,7 @@ public class Game extends Application {
 
         URL cssResource = getClass().getResource("/ui/buttonStyles.css");
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-        URL fxmlResource = getClass().getResource("/ui/GameMapFor3.fxml");
+        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
         FXMLLoader loader = new FXMLLoader(fxmlResource);
