@@ -37,7 +37,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
      * If the defender wins, unit number in both territory decrease.
      */
     public void execute(){
-        Dice dice = new TwentySidesDice();
+      /* Dice dice = new TwentySidesDice();
         boolean attackerWin = false;
         boolean defenderWin = false;
         //System.out.println(defender.getNumUnit());
@@ -71,7 +71,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
                 dest.increaseUnit(unitNum);
                 attackerWin = true;
             }
-        }
+            }*/
     }
 
   public Territory getSourceTerritory() {
