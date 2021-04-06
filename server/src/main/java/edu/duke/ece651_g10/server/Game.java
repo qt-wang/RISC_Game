@@ -372,6 +372,22 @@ public class Game implements Runnable {
 
 
     /**
+     * Handle logout message sent from invalid phase.
+     * Such as during normal game play.
+     * @param object  The received JSON object.
+     * @return True, if the received message is a logout command.
+     * Otherwise, return false.
+     */
+    private boolean handleInvalidLogOutMessage(JSONObject object, int playerId) throws IOException {
+        if (object.getString("type").equals("logout")) {
+            // Send invalid message back.
+            sendServerInvalidResponse(playerId, "You can only logout after you commit!");
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Setup the units distribution of the territories for each player.
      * Each player shall have the same number of initial units, which she may place in her territories as she wishes.
      * This phase should occur simultaneously.
@@ -389,6 +405,9 @@ public class Game implements Runnable {
             if (isCommitMessage(obj)) {
                 sendValidResponse(playerId);
                 receiveCommit = true;
+                continue;
+            }
+            if (handleInvalidLogOutMessage(obj, playerId)) {
                 continue;
             }
             synchronized (this) {

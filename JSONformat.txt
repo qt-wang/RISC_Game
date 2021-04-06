@@ -28,28 +28,19 @@ JSONformat of the messages sent from server to client:
             }
             ......
         }
-    } 
+    }
+
+Evo 2:
 sent from client to server:
     {
         "type": "order",
-        "orderType": "move"/"attack",
+        "orderType": "move" /"attack" /"upgradeUnit" / "upgradeTech",
         "sourceTerritory": String,
+        "unitLevel" : int,
+        "targetLevel" : int,
         "destTerritory": String,
-        "unitNumber": int
+        "unitNumber": int,
     }
-    //send order and get de-parsed at the server side
-    or
-    {
-        "type": "inform",
-        "prompt": String
-    }
-    //used to send information
-    or
-    {
-        "type": "commit"
-    }
-    //commit message to end order phase
-
 
 
 

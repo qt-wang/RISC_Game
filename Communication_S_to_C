@@ -246,14 +246,107 @@ Communication with Game
 
 While waiting for new players to start the game, the joined players are not allowed to quit the game.
 
-
-Client communicate server:
-{   Player id
-    Player 的相关信息，
-    Territories: {
-        "A": {
-           兵力,
-           资源产量
-        }
-    }
+Placement:
+server 发送:
+Initial information:
+{
+   type = "Game"
+   sub = "Placement" (Attack upgrade disabled)   /    "Attack"
+   playerId = x (int)
+   prompt = "valid / invalid\n"
+   reason = ""   (if valid, reason is "", otherwise, it is the reason that cause the problem.)
+   playerStatus = xxxx (A / L / E)
+   // Resource:
+   foodResource = x (int)
+   technologyResource = x(int)
+   technologyLevel = x
+   canUpgrade = true / false
+   TerritoriesInformation = {
+       // 所有的territory的information
+       Territory's Name = {
+          armies = {
+             0 = x (how many in level 0?)
+             1 = x
+             ......
+             6 = x
+          }
+          foodResourceGenerationRate = x
+          technologyResourceGenerationRate = x
+       }
+   }
 }
+
+client 传move order
+
+回复一个全局信息 和刚才一样。
+
+Done
+只检测回复信息的prompt和reason
+
+
+logout的处理代码：
+    this.client.sendLogOutCommand();
+    JSONObject object = this.client.getSocketClient().receive();
+    System.out.println("Logout response:" + object);
+    if (object.getString("prompt").equals("valid\n")) {
+        // Is ok to logout.
+        // Relogin into the beginning site.
+        client.sendOrderToServer(client.sendPasswordToServer(client.getPassword()));
+        //JSONObject result = client.getSocketClient().receive();
+        //System.out.println("Send password to server response: " + result);
+        JSONObject result = client.getSocketClient().receive();
+        System.out.println("Last response, used for generate user pane:" + result);
+        Scene loginScene = factory.createUserScene(result);
+        primaryStage.setScene(loginScene);
+    } else {
+        App.createDialogStage(this.primaryStage, "Error", object.getString("reason"));
+    }
+
+想要join回来，要等下一回合开始
+
+下一回合就是attack了：
+Server 发送信息开始：
+{
+   type = "Game"
+   sub = "Attack" (Attack upgrade disabled)   /    "Attack"
+   playerId = x (int)
+   prompt = "valid / invalid\n"
+   reason = ""   (if valid, reason is "", otherwise, it is the reason that cause the problem.)
+   playerStatus = xxxx (A / L / E)
+   // Resource:
+   foodResource = x (int)
+   technologyResource = x(int)
+   technologyLevel = x
+   canUpgrade = true / false
+   TerritoriesInformation = {
+       // 所有的territory的information
+       Territory's Name = {
+          armies = {
+             0 = x (how many in level 0?)
+             1 = x
+             ......
+             6 = x
+          }
+          foodResourceGenerationRate = x
+          technologyResourceGenerationRate = x
+       }
+   }
+}
+
+moveOrder:
+回复一样的。
+
+
+AttackOrder:
+一样的
+
+
+UpgradeOrder:
+一样的
+
+
+Done:
+一样的
+
+
+Logout: 也是要等到下一回合
