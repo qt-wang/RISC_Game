@@ -47,7 +47,7 @@ public class App {
         }
     }
 
-    public String getGreeting() {
+    public String getGreetings() {
         return "Hello world.";
     }
 
@@ -75,5 +75,6 @@ public class App {
 //        server.run();
         PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
         Server server = new Server(12345, new FixedGameMapFactory(), passwordGenerator);
+        server.run();
     }
 }

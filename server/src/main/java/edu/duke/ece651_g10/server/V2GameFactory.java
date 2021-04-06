@@ -6,23 +6,26 @@ public class V2GameFactory implements GameFactory {
 
     Server runServer;
 
+//    @Override
+//    public Game createRandomGame() {
+//        //TODO: Can be changed to create random game.
+//        GameMapFactory random = new V1GameMapFactory(new PseudoNumberGenerator(), 50, 35, 100);
+//        int playerNumbers = ThreadLocalRandom.current().nextInt(3, 6);
+//        int territoryPerPlayer = ThreadLocalRandom.current().nextInt(3, 9);
+//        int randomUnits = ThreadLocalRandom.current().nextInt(25, 51);
+//        GameMap map = random.createGameMap(playerNumbers, territoryPerPlayer);
+//        RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
+//        RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(new AttackFoodChecker(null))))));
+//        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), randomUnits, playerNumbers, this.runServer.threadPool, this.runServer);
+//    }
     @Override
-    public Game createRandomGame() {
-        //TODO: Can be changed to create random game.
-        GameMapFactory random = new V1GameMapFactory(new PseudoNumberGenerator(), 50, 35, 100);
-        int playerNumbers = ThreadLocalRandom.current().nextInt(3, 6);
-        int territoryPerPlayer = ThreadLocalRandom.current().nextInt(3, 9);
+    public Game createFixedGame(int people) {
+        GameMapFactory fixedGameMapFactory = new FixedGameMapFactory();
         int randomUnits = ThreadLocalRandom.current().nextInt(25, 51);
-        GameMap map = random.createGameMap(playerNumbers, territoryPerPlayer);
+        GameMap map = fixedGameMapFactory.createGameMap(people);
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(new AttackFoodChecker(null))))));
-        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), randomUnits, playerNumbers, this.runServer.threadPool, this.runServer);
-    }
-
-    //TODO: Implement or delete.
-    @Override
-    public Game createFixedGame() {
-        return null;
+        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), randomUnits, people, this.runServer.threadPool, this.runServer);
     }
 
     /**

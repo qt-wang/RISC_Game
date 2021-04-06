@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.NumButtonController">
+   <children>
+      <Button layoutX="61.0" layoutY="109.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="80.0" prefWidth="84.0" stylesheets="@buttonStyles.css" text="Button">
+         <styleClass>
+            <String fx:value="btnA" />
+            <String fx:value="expandable" />
+         </styleClass>
+      </Button>
+      <Button layoutX="136.0" layoutY="109.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="90.0" stylesheets="@buttonStyles.css" text="Button">
+         <styleClass>
+            <String fx:value="btnB" />
+            <String fx:value="expandable" />
+         </styleClass>
+      </Button>
+      <Button layoutX="128.0" layoutY="160.0" mnemonicParsing="false" prefHeight="46.0" prefWidth="84.0" stylesheets="@buttonStyles.css" text="Button">
+         <styleClass>
+            <String fx:value="btnD" />
+            <String fx:value="expandable" />
+         </styleClass>
+      </Button>
+   </children>
+</AnchorPane>

@@ -44,6 +44,7 @@ public class ClientTest {
     bytes.reset();
   }
 
+  @Disabled
   @Test
   public void test_read_action() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -61,6 +62,7 @@ public class ClientTest {
     bytes.reset();
   }
 
+  @Disabled
   @Test
   public void test_read_integer() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -214,6 +216,7 @@ public class ClientTest {
     assertEquals("connection", client1.getCurrentMessageType());
   }
 
+  @Disabled
   @Test
   public void test_logout_game() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();

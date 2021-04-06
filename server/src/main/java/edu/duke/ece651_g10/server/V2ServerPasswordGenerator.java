@@ -6,9 +6,15 @@ package edu.duke.ece651_g10.server;
  */
 public class V2ServerPasswordGenerator implements  PasswordGenerator{
 
+    static int password = 0;
+
+    public V2ServerPasswordGenerator() {
+
+    }
+
     @Override
     //TODO: Implementation.
     public String generate() {
-        return null;
+        return Integer.toString(password++);
     }
 }

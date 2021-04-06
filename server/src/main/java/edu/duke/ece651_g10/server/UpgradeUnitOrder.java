@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import java.util.HashMap;
+
 public class UpgradeUnitOrder extends OneTerritoryOrder {
   private int level;
 
@@ -7,6 +9,7 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
     super(playerID, source, unitNum, gMap, player);
     this.level = level;
   }
+
 
   public void execute() {
     // gMap.upgradeUnit(playerID, dest, unitNum, level);
@@ -27,7 +30,7 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
     return unitNum;
   }
 
-  public int getLevel() {
+  public int getLevel(){
     return level;
   }
 
@@ -36,14 +39,5 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
   }
 
 }
-
-
-
-
-
-
-
-
-
 
 

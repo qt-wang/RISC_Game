@@ -117,7 +117,7 @@ Send a json request to join a new game.
     type="connection"
     sub="joinGame"
     password = "xxxxxx"
-    gameId = "xxxxxx"
+    gameId = x  (int)
 }
 
 Server response:

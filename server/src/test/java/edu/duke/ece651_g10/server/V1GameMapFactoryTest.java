@@ -39,59 +39,59 @@ class V1GameMapFactoryTest {
         }
     }
 
-    @Test
-    public void test_version_map_setup() {
-        PseudoNumberGenerator rand = new PseudoNumberGenerator();
-        V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
-        GameMap map = factory.createGameMap(5, 3);
-        assertEquals(5, map.getTotalPlayers());
-        assertEquals(3, map.getNumberOfTerritoriesPerPlayer());
-        HashMap<Integer, HashSet<Territory>> test = map.getInitialGroups();
-        for (Map.Entry<Integer, HashSet<Territory>> entry : test.entrySet()) {
-            int sizeTotal = 0;
-            int foodTotal = 0;
-            int resourceTotal = 0;
-            for (Territory t: entry.getValue()) {
-                sizeTotal += t.getSize();
-                foodTotal += t.getFoodResourceGenerationRate();
-                resourceTotal += t.getTechnologyResourceGenerationRate();
-            }
-            assertEquals(100, sizeTotal);
-            assertEquals(60, foodTotal);
-            assertEquals(80, resourceTotal);
-        }
-    }
-
-    @Test
-    public void test_create_random_territory_graph() {
-        PseudoNumberGenerator rand = new PseudoNumberGenerator();
-        V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
-        Set<Territory> territories = factory.createRandomTerritoryGraph(3, 5);
-        assertEquals(territories.size(), 15);
-        assertEquals(true, checkConnected(territories));
-
-        territories = factory.createRandomTerritoryGraph(2, 2);
-        assertEquals(territories.size(), 4);
-        assertEquals(true, checkConnected(territories));
-
-        territories = factory.createRandomTerritoryGraph(5, 6);
-        assertEquals(territories.size(), 30);
-        assertEquals(true, checkConnected(territories));
-//        for (Territory t: territories) {
-//            System.out.println(t.getName());
+//    @Test
+//    public void test_version_map_setup() {
+//        PseudoNumberGenerator rand = new PseudoNumberGenerator();
+//        V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
+//        GameMap map = factory.createGameMap(5, 3);
+//        assertEquals(5, map.getTotalPlayers());
+//        assertEquals(3, map.getNumberOfTerritoriesPerPlayer());
+//        HashMap<Integer, HashSet<Territory>> test = map.getInitialGroups();
+//        for (Map.Entry<Integer, HashSet<Territory>> entry : test.entrySet()) {
+//            int sizeTotal = 0;
+//            int foodTotal = 0;
+//            int resourceTotal = 0;
+//            for (Territory t: entry.getValue()) {
+//                sizeTotal += t.getSize();
+//                foodTotal += t.getFoodResourceGenerationRate();
+//                resourceTotal += t.getTechnologyResourceGenerationRate();
+//            }
+//            assertEquals(100, sizeTotal);
+//            assertEquals(60, foodTotal);
+//            assertEquals(80, resourceTotal);
 //        }
+//    }
 
-        Territory t = new V1Territory("t");
-        Territory t2 = new V1Territory("t2");
-        Territory t3 = new V1Territory("t3");
-        t.addNeighbour(t2);
-        t2.addNeighbour(t);
-        Set<Territory> notConnected = new HashSet<>();
-        notConnected.add(t);
-        notConnected.add(t2);
-        notConnected.add(t3);
-        assertEquals(false, checkConnected(notConnected));
-    }
+//    @Test
+//    public void test_create_random_territory_graph() {
+//        PseudoNumberGenerator rand = new PseudoNumberGenerator();
+//        V1GameMapFactory factory = new V1GameMapFactory(rand, 60, 80, 100);
+//        Set<Territory> territories = factory.createRandomTerritoryGraph(3, 5);
+//        assertEquals(territories.size(), 15);
+//        assertEquals(true, checkConnected(territories));
+//
+//        territories = factory.createRandomTerritoryGraph(2, 2);
+//        assertEquals(territories.size(), 4);
+//        assertEquals(true, checkConnected(territories));
+//
+//        territories = factory.createRandomTerritoryGraph(5, 6);
+//        assertEquals(territories.size(), 30);
+//        assertEquals(true, checkConnected(territories));
+////        for (Territory t: territories) {
+////            System.out.println(t.getName());
+////        }
+//
+//        Territory t = new V1Territory("t");
+//        Territory t2 = new V1Territory("t2");
+//        Territory t3 = new V1Territory("t3");
+//        t.addNeighbour(t2);
+//        t2.addNeighbour(t);
+//        Set<Territory> notConnected = new HashSet<>();
+//        notConnected.add(t);
+//        notConnected.add(t2);
+//        notConnected.add(t3);
+//        assertEquals(false, checkConnected(notConnected));
+//    }
 
     @Test
     public void test_all_belong_to_same_user() {

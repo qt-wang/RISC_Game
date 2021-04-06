@@ -19,7 +19,7 @@ public class ShortestPath {
         for(Territory t : gMap.getTerritoriesForPlayer(player)){
             distanceTable.put(t.getName(), Integer.MAX_VALUE);
         }
-                                   distanceTable.put(source.getName(), source.getSize());
+        distanceTable.put(source.getName(), source.getSize());
         for(Territory t : gMap.getTerritoriesForPlayer(player)){
             unvisited.add(t.getName());
         }
@@ -57,7 +57,3 @@ public class ShortestPath {
         return distanceTable.get(target.getName());
     }
 }
-
-
-
-
