@@ -28,7 +28,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder{
                 helper.set(levelNum, helper.get(levelNum) - uNum);
                 temp = temp - uNum;
             } else if(helper.get(levelNum) < uNum && helper.get(levelNum) > 0){
-                attackLevel.set(levelNum, helper.get(levelNum));
+                attackLevel.set(levelNum, attackLevel.get(levelNum) + helper.get(levelNum));
                 temp = temp - helper.get(levelNum);
                 helper.set(levelNum, 0);
             }

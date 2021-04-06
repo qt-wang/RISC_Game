@@ -9,9 +9,11 @@ import java.util.*;
  */
 public class V1OrderProcessor implements OrderProcessor{
     private HashMap<Player, Vector<AttackOrder>> attacksInOneTurn;
+    private Vector<UpgradeTechOrder> upgradeTechInOneTurn;
 
     public V1OrderProcessor(){
         attacksInOneTurn = new HashMap<>();
+        upgradeTechInOneTurn = new Vector<>();
     }
 
     /**
@@ -49,6 +51,10 @@ public class V1OrderProcessor implements OrderProcessor{
                 }
                 attacksInOneTurn.put(((AttackOrder)order).getSourceTerritory().getOwner(), vector);
             }
+        } else if(order instanceof UpgradeUnitOrder){
+            ((UpgradeUnitOrder)order).execute();
+        } else if(order instanceof UpgradeUnitOrder){
+            upgradeTechInOneTurn.addElement((UpgradeTechOrder) order);
         }
     }
 
@@ -93,6 +99,11 @@ public class V1OrderProcessor implements OrderProcessor{
             allAttacks.remove(allAttacks.get(index));  //after execution, remove this order.
         }
         attacksInOneTurn.clear();
+        if(upgradeTechInOneTurn.size() != 0) {
+            for (UpgradeTechOrder order : upgradeTechInOneTurn) {
+                order.execute();
+            }
+        }
     }
 
     /**

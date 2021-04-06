@@ -65,7 +65,7 @@ public class AttackOrderTest {
     gMap.getTerritory("Narnia").increaseUnit(3, 4);
     AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
     mOrder.execute();
-    assertEquals(0, gMap.getTerritory("Narnia").getArmyWithLevel(3).getArmyUnits());
+    assertEquals(0, gMap.getTerritory("Narnia").getArmyWithLevel(6).getArmyUnits());
   }
 }
 
