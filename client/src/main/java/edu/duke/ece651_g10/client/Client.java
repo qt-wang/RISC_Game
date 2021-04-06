@@ -91,6 +91,10 @@ public class Client {
         this.listedGames = listedGames;
     }
 
+    public String getPassword() {
+        return this.password;
+    }
+
     public HashMap<Integer, JSONObject> getListedGames() {
         return this.listedGames;
     }
@@ -421,6 +425,10 @@ public class Client {
         if (!response.equals("")) {
             sendOrderToServer(new JSONObject().put("type", "logout"));
         }
+    }
+
+    public void sendLogOutCommand() throws IOException {
+        sendOrderToServer(new JSONObject().put("type", "logout"));
     }
 
     /**

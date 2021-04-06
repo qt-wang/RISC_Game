@@ -1,9 +1,12 @@
 package edu.duke.ece651_g10.client;
 
 import edu.duke.ece651_g10.client.controller.LoginButtonController;
+import edu.duke.ece651_g10.client.controller.NumButtonController;
+import edu.duke.ece651_g10.client.controller.TestSceneController;
 import edu.duke.ece651_g10.client.controller.UserScenePanelController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -38,7 +41,7 @@ public class SceneFactory {
             return controllers.get(c);
         });
         GridPane pane = loader.load();
-        Scene loginScene = new Scene(pane, 1600, 900);
+        Scene loginScene = new Scene(pane, 900, 400);
         return loginScene;
     }
 
@@ -46,13 +49,29 @@ public class SceneFactory {
         URL fxmlResource = getClass().getResource("/ui/UserPanel.fxml");
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         HashMap<Class<?>, Object> controllers = new HashMap<>();
-        controllers.put(UserScenePanelController.class, new UserScenePanelController(this.client, this.primaryStage, object));
+        controllers.put(UserScenePanelController.class, new UserScenePanelController(this.client, this.primaryStage, object, this));
         loader.setControllerFactory((c) -> {
             return controllers.get(c);
         });
         GridPane pane = loader.load();
-        Scene UserScene = new Scene(pane, 1600, 900);
+        Scene UserScene = new Scene(pane, 900, 400);
         return UserScene;
+    }
+
+    // Create a test scene for the user.
+    public Scene createTestScene() throws IOException {
+        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
+        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+        FXMLLoader loader = new FXMLLoader(fxmlResource);
+        HashMap<Class<?>,Object> controllers = new HashMap<>();
+        controllers.put(TestSceneController.class, new TestSceneController(this.client, this.primaryStage, this));
+        loader.setControllerFactory((c)->{
+            return controllers.get(c);
+        });
+        AnchorPane ap = loader.load();
+        Scene scene = new Scene(ap,900,400);
+        scene.getStylesheets().add(cssResource.toString());
+        return scene;
     }
 
 }

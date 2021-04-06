@@ -10,7 +10,7 @@ package edu.duke.ece651_g10.server;
  */
 public class WaitGroup {
 
-    private int count;
+    int count;
 
 
     /**

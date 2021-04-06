@@ -185,7 +185,7 @@ public class Server {
                     break;
                 }
                 case "createNewGame": {
-                    System.out.println("Reached!");
+                    //System.out.println("Reached!");
                     String providedPassword = obj.getString("password");
                     int numberOfPlayers = obj.getInt("numberOfPlayers");
                     Game newGame = gameFactory.createFixedGame(numberOfPlayers);
@@ -212,6 +212,7 @@ public class Server {
                 //Keep receive new JSON objects from the client.
                 try {
                     obj = jc.receive();
+                    System.out.println(obj);
                     handleJSONObject(obj);
                 } catch (IOException e) {
                     e.printStackTrace();

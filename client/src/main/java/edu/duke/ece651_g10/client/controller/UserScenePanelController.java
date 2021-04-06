@@ -2,10 +2,12 @@ package edu.duke.ece651_g10.client.controller;
 
 import edu.duke.ece651_g10.client.App;
 import edu.duke.ece651_g10.client.Client;
+import edu.duke.ece651_g10.client.SceneFactory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -49,11 +51,14 @@ public class UserScenePanelController implements Initializable {
 
     boolean createGameLayOut;
 
-    public UserScenePanelController(Client client, Stage primaryStage, JSONObject object) {
+    SceneFactory factory;
+
+    public UserScenePanelController(Client client, Stage primaryStage, JSONObject object, SceneFactory factory) {
         this.client = client;
         this.primaryStage = primaryStage;
         this.object = object;
         this.createGameLayOut = false;
+        this.factory = factory;
     }
 
     /**
@@ -151,7 +156,14 @@ public class UserScenePanelController implements Initializable {
                 stage.show();
             } else {
                 //TODO: Handle the logic to log the user into the game.
-                System.out.println("You are ready to join the game.");
+                Scene testScene = this.factory.createTestScene();
+                System.out.println(testScene.getWidth());
+                System.out.println(testScene.getHeight());
+                primaryStage.close();
+                primaryStage.setWidth(testScene.getWidth());
+                primaryStage.setHeight(testScene.getHeight());
+                primaryStage.setScene(testScene);
+                primaryStage.show();
             }
         }
     }

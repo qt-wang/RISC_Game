@@ -73,6 +73,12 @@ public class Player {
   // If the player log out, then the inGame variable is set to false.
   private volatile boolean inGame;
 
+  WaitGroup waitGroup;
+
+  public void setWaitGroup(WaitGroup waitGroup) {
+    this.waitGroup = waitGroup;
+  }
+
   //Added by yt136
   /**
    * Get whether the player can upgrade in this turn
@@ -140,6 +146,11 @@ public class Player {
    */
   public void joinGame() {
     this.inGame = true;
+    synchronized (Game.class) {
+      if (waitGroup != null && waitGroup.count != 0) {
+        waitGroup.decrease();
+      }
+    }
   }
 
   /**

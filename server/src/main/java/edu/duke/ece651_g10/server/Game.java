@@ -461,6 +461,7 @@ public class Game implements Runnable {
                 }
             }
             // Else do nothing.
+            System.out.println(waitGroup.count);
         }
     }
 
@@ -532,6 +533,7 @@ public class Game implements Runnable {
         WaitGroup waitGroup = new WaitGroup(players.size());
         for (int i = 1; i <= players.size(); i++) {
             // We create multiple tasks here.
+            players.get(i).setWaitGroup(waitGroup);
             Runnable task = toDo.apply(i);
             int currentPlayer = i;
             Thread t = new Thread(new Runnable() {
