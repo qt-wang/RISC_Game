@@ -1,8 +1,6 @@
 package edu.duke.ece651_g10.server;
 
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * This class is an order processor for v1. It aims to handle all move and attack orders
@@ -27,7 +25,13 @@ public class V1OrderProcessor implements OrderProcessor{
         } else if(order instanceof AttackOrder){
             //If this order is an attack order, decrease the unit number in the source territory at
             //very beginning.
-          ((AttackOrder)order).getSourceTerritory().decreaseUnit(((AttackOrder)order).getNumUnit(), 0);
+            ((AttackOrder) order).getPlayer().setFoodResourceTotal(((AttackOrder) order).getPlayer().getFoodResourceTotal() - 1);
+            ArrayList<Integer> atkLevel = ((AttackOrder) order).getAttackLevel();
+          //((AttackOrder)order).getSourceTerritory().decreaseUnit(((AttackOrder)order).getNumUnit(), 0);
+          for(int i = 0; i < 7; i++){
+              ((AttackOrder)order).getSourceTerritory().decreaseUnit(atkLevel.get(i), i);
+          }
+
             //If the owner of source territory did not attack others before, then create a new item
             //for the hashmap.
             if(attacksInOneTurn.get(((AttackOrder)order).getSourceTerritory().getOwner()) == null) {
@@ -60,7 +64,11 @@ public class V1OrderProcessor implements OrderProcessor{
                 //if destination is same, change the unit number of the ith order. we
                 //need to remove the jth order later.
                 if(vector.get(i).getTargetTerritory().equals(vector.get(j).getTargetTerritory())){
-                    vector.get(i).addUnits(vector.get(j).getNumUnit());
+                    //vector.get(i).addUnits(vector.get(j).getNumUnit());
+                    for(int m = 0; m < 7; m++){
+                        vector.get(i).getAttackLevel().set(m, vector.get(i).getAttackLevel().get(m) + vector.get(j).getAttackLevel().get(m));
+                        //System.out.println(vector.get(i).getAttackLevel().get(m));
+                    }
                     index = j;
                 }
             }
