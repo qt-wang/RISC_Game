@@ -28,11 +28,11 @@
                <VBox.margin>
                   <Insets top="-40.0" />
                </VBox.margin></Button>
-            <Button fx:id="createGameButton" mnemonicParsing="false" text="Create game">
+            <Button fx:id="createGameButton" onAction="#onCreateNewGames" mnemonicParsing="false" text="Create game">
                <VBox.margin>
                   <Insets top="40.0" />
                </VBox.margin></Button>
-            <Button fx:id="listExistingGameButton" mnemonicParsing="false" text="List existing Games">
+            <Button fx:id="listExistingGameButton" onAction="#onListExistingGameButton" mnemonicParsing="false" text="List existing Games">
                <VBox.margin>
                   <Insets top="35.0" />
                </VBox.margin></Button>
@@ -46,7 +46,7 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <Label text="Select game:" />
+                              <Label fx:id="choiceBoxIntro" text="Select game:" />
                               <ChoiceBox fx:id="choiceBox" prefWidth="150.0" />
                            </children>
                         </HBox>

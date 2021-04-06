@@ -54,6 +54,21 @@ Server response:
     }
 }
 
+3. Create new game:
+Client:
+{
+    type="connection"
+    sub="createNewGame"
+    numberOfPlayers = x     (int)
+    password="xxxxxxxx"
+}
+
+Server response:
+{
+    type="connection"
+    prompt = "valid/invalid"
+    reason = "xxxxx" (if invalid, valid set it to "")
+}
 
 4. Client wants to list all his game:
 {

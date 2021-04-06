@@ -81,11 +81,10 @@ public class Server {
      * @param object   The object to append the new information.
      */
     void appendGameInformation(String password, JSONObject object) {
-        //TODO: change this back !!!!!!!
-        List<Game> games = new LinkedList<>();
-        games.add(this.games.get(0));
-        games.add(this.games.get(1));
-        //List<Game> games = clientGames.get(password);
+//        List<Game> games = new LinkedList<>();
+//        games.add(this.games.get(0));
+//        games.add(this.games.get(1));
+        List<Game> games = clientGames.get(password);
         int size = games.size();
         object.put("numberOfGames", size);
         for (int i = 0; i < size; i++) {
@@ -183,6 +182,22 @@ public class Server {
                     } else {
                         jc.sendServerInvalidResponse(reason);
                     }
+                    break;
+                }
+                case "createNewGame": {
+                    System.out.println("Reached!");
+                    String providedPassword = obj.getString("password");
+                    int numberOfPlayers = obj.getInt("numberOfPlayers");
+                    Game newGame = gameFactory.createFixedGame(numberOfPlayers);
+                    // Add the player into the new game.
+                    Player newPlayer = new Player(socket, jc);
+                    clientInfo.get(providedPassword).add(newPlayer);
+                    newGame.addPlayer(newPlayer);
+                    clientGames.get(providedPassword).add(newGame);
+                    newPlayer.leaveGame();
+                    JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                    jc.send(response);
+                    games.put(newGame.getGameId(), newGame);
                     break;
                 }
             }
@@ -303,6 +318,8 @@ public class Server {
             Player newPlayer = new Player(socket, jc);
             clientInfo.get(password).add(newPlayer);
             games.get(gameId).addPlayer(newPlayer);
+            List<Game> gameList = clientGames.get(password);
+            gameList.add(games.get(gameId));
         }
         return null;
     }
