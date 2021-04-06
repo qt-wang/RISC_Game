@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" styleClass="panel" stylesheets="@buttonStyles.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane  pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" styleClass="panel" stylesheets="@buttonStyles.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button layoutX="47.0" layoutY="69.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="80.0" prefWidth="80.0" stylesheets="@mapShapeFor2.css" text="A">
          <styleClass>

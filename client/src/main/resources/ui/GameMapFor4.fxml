@@ -5,9 +5,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" stylesheets="@buttonStyles.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.NumButtonController">
+<AnchorPane pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" stylesheets="@buttonStyles.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.NumButtonController">
    <children>
-      <Button layoutX="61.0" layoutY="109.0" mnemonicParsing="false" onAction="#onLeft" pickOnBounds="false" prefHeight="80.0" prefWidth="84.0" text="A">
+      <Button layoutX="24.0" layoutY="115.0" mnemonicParsing="false" onAction="#onLeft" pickOnBounds="false" prefHeight="80.0" prefWidth="84.0" text="A">
          <styleClass>
             <String fx:value="btnA" />
             <String fx:value="expandable" />
@@ -18,7 +18,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="139.0" layoutY="108.0" mnemonicParsing="false" onAction="#onRight" pickOnBounds="false" prefHeight="61.0" prefWidth="106.0" text="B">
+      <Button layoutX="96.0" layoutY="115.0" mnemonicParsing="false" onAction="#onRight" pickOnBounds="false" prefHeight="61.0" prefWidth="106.0" text="B">
          <styleClass>
             <String fx:value="redButton" />
             <String fx:value="btnB" />
@@ -29,7 +29,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="128.0" layoutY="160.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="46.0" prefWidth="84.0" text="D">
+      <Button layoutX="85.0" layoutY="167.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="46.0" prefWidth="84.0" text="D">
          <styleClass>
             <String fx:value="btnD" />
             <String fx:value="expandable" />
@@ -40,7 +40,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="172.0" layoutY="150.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="99.0" prefWidth="116.0" text="E">
+      <Button layoutX="129.0" layoutY="157.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="99.0" prefWidth="116.0" text="E">
          <styleClass>
             <String fx:value="btnE" />
             <String fx:value="expandable" />
@@ -51,7 +51,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="244.0" layoutY="104.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="46.0" prefWidth="76.0" text="C">
+      <Button layoutX="201.0" layoutY="111.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="46.0" prefWidth="76.0" text="C">
          <styleClass>
             <String fx:value="btnC" />
             <String fx:value="expandable" />
@@ -62,7 +62,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="244.0" layoutY="125.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="80.0" prefWidth="122.0" rotate="3.0" text="F">
+      <Button layoutX="201.0" layoutY="132.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="80.0" prefWidth="122.0" rotate="3.0" text="F">
          <styleClass>
             <String fx:value="btnF" />
             <String fx:value="expandable" />
@@ -73,7 +73,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="275.0" layoutY="123.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="122.0" prefWidth="159.0" text="               H">
+      <Button layoutX="232.0" layoutY="130.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="122.0" prefWidth="159.0" text="               H">
          <styleClass>
             <String fx:value="btnH" />
             <String fx:value="expandable" />
@@ -84,7 +84,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="283.0" layoutY="91.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="33.0" prefWidth="99.0" text="L">
+      <Button layoutX="240.0" layoutY="98.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="33.0" prefWidth="99.0" text="L">
          <styleClass>
             <String fx:value="greenButton" />
             <String fx:value="btnL" />
@@ -95,7 +95,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="319.0" layoutY="94.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="39.0" prefWidth="99.0" text="G">
+      <Button layoutX="276.0" layoutY="101.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="39.0" prefWidth="99.0" text="G">
          <styleClass>
             <String fx:value="yellowButton" />
             <String fx:value="btnG" />
@@ -106,7 +106,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="417.0" layoutY="83.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="114.0" prefWidth="56.0" text="I">
+      <Button layoutX="374.0" layoutY="90.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="114.0" prefWidth="56.0" text="I">
          <styleClass>
             <String fx:value="blueButton" />
             <String fx:value="btnI" />
@@ -117,7 +117,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="463.0" layoutY="35.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="122.0" prefWidth="49.0" text="J">
+      <Button layoutX="420.0" layoutY="42.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="122.0" prefWidth="49.0" text="J">
          <styleClass>
             <String fx:value="blueButton" />
             <String fx:value="expandable" />
@@ -128,7 +128,7 @@
             <URL value="@mapShapeFor4.css" />
          </stylesheets>
       </Button>
-      <Button layoutX="490.0" layoutY="35.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="106.0" prefWidth="76.0" text="K">
+      <Button layoutX="447.0" layoutY="42.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="106.0" prefWidth="76.0" text="K">
          <styleClass>
             <String fx:value="btnK" />
             <String fx:value="blueButton" />
