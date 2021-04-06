@@ -242,5 +242,15 @@ server response:
 
 
 ------------------------------------------------------------------------------------------------------------------------
+Communication with Game
 
-
+Client communicate server:
+{   Player id
+    Player 的相关信息，
+    Territories: {
+        "A": {
+           兵力,
+           资源产量
+        }
+    }
+}
