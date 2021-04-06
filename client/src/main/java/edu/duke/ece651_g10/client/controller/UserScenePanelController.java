@@ -151,6 +151,7 @@ public class UserScenePanelController implements Initializable {
                 stage.show();
             } else {
                 //TODO: Handle the logic to log the user into the game.
+                System.out.println("You are ready to join the game.");
             }
         }
     }
