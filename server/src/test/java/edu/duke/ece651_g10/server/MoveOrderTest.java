@@ -4,18 +4,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 public class MoveOrderTest {
   @Test
   public void test_MoveOrderExecute() {
-    FixedGameMapFactory factory = new FixedGameMapFactory();
+   FixedGameMapFactory factory = new FixedGameMapFactory();
     GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
+    assertEquals(0, gMap.getTerritory("Elantris").getArmyWithLevel(0).getLevel());
     Player p = mock(Player.class);
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
     mOrder.execute();
     assertEquals(2, gMap.getTerritory("Elantris").getNumUnit());
-  }
+    }
 
   @Test
   public void test_getSourceTerritory(){
@@ -48,8 +51,10 @@ public class MoveOrderTest {
     MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
     mOrder.execute();
     assertEquals(3, mOrder.getNumUnit());
-  }
+    }
 }
+
+
 
 
 

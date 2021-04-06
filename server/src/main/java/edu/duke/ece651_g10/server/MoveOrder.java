@@ -40,32 +40,20 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
         player.setFoodResourceTotal(player.getFoodResourceTotal() - foodCost);
     }
 
-   public Territory getSourceTerritory() {
+  public int getNumUnit() {
+    return unitNum;
+  }
+
+  public Territory getTargetTerritory() {
+    return dest;
+  }
+
+  public void addUnits(int number) {
+    unitNum += number;
+  }
+
+ public Territory getSourceTerritory() {
         return source;
     }
 
-    public int getNumUnit() {
-        return unitNum;
-    }
-    public Territory getTargetTerritory() {
-        return dest;
-    }
-
-    public void addUnits(int number) {
-        unitNum += number;
-    }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-

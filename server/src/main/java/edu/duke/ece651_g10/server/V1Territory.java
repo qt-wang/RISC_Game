@@ -3,11 +3,9 @@ package edu.duke.ece651_g10.server;
 import java.util.*;
 
 /**
- * This class represents one territory of the map.
- * Maintained by Guancheng Fu.
+ * This class represents one territory of the map. Maintained by Guancheng Fu.
  */
 public class V1Territory implements Territory {
-
     @Deprecated
     @Override
     public void setUnitNumber(int unit) {
@@ -151,16 +149,3 @@ public class V1Territory implements Territory {
         return armies.get(level).getArmyUnits();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

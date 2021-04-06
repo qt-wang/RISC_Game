@@ -17,4 +17,19 @@ public interface ArmyFactory {
     public Army generateLFiveArmy(int units);
 
     public Army generateLSixArmy(int units);
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
