@@ -1,6 +1,7 @@
 package edu.duke.ece651_g10.server;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.Executors;
@@ -39,9 +40,8 @@ class GameTest {
         testGame.addPlayer(p3);
         assertEquals(true, testGame.isGameFull());
         test = testGame.presentGameInfo();
-
     }
-    
+
 
     @Test
     public void test_get_player_info() {
@@ -106,7 +106,6 @@ class GameTest {
         assertEquals(secondPhaseBeginMessage, test.get("prompt"));
 
 
-
         JSONObject receivedJson = game.generateServerResponse("valid\n", "", "connection");
         assertEquals(receivedJson.getString("prompt"), "valid\n");
         assertEquals(receivedJson.getString("reason"), "");
@@ -128,5 +127,69 @@ class GameTest {
         JSONObject test = merged.getJSONObject("12");
         assertEquals("test", test.getString("wow"));
         assertEquals(1, merged.getInt("11"));
+    }
+
+    @Test
+    public void test_toOrder() {
+        Game testGame = createTestGame();
+        JSONObject json = new JSONObject().put("type", "order");
+        json = json.put("orderType", "move");
+        json = json.put("sourceTerritory", "Elantris");
+        json = json.put("destTerritory", "Roshar");
+        json = json.put("unitLevel", 0);
+        json = json.put("unitNumber", 2);
+        Order order = testGame.toOrder(1, json);
+        assertEquals(true, order instanceof MoveOrder);
+        assertEquals("Roshar", ((MoveOrder) order).getTargetTerritory().getName());
+        assertEquals("Elantris", ((MoveOrder) order).getSourceTerritory().getName());
+        assertEquals(2, ((MoveOrder) order).getNumUnit());
+
+    }
+
+    @Disabled
+    @Test
+    public void test_toOrderAttack() {
+        Game testGame = createTestGame();
+        JSONObject json = new JSONObject().put("type", "order");
+        json = json.put("orderType", "attack");
+        json = json.put("sourceTerritory", "Elantris");
+        json = json.put("destTerritory", "Narnia");
+        json = json.put("unitLevel", 0);
+        json = json.put("unitNumber", 2);
+        Order order = testGame.toOrder(1, json);
+        assertEquals(true, order instanceof AttackOrder);
+        assertEquals("Narnia", ((AttackOrder) order).getTargetTerritory().getName());
+        assertEquals("Elantris", ((AttackOrder) order).getSourceTerritory().getName());
+        assertEquals(2, ((AttackOrder) order).getNumUnit());
+
+    }
+
+    @Test
+    public void test_toOrderUpgradeUnit() {
+        Game testGame = createTestGame();
+        JSONObject json = new JSONObject().put("type", "order");
+        json = json.put("orderType", "upgradeUnit");
+        json = json.put("sourceTerritory", "Elantris");
+        json = json.put("destTerritory", "Narnia");
+        json = json.put("unitLevel", 3);
+        json = json.put("unitNumber", 2);
+        Order order = testGame.toOrder(1, json);
+        assertEquals(true, order instanceof UpgradeUnitOrder);
+        assertEquals("Elantris", ((UpgradeUnitOrder) order).getSourceTerritory().getName());
+        assertEquals(2, ((UpgradeUnitOrder) order).getNumUnit());
+        assertEquals(3, ((UpgradeUnitOrder) order).getLevel());
+    }
+
+    @Test
+    public void test_toOrderUpgradeTech() {
+        Game testGame = createTestGame();
+        JSONObject json = new JSONObject().put("type", "order");
+        json = json.put("orderType", "upgradeTech");
+        json = json.put("sourceTerritory", "Elantris");
+        json = json.put("destTerritory", "Narnia");
+        json = json.put("unitLevel", 3);
+        json = json.put("unitNumber", 2);
+        Order order = testGame.toOrder(1, json);
+        assertEquals(true, order instanceof UpgradeTechOrder);
     }
 }
