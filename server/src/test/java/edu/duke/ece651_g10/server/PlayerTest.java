@@ -20,7 +20,7 @@ public class PlayerTest {
 
     assertEquals(0, player.getFoodResourceTotal());
     assertEquals(0, player.getTechnologyResourceTotal());
-    assertEquals(0, player.getTechnologyLevel());
+    assertEquals(1, player.getTechnologyLevel());
 
     player.setFoodResourceTotal(100);
     assertEquals(100, player.getFoodResourceTotal());
@@ -29,7 +29,7 @@ public class PlayerTest {
     assertEquals(120, player.getTechnologyResourceTotal());
 
     player.incrementTechnologyLevel();
-    assertEquals(1, player.getTechnologyLevel());
+    assertEquals(2, player.getTechnologyLevel());
   }
 
 }
