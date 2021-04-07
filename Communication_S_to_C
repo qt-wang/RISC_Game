@@ -117,7 +117,7 @@ Client sends:
 {
     type = "connection"
     sub = "listOpenGame"         (list all the open games that the player currently not in)
-    password = "xxxxxx" 
+    password = "xxxxxx"
 }
 
 Server response:
