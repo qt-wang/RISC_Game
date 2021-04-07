@@ -23,6 +23,57 @@ public class FixedGameMapFactory implements GameMapFactory {
         }
     }
 
+    GameMap createNewThreePeopleMap() {
+        HashMap<String, Territory> territoryHashMap = createTerritories(9);
+        territoryHashMap.get("A").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("A").addNeighbour(territoryHashMap.get("I"));
+
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("A"));
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("I"));
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("H"));
+        territoryHashMap.get("B").addNeighbour(territoryHashMap.get("C"));
+
+        territoryHashMap.get("C").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("C").addNeighbour(territoryHashMap.get("H"));
+        territoryHashMap.get("C").addNeighbour(territoryHashMap.get("E"));
+        territoryHashMap.get("C").addNeighbour(territoryHashMap.get("D"));
+
+        territoryHashMap.get("D").addNeighbour(territoryHashMap.get("C"));
+        territoryHashMap.get("D").addNeighbour(territoryHashMap.get("E"));
+
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("D"));
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("C"));
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("H"));
+        territoryHashMap.get("E").addNeighbour(territoryHashMap.get("F"));
+
+
+        territoryHashMap.get("F").addNeighbour(territoryHashMap.get("E"));
+        territoryHashMap.get("F").addNeighbour(territoryHashMap.get("H"));
+        territoryHashMap.get("F").addNeighbour(territoryHashMap.get("G"));
+
+
+        territoryHashMap.get("G").addNeighbour(territoryHashMap.get("F"));
+        territoryHashMap.get("G").addNeighbour(territoryHashMap.get("H"));
+        territoryHashMap.get("G").addNeighbour(territoryHashMap.get("I"));
+
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("I"));
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("G"));
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("F"));
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("E"));
+        territoryHashMap.get("H").addNeighbour(territoryHashMap.get("C"));
+
+        territoryHashMap.get("I").addNeighbour(territoryHashMap.get("A"));
+        territoryHashMap.get("I").addNeighbour(territoryHashMap.get("B"));
+        territoryHashMap.get("I").addNeighbour(territoryHashMap.get("H"));
+        territoryHashMap.get("I").addNeighbour(territoryHashMap.get("G"));
+
+        HashMap<Integer, HashSet<Territory>> groups = createGroups(3, territoryHashMap);
+        GameMap map = new V1GameMap(new HashSet<>(territoryHashMap.values()), groups);
+        setupTerritoryAttributes(map, 120, 45, 90);
+        return map;
+    }
+
     GameMap createTwoPeopleMap() {
         HashMap<String, Territory> territoryHashMap = createTerritories(8);
         territoryHashMap.get("A").addNeighbour(territoryHashMap.get("B"));
@@ -362,4 +413,24 @@ public class FixedGameMapFactory implements GameMapFactory {
                 return null;
         }
     }
+
+    @Override
+    public GameMap V2CreateGameMap(int numberOfPlayers) {
+        switch (numberOfPlayers) {
+            case 2:
+                return createTwoPeopleMap();
+            case 3:
+                return createNewThreePeopleMap();
+            case 4:
+                return createFourPeopleMap();
+            case 5:
+                return createFivePeopleMap();
+            default:
+                System.out.println("Not implemented yet!");
+                assert (false);
+                return null;
+        }
+    }
+
+
 }

@@ -26,9 +26,6 @@ public class Server {
     // The server socket the server is listening to.
     private ServerSocket serverSocket;
 
-    // The factory used to create the map.
-    private GameMapFactory mapFactory;
-
     private GameFactory gameFactory;
 
     // Each game has a specific identification.
@@ -81,9 +78,6 @@ public class Server {
      * @param object   The object to append the new information.
      */
     void appendGameInformation(String password, JSONObject object) {
-//        List<Game> games = new LinkedList<>();
-//        games.add(this.games.get(0));
-//        games.add(this.games.get(1));
         List<Game> games = clientGames.get(password);
         int size = games.size();
         object.put("numberOfGames", size);
