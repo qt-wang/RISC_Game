@@ -73,11 +73,9 @@ public class UserScenePanelController implements Initializable {
         button.setDisable(false);
         if (createGameLayOut) {
             choiceBoxIntro.setText("Please select the number of Players involved in game:");
-            labelIntro.setText("");
             button.setText("Create");
         } else {
             choiceBoxIntro.setText("Select game:");
-            labelIntro.setText("");
             button.setText("Join");
         }
     }
@@ -85,14 +83,17 @@ public class UserScenePanelController implements Initializable {
 
     public void onCreateNewGames(ActionEvent actionEvent) throws IOException {
         this.createGameLayOut = true;
+        labelIntro.setText("");
         setupLayOut();
         // Setup the default values for choice box.
+        choiceBox.setDisable(true);
         choiceBox.getItems().clear();
         for (int i = 2; i <= 5; i++) {
             choiceBox.getItems().add(i);
         }
         // Setup the default values for choice box.
         choiceBox.setValue(2);
+        choiceBox.setDisable(false);
     }
 
     // Send json to the server, and receive the corresponding json from server.
@@ -105,24 +106,29 @@ public class UserScenePanelController implements Initializable {
      */
     public void onClickListOpenGameButton(ActionEvent ae) throws IOException {
         this.createGameLayOut = false;
+
         client.sendListOpenGameJSON(false);
         JSONObject object = client.socketClient.receive();
+        choiceBox.setDisable(true);
         if (choiceBox.getItems() != null) {
             choiceBox.getItems().clear();
         }
-        setupLayOut();
+        labelIntro.setText("");
         setChoiceBoxDefaultValue(object);
+        setupLayOut();
     }
 
     public void onListExistingGameButton(ActionEvent ae) throws IOException {
         this.createGameLayOut = false;
         client.sendListOpenGameJSON(true);
         JSONObject object = client.socketClient.receive();
+        choiceBox.setDisable(true);
         if (choiceBox.getItems() != null) {
             choiceBox.getItems().clear();
         }
-        setupLayOut();
+        labelIntro.setText("");
         setChoiceBoxDefaultValue(object);
+        setupLayOut();
     }
 
     // Send join game to the server, receive response from server.
@@ -140,7 +146,7 @@ public class UserScenePanelController implements Initializable {
             int numberOfPlayers = (int) choiceBox.getValue();
             this.client.sendCreateGameJSON(numberOfPlayers);
             JSONObject object = this.client.getSocketClient().receive();
-            System.out.println(object);
+            //System.out.println(object);
             Boolean valid = object.getString("prompt").equals("valid\n");
             Stage dialog;
             if (valid) {
@@ -151,6 +157,7 @@ public class UserScenePanelController implements Initializable {
             dialog.show();
         } else {
             int gameId = (int) choiceBox.getValue();
+            //System.out.println("game id in join button: " + gameId);
             this.client.sendJoinGameJSON(gameId);
             JSONObject object = this.client.getSocketClient().receive();
             Boolean valid = object.getString("prompt").equals("valid\n");
@@ -217,7 +224,7 @@ public class UserScenePanelController implements Initializable {
                         stage.close();
                         Scene testScene = null;
                         try {
-                            System.out.println(newValue);
+                            //System.out.println(newValue);
                             testScene = factory.createTestScene(newValue);
                         } catch (IOException exception) {
                             exception.printStackTrace();
@@ -261,16 +268,21 @@ public class UserScenePanelController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 // Based on the value of newValue, display the gameinfo for newValue.
-                if (!controller.createGameLayOut) {
-                    for (JSONObject object : client.getListedGames().values()) {
-                        int gameId = object.getInt("gameId");
-                        if (gameId == newValue.intValue()) {
-                            setLabelText(object);
-                            break;
+                //System.out.println((int) newValue.intValue());
+                if (!controller.choiceBox.isDisabled()) {
+                    if (!controller.createGameLayOut) {
+                        int target = (int) choiceBox.getItems().get((int) newValue.intValue());
+                        for (JSONObject object : client.getListedGames().values()) {
+                            int gameId = object.getInt("gameId");
+                            //System.out.println(newValue.intValue());
+                            if (gameId == target) {
+                                setLabelText(object);
+                                break;
+                            }
                         }
+                    } else {
+                        labelIntro.setText("");
                     }
-                } else {
-                    labelIntro.setText("");
                 }
             }
         });

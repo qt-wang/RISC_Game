@@ -110,13 +110,7 @@ public class Server {
         Player p = getPlayerWithPassword(password, gameId);
         synchronized (this) {
             List<RequestHandleTask> temp = waitClients.get(game);
-            int found = 0;
-            for (int i = 0; i < temp.size(); i ++) {
-                if (temp.get(i) == task) {
-                    found = i;
-                }
-            }
-            temp.remove(found);
+            temp.remove(task);
         }
         assert (p != null);
         synchronized (game) {

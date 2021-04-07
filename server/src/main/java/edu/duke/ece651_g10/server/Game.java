@@ -430,6 +430,7 @@ public class Game implements Runnable {
         object.put("technologyLevel", p.getTechnologyLevel());
         object.put("canUpgrade", p.getCanUpgradeInThisTurn());
         object.put("TerritoriesInformation", mergeJSONObject(fixedJSON, variableJSON));
+        object.put("playerNumber", playMap.getTotalPlayers());
         return object;
     }
 
