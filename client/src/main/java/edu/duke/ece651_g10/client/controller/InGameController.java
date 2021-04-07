@@ -185,7 +185,8 @@ public class InGameController {
             playerInfo.refresh();
             setPrompt("What would you like to do?");
         } else {
-            invalidPrompt(object.getString("reason"));
+            //invalidPrompt(object.getString("reason"));
+            setPrompt(object.getString("reason"));
         }
         toSend = null;
     }

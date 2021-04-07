@@ -248,7 +248,7 @@ public class Game implements Runnable {
     }
 
     private void sendServerInvalidResponse(int playerId, String reason) throws IOException {
-        sendToPlayer(playerId, generateServerResponse("invalid\n", reason, "connection"));
+        //sendToPlayer(playerId, generateServerResponse("invalid\n", reason, "connection"));
         players.get(playerId).getJCommunicator().sendServerInvalidResponse(reason);
     }
 
@@ -515,8 +515,10 @@ public class Game implements Runnable {
                     orderProcessor.acceptOrder(order);
                     // Send upgrade information back to the client.
                     sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+                    System.out.println("Send back valid response");
                 } else {
                     sendServerInvalidResponse(playerId, message);
+                    System.out.println("Send back invalid response");
                 }
             }
         }

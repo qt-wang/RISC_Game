@@ -337,7 +337,7 @@ public class Server {
         //TODO: shall we only have fixed number of games? what if game ends?
         waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
-            games.put(i, gameFactory.createFixedGame(3));
+            games.put(i, gameFactory.createFixedGame(2));
         }
     }
 
