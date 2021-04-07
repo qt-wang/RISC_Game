@@ -43,6 +43,8 @@ public class Game implements Runnable {
 
     private OrderProcessor orderProcessor;
 
+    private WaitGroup beforeGameWaitGroup;
+
     /**
      * These two variables keep the game states.
      * i.e. whether the game is:
@@ -52,7 +54,7 @@ public class Game implements Runnable {
      */
     private boolean gameEnds;
 
-    private boolean gameBegins;
+    boolean gameBegins;
 
     private int numUnitPerPlayer;
 
@@ -92,6 +94,7 @@ public class Game implements Runnable {
         this.gameBegins = false;
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
+        beforeGameWaitGroup = new WaitGroup(map.getTotalPlayers());
     }
 
     public int getGameId() {
@@ -556,8 +559,6 @@ public class Game implements Runnable {
                     sendServerInvalidResponse(playerId, "Can only issue logout command in this state!");
                 }
             }
-            // Else do nothing.
-            System.out.println(waitGroup.count);
         }
     }
 
@@ -704,7 +705,11 @@ public class Game implements Runnable {
     }
 
     public boolean canGameStart() {
-        return players.size() == numPlayers;
+        return players.size() == numPlayers && beforeGameWaitGroup.getState();
+    }
+
+    public WaitGroup getBeforeGameWaitGroup () {
+        return beforeGameWaitGroup;
     }
 
     /**
@@ -715,6 +720,7 @@ public class Game implements Runnable {
     @Override
     public void run() {
         // Create the map used in this game.
+        gameBegins = true;
         assignInitialTerritories();
         runTasksForAllPlayer(getUnitsDistributionTask());
         Player winner = null;

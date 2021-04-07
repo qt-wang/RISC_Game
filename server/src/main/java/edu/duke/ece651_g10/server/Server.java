@@ -179,7 +179,6 @@ public class Server {
                     break;
                 }
                 case "createNewGame": {
-                    //System.out.println("Reached!");
                     String providedPassword = obj.getString("password");
                     int numberOfPlayers = obj.getInt("numberOfPlayers");
                     Game newGame = gameFactory.createFixedGame(numberOfPlayers);
@@ -308,10 +307,15 @@ public class Server {
         if (success != null) {
             return success;
         }
+        Game game = games.get(gameId);
+        if (!game.gameBegins) {
+            game.getBeforeGameWaitGroup().decrease();
+            System.out.println(game.getBeforeGameWaitGroup().count);
+        }
         if (isPlayerInGame(password, gameId)) {
             // Mark the player as enter the game.
             Player p = getPlayerWithPassword(password, gameId);
-            assert (p!=null);
+            assert (p != null);
             p.joinGame();
         } else {
             // Create a new player, add it to game.
@@ -322,9 +326,9 @@ public class Server {
             joinedGame.addPlayer(newPlayer);
             List<Game> gameList = clientGames.get(password);
             gameList.add(joinedGame);
-            if (joinedGame.canGameStart()) {
-                startGame(joinedGame);
-            }
+        }
+        if (game.canGameStart()) {
+            startGame(game);
         }
         return null;
     }
