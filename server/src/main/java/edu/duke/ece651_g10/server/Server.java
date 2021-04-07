@@ -110,6 +110,7 @@ public class Server {
         Player p = getPlayerWithPassword(password, gameId);
         synchronized (this) {
             List<RequestHandleTask> temp = waitClients.get(game);
+            task.currentGame = null;
             temp.remove(task);
         }
         assert (p != null);
@@ -127,6 +128,7 @@ public class Server {
         JSONCommunicator jc;
         Socket socket;
         Boolean running;
+        Game currentGame;
 
         //TODO: later abstract out this as a method?
         private void handleJSONObject(JSONObject obj) throws IOException {
@@ -204,6 +206,7 @@ public class Server {
                         List<Game> gameList = clientGames.get(providedPassword);
                         gameList.add(joinedGame);
                     }
+                    // Player in game. need to check it.
 
                     synchronized (game) {
                         game.getCurrentWaitGroup().decrease();
@@ -222,6 +225,7 @@ public class Server {
                             waitClients.put(game, new LinkedList<>());
                         } else {
                             // Add it to the wait group.
+                            currentGame = game;
                             synchronized (this) {
                                 if (!waitClients.containsKey(game)) {
                                     waitClients.put(game, new LinkedList<>());
@@ -275,6 +279,23 @@ public class Server {
                     if (obj != null) {
                         System.out.println(obj);
                         handleJSONObject(obj);
+                    }
+                    // Check if the wait game can be done.
+                    if (currentGame != null) {
+                        // check if it is ready.
+                        synchronized (currentGame) {
+                            System.out.println(currentGame.getCurrentWaitGroup().count);
+                            if (currentGame.getCurrentWaitGroup().getState()) {
+                                // it is done.
+                                // Add all the players into the game.
+                                this.running = false;
+                                for (RequestHandleTask t: waitClients.get(game)) {
+                                    t.running = false;
+                                }
+                                waitClients.put(game, new LinkedList<>());
+                                currentGame = null;
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

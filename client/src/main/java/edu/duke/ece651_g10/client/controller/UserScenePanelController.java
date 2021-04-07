@@ -175,21 +175,7 @@ public class UserScenePanelController implements Initializable {
                  * After receive the result from the background task, create a new scene use it.
                  */
                 // Create the background task, which should receive a json object from the server.
-                Task<JSONObject> backTask = new Task<JSONObject>() {
-                    @Override
-                    protected JSONObject call() throws Exception {
-                        while (true) {
-                            JSONObject temp = client.socketClient.tryReceive();
-                            if (temp != null) {
-                                System.out.println(temp);
-                                return temp;
-                            }
-                            if (isCancelled()) {
-                                return null;
-                            }
-                        }
-                    }
-                };
+                Task<JSONObject> backTask = App.generateBackGroundReceiveTask(client);
 
                 //Create a wait box.
                 Stage stage = App.createChildStage(primaryStage, "Waiting...");

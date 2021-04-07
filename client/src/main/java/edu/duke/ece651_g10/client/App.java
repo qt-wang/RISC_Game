@@ -4,6 +4,7 @@
 package edu.duke.ece651_g10.client;
 
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -30,6 +31,29 @@ public class App extends Application {
      */
     public static void main(String[] args) throws IOException {
         launch(args);
+    }
+
+    /**
+     * Generate a background task to try to receive a json object from the server.
+     * @param client The client which represents the user.
+     * @return The task.
+     */
+    public static Task<JSONObject> generateBackGroundReceiveTask(Client client) {
+        return new Task<JSONObject>() {
+            @Override
+            protected JSONObject call() throws Exception {
+                while (true) {
+                    JSONObject temp = client.socketClient.tryReceive();
+                    if (temp != null) {
+                        System.out.println(temp);
+                        return temp;
+                    }
+                    if (isCancelled()) {
+                        return null;
+                    }
+                }
+            }
+        };
     }
 
     public static Stage createDialogStage(Stage primaryStage, String title, String content) {

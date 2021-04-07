@@ -146,11 +146,11 @@ public class Player {
    */
   public void joinGame() {
     this.inGame = true;
-    synchronized (Game.class) {
-      if (waitGroup != null && waitGroup.count != 0) {
-        waitGroup.decrease();
-      }
-    }
+//    synchronized (Game.class) {
+//      if (waitGroup != null && waitGroup.count != 0) {
+//        waitGroup.decrease();
+//      }
+//    }
   }
 
   /**
