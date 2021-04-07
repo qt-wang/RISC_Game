@@ -49,8 +49,8 @@ public class InGameController {
         prompt.setText(str);
     }
 
-    public void updateGameInfo(){
-
+    public void updateGameInfo(JSONObject obj){
+        gameInfo = new GameInfo();
     }
 
     public void setPlayerInfo(){
@@ -73,33 +73,13 @@ public class InGameController {
     }
 
     @FXML
-    public void onEnter(MouseEvent ae){
-        Object source = ae.getSource();
-        if (source instanceof Button) {
-            Button btn = (Button) source;
-            setTerritoryInfo(btn.getText());
-        }
-        else {
-            throw new IllegalArgumentException("Invalid source " + source + " for ActionEvent");
-        }
-    }
-
-    @FXML
-    public void onExit(MouseEvent ae){
-        Object source = ae.getSource();
-        if (source instanceof Button) {
-            setTerritoryInfo("");
-        }
-        else {
-            throw new IllegalArgumentException("Invalid source " + source + " for ActionEvent");
-        }
-    }
-
-    @FXML
     public void onEnterStage(MouseEvent ae){
         setPlayerInfo();
     }
-
+    @FXML
+    public void onClickPane(MouseEvent ae){
+        setTerritoryInfo("");
+    }
     public void invalidPrompt(String msg){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -188,21 +168,26 @@ public class InGameController {
     public void onClickTerritory(ActionEvent ae){
         Object source = ae.getSource();
         if (source instanceof Button) {
-            if(toSend==null) return;
             Button btn = (Button) source;
+            setTerritoryInfo(btn.getText());
+            if(toSend==null) return;
             if(toSend.getString("orderType").equals("move") || toSend.getString("orderType").equals("attack")){
                 if(!toSend.has("sourceTerritory")){
                     toSend.put("sourceTerritory",btn.getText());
                     setPrompt("Please select the destination territory!");
                 }else if(!toSend.has("destTerritory")){
                     toSend.put("destTerritory",btn.getText());
+                    //for specific level of unit and unit number
+//                    String[] infos = {"Please input the level of the unit you want to send!","Please input the number of unit!"};
+//                    String[] fields = {"unitLevel","unitNumber"};
+//                    setNumbersPrompt(infos, fields, true);
                     String[] infos = {"Please input the number of unit!"};
                     String[] fields = {"unitNumber"};
                     setNumbersPrompt(infos,fields,true);
                 }
             }else if(toSend.getString("orderType").equals("upgradeUnit")){
-                if(!toSend.has("destTerritory")) {
-                    toSend.put("destTerritory", btn.getText());
+                if(!toSend.has("sourceTerritory")) {
+                    toSend.put("sourceTerritory", btn.getText());
                     String[] infos = {"Please input the level of the unit you want to upgrade!","Please input the number of unit!"};
                     String[] fields = {"unitLevel","unitNumber"};
                     setNumbersPrompt(infos, fields, true);
@@ -213,6 +198,7 @@ public class InGameController {
             throw new IllegalArgumentException("Invalid source " + source + " for ActionEvent");
         }
     }
+
     public void initOrder(String orderType, String prompt){
         if(toSend==null) {
             toSend = new JSONObject();
@@ -236,10 +222,14 @@ public class InGameController {
     }
     @FXML
     public void onUpgradeTech(ActionEvent ae){
-        initOrder("upgradeTech","");
-        sendJSON();
-    }
+        if(toSend==null){
+            initOrder("upgradeTech","");
+            sendJSON();
+        }else{
+            invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
+        }
 
+    }
 
     @FXML
     public void onCancel(ActionEvent ae){
@@ -247,5 +237,19 @@ public class InGameController {
             toSend = null;
             setPrompt("Order cancelled. What would you like to do?");
         }
+    }
+    public void initCommit(){
+        if(toSend==null) {
+            toSend = new JSONObject();
+            toSend.put("type", "commit");
+            sendJSON();
+        }else{
+            invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
+        }
+    }
+
+    @FXML
+    public void onCommit(ActionEvent ae){
+        initCommit();
     }
 }

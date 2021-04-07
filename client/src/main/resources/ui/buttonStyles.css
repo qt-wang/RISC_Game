@@ -5,6 +5,17 @@
 .panel{
     -fx-background-color: #403e3e;
 }
+.BtnColor{
+    -track-color: #F30404;
+
+}
+.BtnColor.track{
+    -fx-background-color: black,-track-color;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
+}
+
 .redButton{
     -fx-background-color: black,#F30404;
     -fx-text-fill: black;

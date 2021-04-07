@@ -2,146 +2,209 @@
 
 <?import java.lang.String?>
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" stylesheets="@buttonStyles.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.NumButtonController">
-   <children>
-      <Button layoutX="24.0" layoutY="115.0" mnemonicParsing="false" onAction="#onLeft" pickOnBounds="false" prefHeight="80.0" prefWidth="84.0" text="A">
-         <styleClass>
-            <String fx:value="btnA" />
-            <String fx:value="expandable" />
-            <String fx:value="redButton" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="96.0" layoutY="115.0" mnemonicParsing="false" onAction="#onRight" pickOnBounds="false" prefHeight="61.0" prefWidth="106.0" text="B">
-         <styleClass>
-            <String fx:value="redButton" />
-            <String fx:value="btnB" />
-            <String fx:value="expandable" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="85.0" layoutY="167.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="46.0" prefWidth="84.0" text="D">
-         <styleClass>
-            <String fx:value="btnD" />
-            <String fx:value="expandable" />
-            <String fx:value="redButton" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="129.0" layoutY="157.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="99.0" prefWidth="116.0" text="E">
-         <styleClass>
-            <String fx:value="btnE" />
-            <String fx:value="expandable" />
-            <String fx:value="yellowButton" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="201.0" layoutY="111.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="46.0" prefWidth="76.0" text="C">
-         <styleClass>
-            <String fx:value="btnC" />
-            <String fx:value="expandable" />
-            <String fx:value="greenButton" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="201.0" layoutY="132.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="80.0" prefWidth="122.0" rotate="3.0" text="F">
-         <styleClass>
-            <String fx:value="btnF" />
-            <String fx:value="expandable" />
-            <String fx:value="greenButton" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="232.0" layoutY="130.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="122.0" prefWidth="159.0" text="               H">
-         <styleClass>
-            <String fx:value="btnH" />
-            <String fx:value="expandable" />
-            <String fx:value="yellowButton" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="240.0" layoutY="98.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="33.0" prefWidth="99.0" text="L">
-         <styleClass>
-            <String fx:value="greenButton" />
-            <String fx:value="btnL" />
-            <String fx:value="expandable" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="276.0" layoutY="101.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="39.0" prefWidth="99.0" text="G">
-         <styleClass>
-            <String fx:value="yellowButton" />
-            <String fx:value="btnG" />
-            <String fx:value="expandable" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="374.0" layoutY="90.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="114.0" prefWidth="56.0" text="I">
-         <styleClass>
-            <String fx:value="blueButton" />
-            <String fx:value="btnI" />
-            <String fx:value="expandable" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="420.0" layoutY="42.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="122.0" prefWidth="49.0" text="J">
-         <styleClass>
-            <String fx:value="blueButton" />
-            <String fx:value="expandable" />
-            <String fx:value="btnJ" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-      <Button layoutX="447.0" layoutY="42.0" mnemonicParsing="false" pickOnBounds="false" prefHeight="106.0" prefWidth="76.0" text="K">
-         <styleClass>
-            <String fx:value="btnK" />
-            <String fx:value="blueButton" />
-            <String fx:value="expandable" />
-         </styleClass>
-         <stylesheets>
-            <URL value="@buttonStyles.css" />
-            <URL value="@mapShapeFor4.css" />
-         </stylesheets>
-      </Button>
-   </children>
-   <styleClass>
-      <String fx:value="expandable" />
-      <String fx:value="panel" />
-   </styleClass>
-</AnchorPane>
+<GridPane onMouseEntered="#onEnterStage" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.InGameController">
+<columnConstraints>
+   <ColumnConstraints percentWidth="25" />
+   <ColumnConstraints percentWidth="65" />
+   <ColumnConstraints percentWidth="10" />
+</columnConstraints>
+<rowConstraints>
+   <RowConstraints percentHeight="20" />
+   <RowConstraints percentHeight="60" />
+   <RowConstraints percentHeight="10" />
+   <RowConstraints percentHeight="10" />
+</rowConstraints>
+<children>
+   <AnchorPane onMouseClicked="#onClickPane" pickOnBounds="false" prefHeight="404.0" prefWidth="617.0" styleClass="panel" stylesheets="@buttonStyles.css" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.rowSpan="2">
+      <children>
+         <Button layoutX="24.0" layoutY="115.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="80.0" prefWidth="84.0" text="A">
+            <styleClass>
+               <String fx:value="btnA" />
+               <String fx:value="expandable" />
+               <String fx:value="redButton" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="96.0" layoutY="115.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="61.0" prefWidth="106.0" text="B">
+            <styleClass>
+               <String fx:value="redButton" />
+               <String fx:value="btnB" />
+               <String fx:value="expandable" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="85.0" layoutY="167.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="46.0" prefWidth="84.0" text="D">
+            <styleClass>
+               <String fx:value="btnD" />
+               <String fx:value="expandable" />
+               <String fx:value="redButton" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="129.0" layoutY="157.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="99.0" prefWidth="116.0" text="E">
+            <styleClass>
+               <String fx:value="btnE" />
+               <String fx:value="expandable" />
+               <String fx:value="yellowButton" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="201.0" layoutY="111.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="46.0" prefWidth="76.0" text="C">
+            <styleClass>
+               <String fx:value="btnC" />
+               <String fx:value="expandable" />
+               <String fx:value="greenButton" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="201.0" layoutY="132.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="80.0" prefWidth="122.0" rotate="3.0" text="F">
+            <styleClass>
+               <String fx:value="btnF" />
+               <String fx:value="expandable" />
+               <String fx:value="greenButton" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="232.0" layoutY="130.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="122.0" prefWidth="159.0" text="H">
+            <styleClass>
+               <String fx:value="btnH" />
+               <String fx:value="expandable" />
+               <String fx:value="yellowButton" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+               <padding>
+                  <Insets left="50.0" />
+               </padding>
+         </Button>
+         <Button layoutX="240.0" layoutY="98.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="33.0" prefWidth="99.0" text="L">
+            <styleClass>
+               <String fx:value="greenButton" />
+               <String fx:value="btnL" />
+               <String fx:value="expandable" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="276.0" layoutY="101.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="39.0" prefWidth="99.0" text="G">
+            <styleClass>
+               <String fx:value="yellowButton" />
+               <String fx:value="btnG" />
+               <String fx:value="expandable" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="374.0" layoutY="90.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="114.0" prefWidth="56.0" text="I">
+            <styleClass>
+               <String fx:value="blueButton" />
+               <String fx:value="btnI" />
+               <String fx:value="expandable" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="420.0" layoutY="42.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="122.0" prefWidth="49.0" text="J">
+            <styleClass>
+               <String fx:value="blueButton" />
+               <String fx:value="expandable" />
+               <String fx:value="btnJ" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+         <Button layoutX="447.0" layoutY="42.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="106.0" prefWidth="76.0" text="K">
+            <styleClass>
+               <String fx:value="btnK" />
+               <String fx:value="blueButton" />
+               <String fx:value="expandable" />
+            </styleClass>
+            <stylesheets>
+               <URL value="@buttonStyles.css" />
+               <URL value="@mapShapeFor4.css" />
+            </stylesheets>
+         </Button>
+      </children>
+      <styleClass>
+         <String fx:value="expandable" />
+         <String fx:value="panel" />
+      </styleClass>
+   </AnchorPane>
+   <ListView fx:id="playerInfo" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="0" GridPane.rowSpan="1" />
+   <ListView fx:id="territoryInfo" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="1" GridPane.rowSpan="1" />
+   <Text fx:id="prompt" text="What would you like to do? Hover on a territory to see its information!" wrappingWidth="669.3359375" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="1" />
+   <Button mnemonicParsing="false" onAction="#onCommit" styleClass="expandable" stylesheets="@buttonStyles.css" text="Commit" GridPane.columnIndex="2" GridPane.rowIndex="2">
+      <font>
+         <Font size="12.0" />
+      </font>
+   </Button>
+   <Button mnemonicParsing="false" styleClass="expandable" stylesheets="@buttonStyles.css" text="Log out" GridPane.columnIndex="2" GridPane.rowIndex="3">
+      <font>
+         <Font size="12.0" />
+      </font>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onMove" text="Move" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets left="50.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onAttack" text="Attack" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets left="130.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onUpgradeUnit" text="UpgradeUnit" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets left="30.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onCancel" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets left="280.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onUpgradeTech" text="UpgradeTech" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets left="150.0" />
+      </GridPane.margin>
+   </Button>
+</children>
+</GridPane>
