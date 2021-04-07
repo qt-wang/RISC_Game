@@ -14,7 +14,8 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
 
   private void initiateAttackLevel() {
     this.attackLevel = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0));
-    ArrayList<Integer> helper = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0));
+    attackLevel.set(level, unitNum);
+    /*ArrayList<Integer> helper = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0));
     for (int i = 0; i < 7; i++) {
       helper.set(i, source.getArmyWithLevel(i).getArmyUnits());
     }
@@ -32,7 +33,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
         temp = temp - helper.get(levelNum);
         helper.set(levelNum, 0);
       }
-    }
+    }*/
   }
 
   /**
@@ -41,8 +42,8 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
    * @param def      is the defender territory
    * @param num      is the unit number that the attacker sends to the defender.
    */
-  public AttackOrder(int playerID, String att, String def, int num, GameMap gMap, Player player) {
-    super(playerID, att, def, num, gMap, player);
+  public AttackOrder(int playerID, String att, String def, int num, GameMap gMap, Player player, int level) {
+    super(playerID, att, def, num, gMap, player, level);
     initiateAttackLevel();
   }
 
@@ -177,5 +178,15 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
 
   public Player getPlayer() {
     return player;
+  }
+
+  public void setAttackLevel(ArrayList<Integer> atkLevel){
+    for(int i = 0; i < 7; i++){
+      attackLevel.set(i, attackLevel.get(i) + atkLevel.get(i));
+    }
+  }
+
+  public int getLevel(){
+    return level;
   }
 }

@@ -268,10 +268,10 @@ public class Game implements Runnable {
             int uLevel = obj.getInt("unitLevel");
             int unitNum = obj.getInt("unitNumber");
             if (orderType.equals("move")) {
-                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
+                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
                 return order;
             } else if (orderType.equals("attack")) {
-                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId));
+                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
                 return order;
             } else if (orderType.equals("upgradeUnit")){
                 Order order = new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));

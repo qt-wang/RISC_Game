@@ -10,8 +10,8 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
 //    // HashSet<Unit> units;
     private ShortestPath sp;
 
-    public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p){  //need to change Territory to string
-      super(playerID, source, dest, unitNum, gMap, p);
+    public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p, int level){  //need to change Territory to string
+      super(playerID, source, dest, unitNum, gMap, p, level);
       this.sp = new ShortestPath(gMap);
     }
 
@@ -20,7 +20,7 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
      *source territory, and increases the number of units in the army of destination territory.
      */
     public void execute(){
-        boolean flag = false;
+        /*boolean flag = false;
         while(!flag) {
             Random random = new Random();
             int randLevel = random.nextInt(7);
@@ -35,8 +35,10 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
                 destArmy.increaseUnits(sourceArmy.getArmyUnits());
                 unitNum -= sourceArmy.getArmyUnits();
             }
-        }
-        int foodCost = sp.minCost(source, dest);
+        }*/
+        source.decreaseUnit(unitNum, level);
+        dest.increaseUnit(unitNum, level);
+        int foodCost = sp.minCost(source, dest) * unitNum;
         player.setFoodResourceTotal(player.getFoodResourceTotal() - foodCost);
     }
 
@@ -56,4 +58,7 @@ public class MoveOrder extends TerritoryToTerritoryOrder{
         return source;
     }
 
+    public int getLevel(){
+        return level;
+    }
 }

@@ -54,6 +54,7 @@ public class V1OrderProcessor implements OrderProcessor {
         Vector<AttackOrder> vector = attacksInOneTurn.get(((AttackOrder) order).getSourceTerritory().getOwner());
         vector.addElement((AttackOrder) order);
         if (vector.size() > 1) {
+          mergeAttackLevel(vector);
           merge(vector);
         }
         attacksInOneTurn.put(((AttackOrder) order).getSourceTerritory().getOwner(), vector);
@@ -68,6 +69,22 @@ public class V1OrderProcessor implements OrderProcessor {
       int newTechResource = currentTechResource - techResourceCost;
       ((UpgradeTechOrder) order).getPlayer().setTechnologyResourceTotal(newTechResource);
       upgradeTechInOneTurn.addElement((UpgradeTechOrder) order);
+    }
+  }
+
+  private void mergeAttackLevel(Vector<AttackOrder> vector){
+    int length = vector.size();
+    int index = -1;
+    for(int i = 0; i < length - 1; i++){
+      for(int j = i + 1; j < length; j++){
+        if(vector.get(i).getSourceTerritory().equals(vector.get(j).getSourceTerritory()) && vector.get(i).getTargetTerritory().equals(vector.get(j).getTargetTerritory())){
+          vector.get(i).setAttackLevel(vector.get(j).getAttackLevel());
+          index = j;
+        }
+      }
+    }
+    if (index != -1) {
+      vector.remove(vector.get(index));
     }
   }
 

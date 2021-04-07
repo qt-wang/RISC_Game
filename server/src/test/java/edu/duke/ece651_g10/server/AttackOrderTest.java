@@ -13,17 +13,17 @@ public class AttackOrderTest {
     Player player = new Player(null, null);
    
     gMap.getTerritory("Elantris").increaseUnit(1, 0);
-    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
+    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player, 0);
     assertEquals(1, mOrder.getPlayerID());
     assertEquals(1, mOrder.getNumUnit());
     mOrder.execute();
     assertEquals(1, gMap.getTerritory("Narnia").getNumUnit());
-    AttackOrder mOrder2 = new AttackOrder(1, "Narnia", "Elantris", 1, gMap, player);
+    AttackOrder mOrder2 = new AttackOrder(1, "Narnia", "Elantris", 1, gMap, player, 0);
     mOrder2.execute();
     assertEquals(1, gMap.getTerritory("Elantris").getNumUnit());
 
     gMap.getTerritory("Scadrial").increaseUnit(2, 0);
-    AttackOrder mOrder3 = new AttackOrder(1, "Scadrial", "Elantris", 1, gMap, player);
+    AttackOrder mOrder3 = new AttackOrder(1, "Scadrial", "Elantris", 1, gMap, player, 0);
     mOrder3.addUnits(1);
     assertEquals(2, mOrder3.getNumUnit());
     
@@ -39,7 +39,7 @@ public class AttackOrderTest {
     GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
-    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
+    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player, 0);
     mOrder.execute();
     assertEquals("Elantris", mOrder.getSourceTerritory().getName());
   }
@@ -50,7 +50,7 @@ public class AttackOrderTest {
     GameMap gMap = factory.createGameMap(3);
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
-    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
+    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player, 0);
     mOrder.execute();
     assertEquals("Narnia", mOrder.getTargetTerritory().getName());
   }
@@ -63,7 +63,7 @@ public class AttackOrderTest {
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     gMap.getTerritory("Elantris").increaseUnit(6, 3);
     gMap.getTerritory("Narnia").increaseUnit(3, 4);
-    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player);
+    AttackOrder mOrder = new AttackOrder(1, "Elantris", "Narnia", 3, gMap, player, 0);
     mOrder.execute();
     assertEquals(0, gMap.getTerritory("Narnia").getArmyWithLevel(6).getArmyUnits());
   }

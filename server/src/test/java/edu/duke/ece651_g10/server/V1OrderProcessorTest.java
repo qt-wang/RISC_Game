@@ -19,9 +19,9 @@ public class V1OrderProcessorTest {
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     gMap.getTerritory("Roshar").increaseUnit(4, 6);
     Player p = mock(Player.class);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
-    AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
-    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Scadrial", 1, gMap, player);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p, 0);
+    AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player, 0);
+    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Scadrial", 1, gMap, player, 0);
     V1OrderProcessor op = new V1OrderProcessor();
     op.acceptOrder(mOrder);
     op.acceptOrder(aOrder);
@@ -43,11 +43,14 @@ public class V1OrderProcessorTest {
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     gMap.getTerritory("Elantris").increaseUnit(2, 3);
-    AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 7, gMap, player);
-    ArrayList<Integer> arr = new ArrayList<>(Arrays.asList(5, 0, 0, 2, 0, 0, 0));
-    assertEquals(5, aOrder.getSourceTerritory().getArmyWithLevel(0).getArmyUnits());
-    assertEquals(2, aOrder.getSourceTerritory().getArmyWithLevel(3).getArmyUnits());
-    assertEquals(arr, aOrder.getAttackLevel());
+    AttackOrder aOrder1 = new AttackOrder(1, "Elantris", "Narnia", 5, gMap, player, 0);
+    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Narnia", 2, gMap, player, 3);
+    ArrayList<Integer> arr1 = new ArrayList<>(Arrays.asList(5, 0, 0, 0, 0, 0, 0));
+    ArrayList<Integer> arr2 = new ArrayList<>(Arrays.asList(0, 0, 0, 2, 0, 0, 0));
+    assertEquals(5, aOrder1.getSourceTerritory().getArmyWithLevel(0).getArmyUnits());
+    assertEquals(2, aOrder2.getSourceTerritory().getArmyWithLevel(3).getArmyUnits());
+    assertEquals(arr1, aOrder1.getAttackLevel());
+    assertEquals(arr2, aOrder2.getAttackLevel());
   }
 
   @Test
@@ -59,13 +62,13 @@ public class V1OrderProcessorTest {
     gMap.getTerritory("Elantris").increaseUnit(2, 3);
     gMap.getTerritory("Roshar").increaseUnit(6, 1);
     gMap.getTerritory("Roshar").increaseUnit(3, 4);
-    AttackOrder aOrder1 = new AttackOrder(1, "Elantris", "Scadrial", 3, gMap, player);
-    AttackOrder aOrder2 = new AttackOrder(1, "Roshar", "Scadrial", 3, gMap, player);
+    AttackOrder aOrder1 = new AttackOrder(1, "Elantris", "Scadrial", 2, gMap, player, 0);
+    AttackOrder aOrder2 = new AttackOrder(1, "Roshar", "Scadrial", 1, gMap, player, 3);
     V1OrderProcessor op = new V1OrderProcessor();
     op.acceptOrder(aOrder1);
     op.acceptOrder(aOrder2);
     op.executeEndTurnOrders();
-    assertEquals(6, gMap.getTerritory("Scadrial").getNumUnit());
+    assertEquals(3, gMap.getTerritory("Scadrial").getNumUnit());
   }
 
   @Test
@@ -78,8 +81,8 @@ public class V1OrderProcessorTest {
     gMap.getTerritory("Narnia").setOwner(player2);
     gMap.getTerritory("Elantris").increaseUnit(1, 0);
     gMap.getTerritory("Narnia").increaseUnit(1, 6);
-    AttackOrder aOrder1 = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player1);
-    AttackOrder aOrder2 = new AttackOrder(1, "Narnia", "Elantris", 1, gMap, player2);
+    AttackOrder aOrder1 = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player1, 0);
+    AttackOrder aOrder2 = new AttackOrder(1, "Narnia", "Elantris", 1, gMap, player2, 6);
     V1OrderProcessor op = new V1OrderProcessor();
     op.acceptOrder(aOrder1);
     op.acceptOrder(aOrder2);

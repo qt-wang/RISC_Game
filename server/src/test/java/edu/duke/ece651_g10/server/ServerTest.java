@@ -35,8 +35,8 @@ class ServerTest {
             t2.setUnitNumber(1);
 
             // p1 attack p2
-            Order attack = new AttackOrder(p1.getPlayerID(), "test1", "test2", 1, map, p1);
-            Order attack2 = new AttackOrder(p2.getPlayerID(), "test2", "test1", 1, map, p2);
+            Order attack = new AttackOrder(p1.getPlayerID(), "test1", "test2", 1, map, p1, 0);
+            Order attack2 = new AttackOrder(p2.getPlayerID(), "test2", "test1", 1, map, p2, 0);
 
             orderProcessor.acceptOrder(attack);;
             orderProcessor.acceptOrder(attack2);
