@@ -47,6 +47,7 @@ public class Server {
 
     ExecutorService threadPool;
 
+    HashMap<Game, List<RequestHandleTask>> waitClients;
 
     /**
      * Setup the server socket.
@@ -102,6 +103,26 @@ public class Server {
             }
         }
         object.put("numberOfGames", count);
+    }
+
+    void cancelUserLogin(String password, int gameId, RequestHandleTask task) {
+        Game game = games.get(gameId);
+        Player p = getPlayerWithPassword(password, gameId);
+        synchronized (this) {
+            List<RequestHandleTask> temp = waitClients.get(game);
+            int found = 0;
+            for (int i = 0; i < temp.size(); i ++) {
+                if (temp.get(i) == task) {
+                    found = i;
+                }
+            }
+            temp.remove(found);
+        }
+        assert (p != null);
+        synchronized (game) {
+            p.leaveGame();
+            game.getCurrentWaitGroup().increase();
+        }
     }
 
     /**
@@ -165,18 +186,69 @@ public class Server {
                     break;
                 }
                 case "joinGame": {
+                    // TODO: Change this logic for other phases.
                     String providedPassword = obj.getString("password");
                     int gameId = obj.getInt("gameId");
-                    String reason = addPlayerToGame(providedPassword, gameId, socket, jc);
-                    Game currentGame = games.get(gameId);
-                    if (reason == null) {
-                        // We should not monitor on this port anymore.
-                        running = false;
-                        JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
-                        jc.send(response);
-                    } else {
+                    String reason = null; //addPlayerToGame(providedPassword, gameId, socket, jc);
+                    String success = checkValidOpenGame(providedPassword, gameId);
+                    if (success != null) {
+                        reason = success;
                         jc.sendServerInvalidResponse(reason);
+                        break;
                     }
+                    Game game = games.get(gameId);
+                    if (isPlayerInGame(providedPassword, gameId)) {
+                        // Mark the player as enter the game.
+                        Player p = getPlayerWithPassword(providedPassword, gameId);
+                        assert (p != null);
+                        p.joinGame();
+                    } else {
+                        Player newPlayer = new Player(socket, jc);
+                        clientInfo.get(providedPassword).add(newPlayer);
+                        Game joinedGame = games.get(gameId);
+                        joinedGame.addPlayer(newPlayer);
+                        List<Game> gameList = clientGames.get(providedPassword);
+                        gameList.add(joinedGame);
+                    }
+
+                    synchronized (game) {
+                        game.getCurrentWaitGroup().decrease();
+                        // If the game is not started yet!
+                        if (game.canGameStart()) {
+                            startGame(game);
+                        }
+                        // If game already starts, just disconnect from the server.
+                        if (game.getCurrentWaitGroup().getState()) {
+                            // Disconnect from the thread.
+                            // We should also free the previous waiting player.
+                            this.running = false;
+                            for (RequestHandleTask t: waitClients.get(game)) {
+                                t.running = false;
+                            }
+                            waitClients.put(game, new LinkedList<>());
+                        } else {
+                            // Add it to the wait group.
+                            synchronized (this) {
+                                if (!waitClients.containsKey(game)) {
+                                    waitClients.put(game, new LinkedList<>());
+                                }
+                                waitClients.get(game).add(this);
+                            }
+                        }
+                        if (reason == null) {
+                            // We should not monitor on this port anymore.
+                            JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                            jc.send(response);
+                        } else {
+                            jc.sendServerInvalidResponse(reason);
+                        }
+                        break;
+                    }
+                }
+                case "cancelLogIn": {
+                    String providedPassword = obj.getString("password");
+                    int gameId = obj.getInt("gameId");
+                    cancelUserLogin(providedPassword, gameId, this);
                     break;
                 }
                 case "createNewGame": {
@@ -241,6 +313,7 @@ public class Server {
         clientInfo = new HashMap<>();
         clientGames = new HashMap<>();
         //TODO: shall we only have fixed number of games? what if game ends?
+        waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             games.put(i, gameFactory.createFixedGame(3));
         }
@@ -270,6 +343,7 @@ public class Server {
 
     /**
      * Check if player is in this game with game id "gameId"
+     *
      * @param password The client's password.
      * @param gameId   The id of the game.
      * @return True if player in game with gameId "gameId"
@@ -284,7 +358,7 @@ public class Server {
 
     private Player getPlayerWithPassword(String password, int GameId) {
         Game game = games.get(GameId);
-        for (Player p: clientInfo.get(password)) {
+        for (Player p : clientInfo.get(password)) {
             if (game.containsPlayer(p)) {
                 return p;
             }
@@ -297,43 +371,46 @@ public class Server {
         newThread.start();
     }
 
-    /**
-     * Add the player to game with gameId "gameId"
-     *
-     * @param password The password provided by the user.
-     * @param gameId   The game id which represents a open game.
-     */
-    private synchronized String addPlayerToGame(String password, int gameId, Socket socket, JSONCommunicator jc) {
-        String success = checkValidOpenGame(password, gameId);
-        if (success != null) {
-            return success;
-        }
-        Game game = games.get(gameId);
-        if (!game.gameBegins) {
-            synchronized (game) {
-                game.getBeforeGameWaitGroup().decrease();
-            }
-        }
-        if (isPlayerInGame(password, gameId)) {
-            // Mark the player as enter the game.
-            Player p = getPlayerWithPassword(password, gameId);
-            assert (p != null);
-            p.joinGame();
-        } else {
-            // Create a new player, add it to game.
-            // Every time a new player joined, check whether the game can start or not.
-            Player newPlayer = new Player(socket, jc);
-            clientInfo.get(password).add(newPlayer);
-            Game joinedGame = games.get(gameId);
-            joinedGame.addPlayer(newPlayer);
-            List<Game> gameList = clientGames.get(password);
-            gameList.add(joinedGame);
-        }
-        if (game.canGameStart()) {
-            startGame(game);
-        }
-        return null;
-    }
+//    /**
+//     * Add the player to game with gameId "gameId"
+//     * Decrease the current game's wait group.
+//     * If wait group becomes 0, then make the thread not running anymore.
+//     * @param password The password provided by the user.
+//     * @param gameId   The game id which represents a open game.
+//     */
+//    private synchronized String addPlayerToGame(String password, int gameId, Socket socket, JSONCommunicator jc) {
+//        String success = checkValidOpenGame(password, gameId);
+//        if (success != null) {
+//            return success;
+//        }
+//        Game game = games.get(gameId);
+//        if (isPlayerInGame(password, gameId)) {
+//            // Mark the player as enter the game.
+//            Player p = getPlayerWithPassword(password, gameId);
+//            assert (p != null);
+//            p.joinGame();
+//        } else {
+//            Player newPlayer = new Player(socket, jc);
+//            clientInfo.get(password).add(newPlayer);
+//            Game joinedGame = games.get(gameId);
+//            joinedGame.addPlayer(newPlayer);
+//            List<Game> gameList = clientGames.get(password);
+//            gameList.add(joinedGame);
+//        }
+//
+//        synchronized (game) {
+//            game.getCurrentWaitGroup().decrease();
+//            // If the game is not started yet!
+//            if (game.canGameStart()) {
+//                startGame(game);
+//            }
+//            // If game already starts, just disconnect from the server.
+//            if (game.getCurrentWaitGroup().getState()) {
+//                // Disconnect from the thread.
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Keep receive new orders, handle these orders.

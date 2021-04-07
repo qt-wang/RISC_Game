@@ -195,6 +195,12 @@ public class UserScenePanelController implements Initializable {
                      * Also, it should close the wait box, and cancel the background task.
                      */
                     public void handle(ActionEvent event) {
+                        try {
+                            client.sendCancelLogInCommand(gameId);
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                        stage.close();
                         backTask.cancel();
                     }
                 });

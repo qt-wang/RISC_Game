@@ -43,7 +43,7 @@ public class Game implements Runnable {
 
     private OrderProcessor orderProcessor;
 
-    private WaitGroup beforeGameWaitGroup;
+    private WaitGroup currentWaitGroup;
 
     /**
      * These two variables keep the game states.
@@ -94,7 +94,7 @@ public class Game implements Runnable {
         this.gameBegins = false;
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
-        beforeGameWaitGroup = new WaitGroup(map.getTotalPlayers());
+        currentWaitGroup = new WaitGroup(map.getTotalPlayers());
     }
 
     public int getGameId() {
@@ -627,7 +627,11 @@ public class Game implements Runnable {
     private void runTasksForAllPlayer(Function<Integer, Runnable> toDo) {
         CyclicBarrier barrier = new CyclicBarrier(players.size() + 1);
         // Generate a waitGroup.
-        WaitGroup waitGroup = new WaitGroup(players.size());
+        WaitGroup waitGroup;
+        synchronized (this) {
+             waitGroup = new WaitGroup(players.size());
+            this.currentWaitGroup = waitGroup;
+        }
         for (int i = 1; i <= players.size(); i++) {
             // We create multiple tasks here.
             players.get(i).setWaitGroup(waitGroup);
@@ -705,11 +709,11 @@ public class Game implements Runnable {
     }
 
     public boolean canGameStart() {
-        return players.size() == numPlayers && beforeGameWaitGroup.getState();
+        return players.size() == numPlayers && !gameBegins && currentWaitGroup.getState();
     }
 
-    public WaitGroup getBeforeGameWaitGroup () {
-        return beforeGameWaitGroup;
+    public WaitGroup getCurrentWaitGroup () {
+        return currentWaitGroup;
     }
 
     /**

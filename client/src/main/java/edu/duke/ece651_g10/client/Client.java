@@ -133,6 +133,10 @@ public class Client {
         return new JSONObject().put("type", "connection").put("sub", "providePass").put("password", password);
     }
 
+    public void sendCancelLogInCommand(int gameId) throws IOException {
+        JSONObject object = new JSONObject().put("type", "connection").put("sub", "cancelLogIn").put("password", password).put("gameId", gameId);
+        this.socketClient.send(object);
+    }
 
     /**
      * generate a JSONObject of type: inform
