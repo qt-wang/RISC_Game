@@ -15,7 +15,7 @@ public class GameInfo {
     boolean canUpgrade;
     HashMap<String,List<String>> territoryInfos;
     HashMap<Integer, List<String>> territoryOwnerShip = new HashMap<>();
-    HashMap<Integer, String> colorStrategy = new HashMap<>();
+    //HashMap<Integer, String> colorStrategy = new HashMap<>();
 
     public GameInfo(JSONObject received) {
         //JSONObject
@@ -24,16 +24,24 @@ public class GameInfo {
         sub = received.getString("sub");
         canUpgrade = received.getBoolean("canUpgrade");
         int playerNumber = received.getInt("playerNumber");
-        setColorStrategy(playerNumber);
-        setPlayerInfo(received);
+        //setColorStrategy(playerNumber);
         setTerritoryInfos(received);
+        setPlayerInfo(received);
     }
+
     public void setPlayerInfo(JSONObject obj){
         try{
             List<String> info = new LinkedList<>();
             int playerId = obj.getInt("playerId");
             info.add("Player "+playerId+":");
-            info.add("Territory color: "+colorStrategy.get(playerId));
+
+            StringBuilder sb = new StringBuilder("Owns territory: ");
+            for(String str : territoryOwnerShip.get(playerId)){
+                String toAppend = str+" ";
+                sb.append(toAppend);
+            }
+            info.add(sb.toString());
+            //info.add("Territory color: "+colorStrategy.get(playerId));
             int technologyLevel = obj.getInt("technologyLevel");
             int foodResource = obj.getInt("foodResource");
             int technologyResource = obj.getInt("technologyResource");
@@ -45,19 +53,27 @@ public class GameInfo {
             e.printStackTrace();
         }
     }
-    public void setColorStrategy(int playerNum){
-        colorStrategy.put(1,"Red");
-        colorStrategy.put(2,"Blue");
-        if(playerNum>=3){
-            colorStrategy.put(3,"Yellow");
-        }
-        if(playerNum>=4){
-            colorStrategy.put(4,"Green");
-        }
-        if(playerNum>=5){
-            colorStrategy.put(5,"Purple");
-        }
+
+    public String getSub(){
+        return sub;
     }
+    public boolean getCanUpgrade(){
+        return canUpgrade;
+    }
+
+//    public void setColorStrategy(int playerNum){
+//        colorStrategy.put(1,"Red");
+//        colorStrategy.put(2,"Blue");
+//        if(playerNum>=3){
+//            colorStrategy.put(3,"Yellow");
+//        }
+//        if(playerNum>=4){
+//            colorStrategy.put(4,"Green");
+//        }
+//        if(playerNum>=5){
+//            colorStrategy.put(5,"Purple");
+//        }
+//    }
     public void setTerritoryInfos(JSONObject obj){
         try{
             HashMap<String,List<String>> infos = new HashMap<>();
@@ -71,6 +87,7 @@ public class GameInfo {
                 territoryOwnerShip.put(ownerId, currOwners);
                 List<String> terrInfo = new LinkedList<>();
                 terrInfo.add("Territory name: "+key);
+                terrInfo.add("Owner: " + ownerId);
                 int foodRate = singleT.getInt("foodResourceGenerationRate");
                 int techRate = singleT.getInt("technologyResourceGenerationRate");
                 terrInfo.add("Food increase rate: "+foodRate);

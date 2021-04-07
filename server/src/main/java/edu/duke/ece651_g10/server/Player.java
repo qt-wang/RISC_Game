@@ -186,7 +186,7 @@ public class Player {
     // TODO: Change the default value?
     this.foodResourceTotal = 0;
     this.technologyResourceTotal = 0;
-    this.technologyLevel = 0;
+    this.technologyLevel = 1;
     this.canUpgradeInThisTurn = true;
     this.inGame = false;
   }

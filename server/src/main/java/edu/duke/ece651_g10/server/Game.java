@@ -265,18 +265,25 @@ public class Game implements Runnable {
      */
     public Order toOrder(int playerId, JSONObject obj) {
         try {
-            String orderType = obj.getString("orderType"),
-                    sourceT = obj.getString("sourceTerritory"),
-                    destT = obj.getString("destTerritory");
-            int uLevel = obj.getInt("unitLevel");
-            int unitNum = obj.getInt("unitNumber");
+            String orderType = obj.getString("orderType");
             if (orderType.equals("move")) {
+                String sourceT = obj.getString("sourceTerritory"),
+                        destT = obj.getString("destTerritory");
+                int uLevel = obj.getInt("unitLevel");
+                int unitNum = obj.getInt("unitNumber");
                 Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
                 return order;
             } else if (orderType.equals("attack")) {
+                String sourceT = obj.getString("sourceTerritory"),
+                        destT = obj.getString("destTerritory");
+                int uLevel = obj.getInt("unitLevel");
+                int unitNum = obj.getInt("unitNumber");
                 Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
                 return order;
             } else if (orderType.equals("upgradeUnit")){
+                String sourceT = obj.getString("sourceTerritory");
+                int uLevel = obj.getInt("unitLevel");
+                int unitNum = obj.getInt("unitNumber");
                 Order order = new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));
                 return order;
             } else if (orderType.equals("upgradeTech")){
@@ -738,10 +745,10 @@ public class Game implements Runnable {
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
-            // Send the updated information to all players.
-            //sendToAllPlayer(getWholeGameInformation());
             playMap.addUnitToEachTerritory();
             updatePlayerInfo();
+            //Update player's food resource and technology resource.
+            playMap.updatePlayerResource();
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();

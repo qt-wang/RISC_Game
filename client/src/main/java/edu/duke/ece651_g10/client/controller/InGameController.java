@@ -180,9 +180,13 @@ public class InGameController {
         System.out.println(toSend.toString());
         client.getSocketClient().send(toSend);
         JSONObject object = client.getSocketClient().receive();
-        gameInfo = new GameInfo(object);
-        playerInfo.refresh();
-        setPrompt("What would you like to do?");
+        if (object.getString("prompt").equals("valid\n")) {
+            gameInfo = new GameInfo(object);
+            playerInfo.refresh();
+            setPrompt("What would you like to do?");
+        } else {
+            invalidPrompt(object.getString("reason"));
+        }
         toSend = null;
     }
 
@@ -200,8 +204,8 @@ public class InGameController {
                 } else if (!toSend.has("destTerritory")) {
                     toSend.put("destTerritory", btn.getText());
                     //for specific level of unit and unit number
-                    String[] infos = {"Please input the level of the unit you want to send!","Please input the number of unit!"};
-                    String[] fields = {"unitLevel","unitNumber"};
+                    String[] infos = {"Please input the level of the unit you want to send!", "Please input the number of unit!"};
+                    String[] fields = {"unitLevel", "unitNumber"};
                     setNumbersPrompt(infos, fields, true);
 //                    String[] infos = {"Please input the number of unit!"};
 //                    String[] fields = {"unitNumber"};
@@ -237,17 +241,27 @@ public class InGameController {
 
     @FXML
     public void onAttack(ActionEvent ae) {
-        initOrder("attack", "Please select the source territory!");
+        if (gameInfo.getSub().equals("Placement")) {
+            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
+        } else {
+            initOrder("attack", "Please select the source territory!");
+        }
     }
 
     @FXML
     public void onUpgradeUnit(ActionEvent ae) {
-        initOrder("upgradeUnit", "Please select the territory which the units are on!");
+        if (gameInfo.getSub().equals("Placement")) {
+            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
+        } else {
+            initOrder("upgradeUnit", "Please select the territory which the units are on!");
+        }
     }
 
     @FXML
     public void onUpgradeTech(ActionEvent ae) throws IOException {
-        if (toSend == null) {
+        if (gameInfo.getSub().equals("Placement")) {
+            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
+        } else if (toSend == null) {
             initOrder("upgradeTech", "");
             sendJSON();
         } else {

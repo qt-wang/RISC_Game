@@ -105,6 +105,15 @@ public class V1GameMap implements GameMap {
     }
 
     @Override
+    public void updatePlayerResource() {
+        for (Territory t: territories) {
+            Player p = t.getOwner();
+            p.setFoodResourceTotal(p.getFoodResourceTotal() + t.getFoodResourceGenerationRate());
+            p.setTechnologyResourceTotal(p.getTechnologyResourceTotal() + t.getTechnologyResourceGenerationRate());
+        }
+    }
+
+    @Override
     public Set<Territory> getTerritoriesNotBelongToPlayer(Player p) {
         Set<Territory> result = new HashSet<>();
         for (Territory t: territories) {

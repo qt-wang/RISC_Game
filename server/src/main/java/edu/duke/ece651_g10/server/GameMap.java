@@ -68,6 +68,12 @@ public interface GameMap {
 
     public int getNumberOfTerritoriesPerPlayer();
 
+
+    /**
+     * Update each player's resource based on the ownership.
+     */
+    public void updatePlayerResource();
+
 }
 
 

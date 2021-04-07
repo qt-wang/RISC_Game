@@ -47,7 +47,7 @@ public class Server {
 
     ExecutorService threadPool;
 
-    HashMap<Game, List<RequestHandleTask>> waitClients;
+    volatile HashMap<Game, List<RequestHandleTask>> waitClients;
 
     /**
      * Setup the server socket.
@@ -200,6 +200,8 @@ public class Server {
                         p.joinGame();
                     } else {
                         Player newPlayer = new Player(socket, jc);
+                        newPlayer.setTechnologyResourceTotal(20);
+                        newPlayer.setFoodResourceTotal(500);
                         clientInfo.get(providedPassword).add(newPlayer);
                         Game joinedGame = games.get(gameId);
                         joinedGame.addPlayer(newPlayer);
@@ -255,6 +257,8 @@ public class Server {
                     Game newGame = gameFactory.createFixedGame(numberOfPlayers);
                     // Add the player into the new game.
                     Player newPlayer = new Player(socket, jc);
+                    newPlayer.setTechnologyResourceTotal(20);
+                    newPlayer.setFoodResourceTotal(500);
                     clientInfo.get(providedPassword).add(newPlayer);
                     newGame.addPlayer(newPlayer);
                     clientGames.get(providedPassword).add(newGame);
