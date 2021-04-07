@@ -25,8 +25,8 @@ public class SufficientUnitChecker extends RuleChecker<TerritoryToTerritoryOrder
    */
   @Override
   protected String checkMyRule(TerritoryToTerritoryOrder order, GameMap gameMap) {
-    if (order.getNumUnit() > order.getSourceTerritory().getNumUnit()) {
-      return "The territory does not have enough units.";
+    if (order.getNumUnit() > order.getSourceTerritory().getArmyWithLevel(order.getLevel()).getArmyUnits()) {
+      return "The territory does not have enough units with certain level.";
     }
     return null;
   }
