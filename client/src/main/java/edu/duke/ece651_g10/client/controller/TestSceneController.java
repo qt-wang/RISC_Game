@@ -30,7 +30,7 @@ public class TestSceneController implements Initializable {
 
     SceneFactory factory;
 
-    public TestSceneController(Client client, Stage primaryStage, SceneFactory factory) throws IOException {
+    public TestSceneController(Client client, Stage primaryStage, SceneFactory factory, JSONObject object) {
         this.client = client;
         this.primaryStage = primaryStage;
         this.factory = factory;
@@ -78,6 +78,6 @@ public class TestSceneController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         stateLabel.setText("Currently waiting for enough players to join.");
-        setUpInitialJSONObject();
+        //setUpInitialJSONObject();
     }
 }

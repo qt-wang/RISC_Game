@@ -6,6 +6,7 @@ import edu.duke.ece651_g10.client.SceneFactory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -13,7 +14,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
@@ -163,21 +166,67 @@ public class UserScenePanelController implements Initializable {
                  * This button should send another message to server indicate that the client logout at the wait state, so that it will not block?
                  * After receive the result from the background task, create a new scene use it.
                  */
-                Scene testScene = this.factory.createTestScene();
-                System.out.println(testScene.getWidth());
-                System.out.println(testScene.getHeight());
-                primaryStage.close();
-                primaryStage.setWidth(testScene.getWidth());
-                primaryStage.setHeight(testScene.getHeight());
-                primaryStage.setScene(testScene);
-                primaryStage.show();
-
-                new Thread(new Task<JSONObject>() {
+                // Create the background task, which should receive a json object from the server.
+                Task<JSONObject> backTask = new Task<JSONObject>() {
                     @Override
                     protected JSONObject call() throws Exception {
-                        return null;
+                        while (true) {
+                            JSONObject temp = client.socketClient.tryReceive();
+                            if (temp != null) {
+                                return temp;
+                            }
+                        }
                     }
-                }).start();
+                };
+
+                //Create a wait box.
+                Stage stage = App.createChildStage(primaryStage, "Waiting...");
+                VBox dialogBox = new VBox(20);
+                Text info = new Text("Please wait for enough players to join.");
+                info.setFont(Font.font(18));
+                dialogBox.getChildren().add(info);
+                Button button = new Button("Cancel");
+                dialogBox.getChildren().add(button);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    //TODO: Change this behaviour.
+                    @Override
+                    /**
+                     * This function should send a message to the server, to log the user out.
+                     * Also, it should close the wait box, and cancel the background task.
+                     */
+                    public void handle(ActionEvent event) {
+                        backTask.cancel();
+                    }
+                });
+                Scene dialogScene = new Scene(dialogBox, 300, 200);
+                stage.setScene(dialogScene);
+
+
+                backTask.valueProperty().addListener(new ChangeListener<JSONObject>() {
+                    @Override
+                    public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
+                        // When we get the result back from it, we can do some tasks.
+                        // After we get the thing back.
+                        // We should first close the dialog.
+                        stage.close();
+                        Scene testScene = null;
+                        try {
+                            System.out.println(newValue);
+                            testScene = factory.createTestScene(newValue);
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                        primaryStage.close();
+                        primaryStage.setWidth(testScene.getWidth());
+                        primaryStage.setHeight(testScene.getHeight());
+                        primaryStage.setScene(testScene);
+                        primaryStage.show();
+                    }
+                });
+
+                //Try receive the json object from the server.
+                new Thread(backTask).start();
+                stage.show();
             }
         }
     }

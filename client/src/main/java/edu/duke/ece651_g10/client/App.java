@@ -4,6 +4,7 @@
 package edu.duke.ece651_g10.client;
 
 import javafx.application.Application;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 

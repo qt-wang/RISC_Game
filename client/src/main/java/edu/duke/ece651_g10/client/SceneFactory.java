@@ -59,12 +59,12 @@ public class SceneFactory {
     }
 
     // Create a test scene for the user.
-    public Scene createTestScene() throws IOException {
+    public Scene createTestScene(JSONObject object) throws IOException {
         URL cssResource = getClass().getResource("/ui/buttonStyles.css");
         URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         HashMap<Class<?>,Object> controllers = new HashMap<>();
-        controllers.put(TestSceneController.class, new TestSceneController(this.client, this.primaryStage, this));
+        controllers.put(TestSceneController.class, new TestSceneController(this.client, this.primaryStage, this, object));
         loader.setControllerFactory((c)->{
             return controllers.get(c);
         });

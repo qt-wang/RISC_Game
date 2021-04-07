@@ -168,6 +168,7 @@ public class Server {
                     String providedPassword = obj.getString("password");
                     int gameId = obj.getInt("gameId");
                     String reason = addPlayerToGame(providedPassword, gameId, socket, jc);
+                    Game currentGame = games.get(gameId);
                     if (reason == null) {
                         // We should not monitor on this port anymore.
                         running = false;
