@@ -146,6 +146,7 @@ class GameTest {
 
     }
 
+    @Disabled
     @Test
     public void test_toOrderAttack() {
         Game testGame = createTestGame();
