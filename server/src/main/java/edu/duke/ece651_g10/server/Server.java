@@ -284,7 +284,6 @@ public class Server {
                     if (currentGame != null) {
                         // check if it is ready.
                         synchronized (currentGame) {
-                            System.out.println(currentGame.getCurrentWaitGroup().count);
                             if (currentGame.getCurrentWaitGroup().getState()) {
                                 // it is done.
                                 // Add all the players into the game.
