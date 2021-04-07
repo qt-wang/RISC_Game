@@ -28,12 +28,15 @@ public class AdjacentTerritoryCheckerTest {
     when(mockTerritory1.getNeighbours()).thenReturn(mockTerritorySet);
     when(mockTerritory2.getNeighbours()).thenReturn(mockTerritorySet);
 
-    when(mockOrder1.getNumUnit()).thenReturn(3);
+    Army mockArmy = mock(Army.class);
+    when(mockTerritory1.getArmyWithLevel(1)).thenReturn(mockArmy);
+    when(mockArmy.getArmyUnits()).thenReturn(3);
     when(mockOrder1.getSourceTerritory()).thenReturn(mockTerritory1);
-    when(mockTerritory1.getNumUnit()).thenReturn(4);
+    when(mockOrder1.getNumUnit()).thenReturn(3);
+    when(mockOrder1.getLevel()).thenReturn(1);
 
-    RuleChecker checker1 = new SufficientUnitChecker(null);
-    RuleChecker checker2 = new AdjacentTerritoryChecker(checker1);
+    RuleChecker<TerritoryToTerritoryOrder> checker1 = new SufficientUnitChecker(null);
+    RuleChecker<TerritoryToTerritoryOrder> checker2 = new AdjacentTerritoryChecker(checker1);
     String res = "The territories are not adjacent to each other.";
     assertEquals(res, checker2.checkOrder(mockOrder2, null));
     assertEquals(null, checker2.checkOrder(mockOrder1, null));
