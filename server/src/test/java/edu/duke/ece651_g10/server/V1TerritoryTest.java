@@ -18,6 +18,9 @@ class V1TerritoryTest {
     @Test
     public void test_present_territory_info() {
         Territory t = new V1Territory("test");
+        Player p = mock(Player.class);
+        when(p.getPlayerID()).thenReturn(1);
+        t.setOwner(p);
         t.setFoodResourceGenerationRate(20);
         t.setTechnologyResourceGenerationRate(15);
         t.increaseUnit(3, 3);;
@@ -30,6 +33,7 @@ class V1TerritoryTest {
         JSONObject army = object.getJSONObject("armies");
         assertEquals(3, army.getInt("3"));
         assertEquals(20, army.getInt("0"));
+        assertEquals(1, object.getInt("owner"));
     }
     @Test
     public void test_getter_setter() {

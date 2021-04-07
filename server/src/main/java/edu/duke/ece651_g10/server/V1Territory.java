@@ -113,6 +113,7 @@ public class V1Territory implements Territory {
         result.put("foodResourceGenerationRate", this.foodResourceGenerationRate);
         result.put("technologyResourceGenerationRate", this.technologyResourceGenerationRate);
         result.put("armies", army);
+        result.put("owner", this.owner.getPlayerID());
         return result;
     }
 

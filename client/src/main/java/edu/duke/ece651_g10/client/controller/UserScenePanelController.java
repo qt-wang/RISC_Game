@@ -5,6 +5,7 @@ import edu.duke.ece651_g10.client.Client;
 import edu.duke.ece651_g10.client.SceneFactory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -155,8 +156,13 @@ public class UserScenePanelController implements Initializable {
                 Stage stage = App.createDialogStage(primaryStage, "Error", object.getString("reason"));
                 stage.show();
             } else {
-                // This will block, maybe we can create a task to handle this logic.\
-                // We create a new login page.
+                /**
+                 * Do the following:
+                 * Generate a new stage, that stage will show the wait message.
+                 * It should have a cancel button.
+                 * This button should send another message to server indicate that the client logout at the wait state, so that it will not block?
+                 * After receive the result from the background task, create a new scene use it.
+                 */
                 Scene testScene = this.factory.createTestScene();
                 System.out.println(testScene.getWidth());
                 System.out.println(testScene.getHeight());
@@ -165,6 +171,13 @@ public class UserScenePanelController implements Initializable {
                 primaryStage.setHeight(testScene.getHeight());
                 primaryStage.setScene(testScene);
                 primaryStage.show();
+
+                new Thread(new Task<JSONObject>() {
+                    @Override
+                    protected JSONObject call() throws Exception {
+                        return null;
+                    }
+                }).start();
             }
         }
     }
