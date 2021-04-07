@@ -54,6 +54,20 @@ Server response:
     }
 }
 
+-----------------------------------------------------------
+New: Cancel logout:
+// This case, the client is trying to login to one game.
+Client:
+{
+    type = "connection"
+    sub = "cancelLogIn"
+    password = "xxxxxxxxxxx"
+    gameId = x (int)
+}
+
+// Shall server send response?
+// Try not send response at first.
+-----------------------------------------------------------
 3. Create new game:
 Client:
 {
@@ -176,7 +190,6 @@ Server response:
     prompt = "valid/invalid"
     reason = "xxxxxx"
 }
-//TODO:One question here: how to resume previous state, use buffer in client?
 {
     type = "connection"
     prompt = "valid/invalid"
