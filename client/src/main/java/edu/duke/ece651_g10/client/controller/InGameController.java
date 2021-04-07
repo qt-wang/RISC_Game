@@ -1,6 +1,8 @@
 package edu.duke.ece651_g10.client.controller;
 
+import edu.duke.ece651_g10.client.App;
 import edu.duke.ece651_g10.client.Client;
+import edu.duke.ece651_g10.client.SceneFactory;
 import edu.duke.ece651_g10.client.model.GameInfo;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
@@ -8,6 +10,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -41,10 +44,16 @@ public class InGameController {
 
     JSONObject toSend;
 
-    public InGameController(GameInfo gameInfo, Stage primaryStage, Client client) {
+    @FXML
+    Button logOutButton;
+
+    SceneFactory factory;
+
+    public InGameController(GameInfo gameInfo, Stage primaryStage, Client client, SceneFactory factory) {
         this.gameInfo = gameInfo;
         this.primaryStage = primaryStage;
         this.client = client;
+        this.factory = factory;
     }
 
     public void setPrompt(String str) {
@@ -141,7 +150,11 @@ public class InGameController {
                     }
                 }
                 if (finalStep && toSend != null) {
-                    sendJSON();
+                    try {
+                        sendJSON();
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                    }
                 }
                 //dialog.setOnCloseRequest(otherEvent->{});
                 dialog.close();
@@ -162,9 +175,13 @@ public class InGameController {
         dialog.show();
     }
 
-    public void sendJSON() {
+    public void sendJSON() throws IOException {
         //send and receive reply
         System.out.println(toSend.toString());
+        client.getSocketClient().send(toSend);
+        JSONObject object = client.getSocketClient().receive();
+        gameInfo = new GameInfo(object);
+        playerInfo.refresh();
         setPrompt("What would you like to do?");
         toSend = null;
     }
@@ -183,12 +200,12 @@ public class InGameController {
                 } else if (!toSend.has("destTerritory")) {
                     toSend.put("destTerritory", btn.getText());
                     //for specific level of unit and unit number
-//                    String[] infos = {"Please input the level of the unit you want to send!","Please input the number of unit!"};
-//                    String[] fields = {"unitLevel","unitNumber"};
-//                    setNumbersPrompt(infos, fields, true);
-                    String[] infos = {"Please input the number of unit!"};
-                    String[] fields = {"unitNumber"};
+                    String[] infos = {"Please input the level of the unit you want to send!","Please input the number of unit!"};
+                    String[] fields = {"unitLevel","unitNumber"};
                     setNumbersPrompt(infos, fields, true);
+//                    String[] infos = {"Please input the number of unit!"};
+//                    String[] fields = {"unitNumber"};
+//                    setNumbersPrompt(infos, fields, true);
                 }
             } else if (toSend.getString("orderType").equals("upgradeUnit")) {
                 if (!toSend.has("sourceTerritory")) {
@@ -229,7 +246,7 @@ public class InGameController {
     }
 
     @FXML
-    public void onUpgradeTech(ActionEvent ae) {
+    public void onUpgradeTech(ActionEvent ae) throws IOException {
         if (toSend == null) {
             initOrder("upgradeTech", "");
             sendJSON();
@@ -247,7 +264,7 @@ public class InGameController {
         }
     }
 
-    public void initCommit() {
+    public void initCommit() throws IOException {
         if (toSend == null) {
             toSend = new JSONObject();
             toSend.put("type", "commit");
@@ -261,6 +278,69 @@ public class InGameController {
     public void onCommit(ActionEvent ae) throws IOException {
         initCommit();
         JSONObject object = this.client.getSocketClient().receive();
-        System.out.println("Commit response: " + object);
+        //System.out.println("Commit response: " + object);
+        boolean valid = object.getString("prompt").equals("valid\n");
+        if (!valid) {
+            Stage stage = App.createDialogStage(primaryStage, "Error", object.getString("reason"));
+            stage.show();
+        } else {
+            Task<JSONObject> task = App.generateBackGroundReceiveTask(client);
+            task.valueProperty().addListener(new ChangeListener<JSONObject>() {
+                @Override
+                public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
+                    if (newValue != null) {
+                        //TODO: update the model information, and update the scene.
+                        System.out.println(newValue);
+                    }
+                }
+            });
+            Thread t = new Thread(task);
+            t.start();
+            logOutButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    task.cancel();
+                    try {
+                        client.sendLogOutCommand();
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                    }
+                    JSONObject object = null;
+                    try {
+                        object = client.getSocketClient().receive();
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                    }
+                    if (object.getString("prompt").equals("valid\n")) {
+                        // Is ok to logout.
+                        // Re login into the beginning site.
+                        try {
+                            client.sendOrderToServer(client.sendPasswordToServer(client.getPassword()));
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                        JSONObject result = null;
+                        try {
+                            result = client.getSocketClient().receive();
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                        //System.out.println("Last response, used for generate user pane:" + result);
+                        Scene loginScene = null;
+                        try {
+                            loginScene = factory.createUserScene(result);
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                        primaryStage.setScene(loginScene);
+                    } else {
+                        App.createDialogStage(primaryStage, "Error", object.getString("reason"));
+                        // Recreate the previous state.
+                        Thread newThread = new Thread(task);
+                        newThread.start();
+                    }
+                }
+            });
+        }
     }
 }

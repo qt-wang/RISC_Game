@@ -99,7 +99,7 @@
          <Font size="12.0" />
       </font>
    </Button>
-   <Button mnemonicParsing="false" styleClass="expandable" stylesheets="@buttonStyles.css" text="Log out" GridPane.columnIndex="2" GridPane.rowIndex="3">
+   <Button mnemonicParsing="false" fx:id="logOutButton" styleClass="expandable" stylesheets="@buttonStyles.css" text="Log out" GridPane.columnIndex="2" GridPane.rowIndex="3">
       <font>
          <Font size="12.0" />
       </font>

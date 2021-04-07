@@ -66,7 +66,7 @@ public class SceneFactory {
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         HashMap<Class<?>,Object> controllers = new HashMap<>();
         GameInfo gameInfo = new GameInfo(object);
-        controllers.put(InGameController.class, new InGameController(gameInfo, primaryStage, client));
+        controllers.put(InGameController.class, new InGameController(gameInfo, primaryStage, client, this));
         loader.setControllerFactory((c)->{
             return controllers.get(c);
         });

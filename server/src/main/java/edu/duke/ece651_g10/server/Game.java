@@ -356,7 +356,7 @@ public class Game implements Runnable {
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
         JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
         boolean receiveCommit = false;
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
@@ -495,6 +495,7 @@ public class Game implements Runnable {
                 continue;
             }
             synchronized (this) {
+                System.out.println(obj);
                 Order order = toOrder(playerId, obj);
                 if (order == null) {
                     sendServerInvalidResponse(playerId, "Received null order!");

@@ -20,6 +20,7 @@ public class GameInfo {
     public GameInfo(JSONObject received) {
         //JSONObject
         //received = generateTestJSON();
+        System.out.println(received);
         sub = received.getString("sub");
         canUpgrade = received.getBoolean("canUpgrade");
         int playerNumber = received.getInt("playerNumber");
@@ -78,7 +79,7 @@ public class GameInfo {
                 for(int i=0;i<7;i++){
                     String level = ""+(char)('0'+i);
                     int num = armies.getInt(level);
-                    terrInfo.add("  Lvl"+level+": "+num);
+                    terrInfo.add("  Lv"+level+": "+num);
                 }
                 infos.put(key,terrInfo);
             }
