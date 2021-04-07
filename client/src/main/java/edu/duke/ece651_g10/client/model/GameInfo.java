@@ -15,10 +15,11 @@ public class GameInfo {
     boolean canUpgrade;
     HashMap<String,List<String>> territoryInfos;
     HashMap<Integer, List<String>> territoryOwnerShip = new HashMap<>();
-    HashMap<Integer, String> colorStrategy = new HashMap<>();;
+    HashMap<Integer, String> colorStrategy = new HashMap<>();
 
-    public GameInfo() {
-        JSONObject received = generateTestJSON();
+    public GameInfo(JSONObject received) {
+        //JSONObject
+        //received = generateTestJSON();
         sub = received.getString("sub");
         canUpgrade = received.getBoolean("canUpgrade");
         int playerNumber = received.getInt("playerNumber");

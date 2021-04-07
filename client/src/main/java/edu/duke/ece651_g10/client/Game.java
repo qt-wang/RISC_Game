@@ -35,38 +35,33 @@ public class Game extends Application {
 //        primaryStage.setResizable(false);
 //        primaryStage.show();
 
-        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
-        //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-        //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
-        //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
-        FXMLLoader loader = new FXMLLoader(fxmlResource);
-        HashMap<Class<?>,Object> controllers = new HashMap<>();
-        GameInfo gameInfo = new GameInfo();
-        controllers.put(InGameController.class, new InGameController(gameInfo,primaryStage));
-        loader.setControllerFactory((c)->{
-            return controllers.get(c);
-        });
-<<<<<<< HEAD
-        AnchorPane ap = loader.load();
-        Scene scene = new Scene(ap,600,400);
-=======
-        //AnchorPane ap = loader.load();
-        GridPane gp = loader.load();
-        //AnchorPane ap =  (AnchorPane) FXMLLoader.load(getClass().getResource("/ui/GameMapFor5.fxml"));
-        //gp.add(ap,1,0,2,2);
-//        gp.setAlignment(Pos.CENTER);
-//        gp.setHgap(10);
-//        gp.setVgap(10);
-//        gp.setPadding(new Insets(25, 25, 25, 25));
-
-        Scene scene = new Scene(gp);
-        //gp.add(ap,1,1,9,9);
->>>>>>> daa0ec1576d0941177abdcc20c478490136b97b9
-        scene.getStylesheets().add(cssResource.toString());
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
+//        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
+//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+//        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
+//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
+//        FXMLLoader loader = new FXMLLoader(fxmlResource);
+//        HashMap<Class<?>,Object> controllers = new HashMap<>();
+//        GameInfo gameInfo = new GameInfo();
+//        controllers.put(InGameController.class, new InGameController(gameInfo,primaryStage));
+//        loader.setControllerFactory((c)->{
+//            return controllers.get(c);
+//        });
+//        //AnchorPane ap = loader.load();
+//        GridPane gp = loader.load();
+//        //AnchorPane ap =  (AnchorPane) FXMLLoader.load(getClass().getResource("/ui/GameMapFor5.fxml"));
+//        //gp.add(ap,1,0,2,2);
+////        gp.setAlignment(Pos.CENTER);
+////        gp.setHgap(10);
+////        gp.setVgap(10);
+////        gp.setPadding(new Insets(25, 25, 25, 25));
+//
+//        Scene scene = new Scene(gp);
+//        //gp.add(ap,1,1,9,9);
+//        scene.getStylesheets().add(cssResource.toString());
+//        primaryStage.setScene(scene);
+//        primaryStage.setResizable(false);
+//        primaryStage.show();
     }
 
 }

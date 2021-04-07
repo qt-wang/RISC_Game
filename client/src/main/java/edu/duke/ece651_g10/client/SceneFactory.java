@@ -1,9 +1,7 @@
 package edu.duke.ece651_g10.client;
 
-import edu.duke.ece651_g10.client.controller.LoginButtonController;
-import edu.duke.ece651_g10.client.controller.NumButtonController;
-import edu.duke.ece651_g10.client.controller.TestSceneController;
-import edu.duke.ece651_g10.client.controller.UserScenePanelController;
+import edu.duke.ece651_g10.client.controller.*;
+import edu.duke.ece651_g10.client.model.GameInfo;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -56,6 +54,26 @@ public class SceneFactory {
         GridPane pane = loader.load();
         Scene UserScene = new Scene(pane, 900, 400);
         return UserScene;
+    }
+
+
+    public Scene createTwoPeopleMap(JSONObject object) throws IOException {
+        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
+        //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+        //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
+        //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
+        FXMLLoader loader = new FXMLLoader(fxmlResource);
+        HashMap<Class<?>,Object> controllers = new HashMap<>();
+        GameInfo gameInfo = new GameInfo(object);
+        controllers.put(InGameController.class, new InGameController(gameInfo, primaryStage, client));
+        loader.setControllerFactory((c)->{
+            return controllers.get(c);
+        });
+        GridPane gp = loader.load();
+        Scene scene = new Scene(gp);
+        scene.getStylesheets().add(cssResource.toString());
+        return scene;
     }
 
     // Create a test scene for the user.

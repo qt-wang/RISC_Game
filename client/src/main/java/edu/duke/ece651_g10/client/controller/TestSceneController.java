@@ -120,24 +120,6 @@ public class TestSceneController implements Initializable {
     }
 
 
-//    // Do this for the player.
-//    public void logOutButtonPressed() throws IOException {
-//        this.client.sendLogOutCommand();
-//        JSONObject object = this.client.getSocketClient().receive();
-//        if (object.getString("prompt").equals("valid\n")) {
-//            // Is ok to logout.
-//            // Relogin into the beginning site.
-//            client.sendOrderToServer(client.sendPasswordToServer(client.getPassword()));
-//            //JSONObject result = client.getSocketClient().receive();
-//            //System.out.println("Send password to server response: " + result);
-//            JSONObject result = client.getSocketClient().receive();
-//            //System.out.println("Last response, used for generate user pane:" + result);
-//            Scene loginScene = factory.createUserScene(result);
-//            primaryStage.setScene(loginScene);
-//        } else {
-//            App.createDialogStage(this.primaryStage, "Error", object.getString("reason"));
-//        }
-//    }
 
 
     @Override
