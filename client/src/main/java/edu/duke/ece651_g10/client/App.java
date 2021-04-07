@@ -5,12 +5,9 @@ package edu.duke.ece651_g10.client;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import javafx.scene.Scene;
