@@ -22,8 +22,8 @@ public class MoveFoodCheckerTest {
     gameMap.getTerritory("Gondor").setOwner(mockPlayer);
     gameMap.getTerritory("Mordor").setOwner(mockPlayer);
     gameMap.getTerritory("Hogwarts").setOwner(mockPlayer);
-    TerritoryToTerritoryOrder order1 = new MoveOrder(0, "Narnia", "Oz", 5, gameMap, mockPlayer);
-    TerritoryToTerritoryOrder order2 = new MoveOrder(0, "Elantris", "Roshar", 5, gameMap, mockPlayer);
+    TerritoryToTerritoryOrder order1 = new MoveOrder(0, "Narnia", "Oz", 5, gameMap, mockPlayer, 0);
+    TerritoryToTerritoryOrder order2 = new MoveOrder(0, "Elantris", "Roshar", 5, gameMap, mockPlayer, 0);
     RuleChecker<TerritoryToTerritoryOrder> checker = new MoveFoodChecker(null);
     assertEquals(null, checker.checkMyRule(order2, gameMap));
     String res = "The player does not have enough food resource to execute the move order";

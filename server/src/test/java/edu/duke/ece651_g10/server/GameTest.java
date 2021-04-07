@@ -138,6 +138,7 @@ class GameTest {
         json = json.put("destTerritory", "Roshar");
         json = json.put("unitLevel", 0);
         json = json.put("unitNumber", 2);
+        json = json.put("level", 0);
         Order order = testGame.toOrder(1, json);
         assertEquals(true, order instanceof MoveOrder);
         assertEquals("Roshar", ((MoveOrder) order).getTargetTerritory().getName());
@@ -156,6 +157,7 @@ class GameTest {
         json = json.put("destTerritory", "Narnia");
         json = json.put("unitLevel", 0);
         json = json.put("unitNumber", 2);
+        json = json.put("level", 0);
         Order order = testGame.toOrder(1, json);
         assertEquals(true, order instanceof AttackOrder);
 //        assertEquals("Narnia", ((AttackOrder) order).getTargetTerritory().getName());

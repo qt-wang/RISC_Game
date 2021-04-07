@@ -15,7 +15,7 @@ public class MoveOrderTest {
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     assertEquals(0, gMap.getTerritory("Elantris").getArmyWithLevel(0).getLevel());
     Player p = mock(Player.class);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p, 0);
     mOrder.execute();
     assertEquals(2, gMap.getTerritory("Elantris").getNumUnit());
     }
@@ -26,7 +26,7 @@ public class MoveOrderTest {
     GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     Player p = mock(Player.class);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p, 0);
     mOrder.execute();
     assertEquals("Elantris", mOrder.getSourceTerritory().getName());
   }
@@ -37,7 +37,7 @@ public class MoveOrderTest {
     GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     Player p = mock(Player.class);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p, 0);
     mOrder.execute();
     assertEquals("Roshar", mOrder.getTargetTerritory().getName());
   }
@@ -48,7 +48,7 @@ public class MoveOrderTest {
     GameMap gMap = factory.createGameMap(3);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     Player p = mock(Player.class);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p, 0);
     mOrder.execute();
     assertEquals(3, mOrder.getNumUnit());
     }

@@ -13,9 +13,9 @@ public class V1RuleCheckerTest {
     Player player = new Player(null, null);
     gMap.getTerritory("Elantris").increaseUnit(5, 0);
     Player p = mock(Player.class);
-    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p);
-    AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
-    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player);
+    MoveOrder mOrder = new MoveOrder(1, "Elantris", "Roshar", 3, gMap, p, 0);
+    AttackOrder aOrder = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player, 0);
+    AttackOrder aOrder2 = new AttackOrder(1, "Elantris", "Narnia", 1, gMap, player, 0);
     V1OrderProcessor op = new V1OrderProcessor();   
     op.acceptOrder(mOrder);
     op.acceptOrder(aOrder);
