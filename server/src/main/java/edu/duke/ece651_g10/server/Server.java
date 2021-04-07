@@ -309,8 +309,9 @@ public class Server {
         }
         Game game = games.get(gameId);
         if (!game.gameBegins) {
-            game.getBeforeGameWaitGroup().decrease();
-            System.out.println(game.getBeforeGameWaitGroup().count);
+            synchronized (game) {
+                game.getBeforeGameWaitGroup().decrease();
+            }
         }
         if (isPlayerInGame(password, gameId)) {
             // Mark the player as enter the game.

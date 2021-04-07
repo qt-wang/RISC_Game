@@ -155,7 +155,8 @@ public class UserScenePanelController implements Initializable {
                 Stage stage = App.createDialogStage(primaryStage, "Error", object.getString("reason"));
                 stage.show();
             } else {
-                //TODO: Handle the logic to log the user into the game.
+                // This will block, maybe we can create a task to handle this logic.\
+                // We create a new login page.
                 Scene testScene = this.factory.createTestScene();
                 System.out.println(testScene.getWidth());
                 System.out.println(testScene.getHeight());
