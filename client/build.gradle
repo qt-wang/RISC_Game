@@ -23,7 +23,7 @@ dependencies {
     testCompile "org.testfx:testfx-junit5:4.0.16-alpha"
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
 }
-//
+
 javafx {
     version = "11"
     modules = [ 'javafx.controls', 'javafx.fxml' ]

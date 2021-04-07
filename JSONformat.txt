@@ -34,7 +34,7 @@ Evo 2:
 sent from client to server:
     {
         "type": "order",
-        "orderType": "move" /"attack" /"upgradeUnit" / "upgradeTech",
+        "orderType": "move" / "attack" /"upgradeUnit" / "upgradeTech",
         "sourceTerritory": String,
         "unitLevel" : int,
         "targetLevel" : int,
