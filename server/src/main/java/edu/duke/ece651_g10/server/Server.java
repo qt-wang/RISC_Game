@@ -271,9 +271,11 @@ public class Server {
             while (this.running) {
                 //Keep receive new JSON objects from the client.
                 try {
-                    obj = jc.receive();
-                    System.out.println(obj);
-                    handleJSONObject(obj);
+                    obj = jc.nonBlockingRead();
+                    if (obj != null) {
+                        System.out.println(obj);
+                        handleJSONObject(obj);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     this.running = false;

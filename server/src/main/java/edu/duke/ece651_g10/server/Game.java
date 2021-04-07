@@ -728,10 +728,12 @@ public class Game implements Runnable {
         gameBegins = true;
         assignInitialTerritories();
         runTasksForAllPlayer(getUnitsDistributionTask());
+        System.out.println("Initial units distribution done.");
         Player winner = null;
         // All threads has finished the execution of the units distribution.
         while ((winner = checkGameEnds()) == null) {
             // We create multiple threads to tell the user what to do.
+            System.out.println("Ready to play the turn");
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
