@@ -10,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,7 +40,9 @@ public class TestSceneController implements Initializable {
 
     public void doneButtonPressed() throws IOException {
         client.getSocketClient().send(client.generateCommitJSON());
-        System.out.println("Done button response: " + client.getSocketClient().receive());
+        System.out.println("Commit response: " + client.getSocketClient().receive());
+        System.out.println("Next turn information: " + client.getSocketClient().receive());
+        // It should receive the next turn information at this stage.
     }
 
 
@@ -49,7 +50,6 @@ public class TestSceneController implements Initializable {
     public void logOutButtonPressed() throws IOException {
         this.client.sendLogOutCommand();
         JSONObject object = this.client.getSocketClient().receive();
-        System.out.println("Logout response:" + object);
         if (object.getString("prompt").equals("valid\n")) {
             // Is ok to logout.
             // Relogin into the beginning site.
@@ -57,7 +57,7 @@ public class TestSceneController implements Initializable {
             //JSONObject result = client.getSocketClient().receive();
             //System.out.println("Send password to server response: " + result);
             JSONObject result = client.getSocketClient().receive();
-            System.out.println("Last response, used for generate user pane:" + result);
+            //System.out.println("Last response, used for generate user pane:" + result);
             Scene loginScene = factory.createUserScene(result);
             primaryStage.setScene(loginScene);
         } else {
@@ -65,19 +65,9 @@ public class TestSceneController implements Initializable {
         }
     }
 
-    private void setUpInitialJSONObject() {
-        try {
-            JSONObject object = this.client.socketClient.receive();
-            System.out.println("Initial setup response:" + object);
-            stateLabel.setText("Enough players joined, wait for game to start");
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         stateLabel.setText("Currently waiting for enough players to join.");
-        //setUpInitialJSONObject();
     }
 }

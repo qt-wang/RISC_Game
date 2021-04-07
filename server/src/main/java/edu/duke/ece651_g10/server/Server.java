@@ -113,8 +113,8 @@ public class Server {
             temp.remove(task);
         }
         assert (p != null);
+        p.leaveGame();
         synchronized (game) {
-            p.leaveGame();
             game.getCurrentWaitGroup().increase();
         }
     }

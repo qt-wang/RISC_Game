@@ -144,6 +144,7 @@ public class UserScenePanelController implements Initializable {
         if (createGameLayOut) {
             // Create game layout.
             int numberOfPlayers = (int) choiceBox.getValue();
+//            System.out.println(numberOfPlayers);
             this.client.sendCreateGameJSON(numberOfPlayers);
             JSONObject object = this.client.getSocketClient().receive();
             //System.out.println(object);
@@ -180,7 +181,11 @@ public class UserScenePanelController implements Initializable {
                         while (true) {
                             JSONObject temp = client.socketClient.tryReceive();
                             if (temp != null) {
+                                System.out.println(temp);
                                 return temp;
+                            }
+                            if (isCancelled()) {
+                                return null;
                             }
                         }
                     }
@@ -194,6 +199,38 @@ public class UserScenePanelController implements Initializable {
                 dialogBox.getChildren().add(info);
                 Button button = new Button("Cancel");
                 dialogBox.getChildren().add(button);
+                Scene dialogScene = new Scene(dialogBox, 300, 200);
+                stage.setScene(dialogScene);
+
+
+                backTask.valueProperty().addListener(new ChangeListener<JSONObject>() {
+                    @Override
+                    public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
+                        // When we get the result back from it, we can do some tasks.
+                        // After we get the thing back.
+                        // We should first close the dialog.
+                        //primaryStage.show();
+                        if (newValue != null) {
+                            stage.close();
+                            Scene testScene = null;
+                            try {
+                                //System.out.println(newValue);
+                                testScene = factory.createTestScene(newValue);
+                            } catch (IOException exception) {
+                                exception.printStackTrace();
+                            }
+                            //primaryStage.close();
+                            primaryStage.setWidth(testScene.getWidth());
+                            primaryStage.setHeight(testScene.getHeight());
+                            primaryStage.setScene(testScene);
+                        }
+                    }
+                });
+
+                //Try receive the json object from the server.
+                Thread t = new Thread(backTask);
+                t.start();
+                stage.show();
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     //TODO: Change this behaviour.
                     @Override
@@ -211,35 +248,6 @@ public class UserScenePanelController implements Initializable {
                         backTask.cancel();
                     }
                 });
-                Scene dialogScene = new Scene(dialogBox, 300, 200);
-                stage.setScene(dialogScene);
-
-
-                backTask.valueProperty().addListener(new ChangeListener<JSONObject>() {
-                    @Override
-                    public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
-                        // When we get the result back from it, we can do some tasks.
-                        // After we get the thing back.
-                        // We should first close the dialog.
-                        stage.close();
-                        Scene testScene = null;
-                        try {
-                            //System.out.println(newValue);
-                            testScene = factory.createTestScene(newValue);
-                        } catch (IOException exception) {
-                            exception.printStackTrace();
-                        }
-                        primaryStage.close();
-                        primaryStage.setWidth(testScene.getWidth());
-                        primaryStage.setHeight(testScene.getHeight());
-                        primaryStage.setScene(testScene);
-                        primaryStage.show();
-                    }
-                });
-
-                //Try receive the json object from the server.
-                new Thread(backTask).start();
-                stage.show();
             }
         }
     }
