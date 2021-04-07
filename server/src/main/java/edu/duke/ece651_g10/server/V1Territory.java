@@ -114,6 +114,7 @@ public class V1Territory implements Territory {
         result.put("technologyResourceGenerationRate", this.technologyResourceGenerationRate);
         result.put("armies", army);
         result.put("owner", this.owner.getPlayerID());
+        result.put("territorySize", this.size);
         return result;
     }
 

@@ -45,6 +45,12 @@ public class GameInfo {
             int technologyLevel = obj.getInt("technologyLevel");
             int foodResource = obj.getInt("foodResource");
             int technologyResource = obj.getInt("technologyResource");
+            //boolean canUpgrade = obj.getBoolean("canUpgrade");
+            if (canUpgrade) {
+                info.add("Can upgrade tech: yes");
+            } else {
+                info.add("Can upgrade tech: no");
+            }
             info.add("Tech lvl: "+technologyLevel);
             info.add("Tech resource: "+technologyResource);
             info.add("Food resource: "+foodResource);
@@ -90,7 +96,9 @@ public class GameInfo {
                 terrInfo.add("Owner: " + ownerId);
                 int foodRate = singleT.getInt("foodResourceGenerationRate");
                 int techRate = singleT.getInt("technologyResourceGenerationRate");
+                int size = singleT.getInt("territorySize");
                 terrInfo.add("Food increase rate: "+foodRate);
+                terrInfo.add("Size: " + size);
                 terrInfo.add("Tech resource increase rate: "+techRate);
                 terrInfo.add("Number of units:");
                 for(int i=0;i<7;i++){

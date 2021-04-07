@@ -89,6 +89,10 @@ public class Player {
     return this.canUpgradeInThisTurn;
   }
 
+  public void setCanUpgradeInThisTurn(boolean canUpgradeInThisTurn) {
+    this.canUpgradeInThisTurn = canUpgradeInThisTurn;
+  }
+
   /**
    * Get the food resource total.
    *

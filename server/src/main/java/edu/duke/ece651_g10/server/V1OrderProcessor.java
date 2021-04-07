@@ -67,6 +67,7 @@ public class V1OrderProcessor implements OrderProcessor {
       int newTechLevel = currentTechLevel + 1;
       int techResourceCost = 25 * (newTechLevel - 1) * (newTechLevel - 2) / 2 + 50;
       int newTechResource = currentTechResource - techResourceCost;
+      ((UpgradeTechOrder) order).getPlayer().setCanUpgradeInThisTurn(false);
       ((UpgradeTechOrder) order).getPlayer().setTechnologyResourceTotal(newTechResource);
       upgradeTechInOneTurn.addElement((UpgradeTechOrder) order);
     }

@@ -185,8 +185,8 @@ public class InGameController {
             playerInfo.refresh();
             setPrompt("What would you like to do?");
         } else {
-            //invalidPrompt(object.getString("reason"));
-            setPrompt(object.getString("reason"));
+            invalidPrompt(object.getString("reason"));
+            //setPrompt(object.getString("reason"));
         }
         toSend = null;
     }
@@ -262,7 +262,10 @@ public class InGameController {
     public void onUpgradeTech(ActionEvent ae) throws IOException {
         if (gameInfo.getSub().equals("Placement")) {
             invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
-        } else if (toSend == null) {
+        } else if (!gameInfo.getCanUpgrade()) {
+            invalidPrompt("You cannot upgrade multiple\n times in one turn!");
+        }
+        else if (toSend == null) {
             initOrder("upgradeTech", "");
             sendJSON();
         } else {
@@ -279,19 +282,24 @@ public class InGameController {
         }
     }
 
-    public void initCommit() throws IOException {
-        if (toSend == null) {
-            toSend = new JSONObject();
-            toSend.put("type", "commit");
-            sendJSON();
-        } else {
-            invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
-        }
-    }
+//    public void initCommit() throws IOException {
+//        if (toSend == null) {
+//            toSend = new JSONObject();
+//            toSend.put("type", "commit");
+//            sendJSON();
+//        } else {
+//            invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
+//        }
+//    }
 
     @FXML
     public void onCommit(ActionEvent ae) throws IOException {
-        initCommit();
+        //initCommit();
+        if (toSend != null) {
+            invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
+            return;
+        }
+        client.sendOrderToServer(client.generateCommitJSON());
         JSONObject object = this.client.getSocketClient().receive();
         //System.out.println("Commit response: " + object);
         boolean valid = object.getString("prompt").equals("valid\n");
@@ -304,8 +312,8 @@ public class InGameController {
                 @Override
                 public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
                     if (newValue != null) {
-                        //TODO: update the model information, and update the scene.
-                        System.out.println(newValue);
+                        gameInfo = new GameInfo(newValue);
+                        setPlayerInfo();
                     }
                 }
             });
