@@ -10,6 +10,7 @@ public class MoveFoodCheckerTest {
   @Test
   public void test_check_my_rule() {
     Player mockPlayer = mock(Player.class);
+    Player mockPlayer2 = mock(Player.class);
     when(mockPlayer.getFoodResourceTotal()).thenReturn(55);
     FixedGameMapFactory factory = new FixedGameMapFactory();
     GameMap gameMap = factory.createGameMap(3);
@@ -18,10 +19,10 @@ public class MoveFoodCheckerTest {
     gameMap.getTerritory("Elantris").setOwner(mockPlayer);
     gameMap.getTerritory("Roshar").setOwner(mockPlayer);
     gameMap.getTerritory("Midkemia").setOwner(mockPlayer);
-    gameMap.getTerritory("Scadrial").setOwner(mockPlayer);
-    gameMap.getTerritory("Gondor").setOwner(mockPlayer);
-    gameMap.getTerritory("Mordor").setOwner(mockPlayer);
-    gameMap.getTerritory("Hogwarts").setOwner(mockPlayer);
+    gameMap.getTerritory("Scadrial").setOwner(mockPlayer2);
+    gameMap.getTerritory("Gondor").setOwner(mockPlayer2);
+    gameMap.getTerritory("Mordor").setOwner(mockPlayer2);
+    gameMap.getTerritory("Hogwarts").setOwner(mockPlayer2);
     TerritoryToTerritoryOrder order1 = new MoveOrder(0, "Narnia", "Oz", 5, gameMap, mockPlayer, 0);
     TerritoryToTerritoryOrder order2 = new MoveOrder(0, "Elantris", "Roshar", 5, gameMap, mockPlayer, 0);
     RuleChecker<TerritoryToTerritoryOrder> checker = new MoveFoodChecker(null);

@@ -1,7 +1,7 @@
 package edu.duke.ece651_g10.server;
 
 /**
- * The RuleChekcer to check whether the target Territory belongs to the player
+ * The RuleChecker to check whether the target Territory belongs to the player
  */
 public class SelfTerritoryChecker extends RuleChecker<TerritoryToTerritoryOrder> {
 

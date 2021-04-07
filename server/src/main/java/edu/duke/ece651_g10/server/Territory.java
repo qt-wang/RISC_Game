@@ -133,5 +133,18 @@ public interface Territory {
      */
     public Army getArmyWithLevel(int level);
 
+    /**
+     * Present the information of this territory.
+     * @return The json object that represents the territory's game info.
+     */
     public JSONObject presentTerritoryInformation();
+
+
+    /**
+     * Return all the territories belong to the owner that are neighbor to the current player.
+     * @return A set of territories that belong to the owner.
+     */
+    public Set<Territory> getNeighborBelongToOwner();
+
+
 }

@@ -221,7 +221,7 @@ public class Server {
                             // Disconnect from the thread.
                             // We should also free the previous waiting player.
                             this.running = false;
-                            for (RequestHandleTask t: waitClients.get(game)) {
+                            for (RequestHandleTask t : waitClients.get(game)) {
                                 t.running = false;
                             }
                             waitClients.put(game, new LinkedList<>());
@@ -292,10 +292,12 @@ public class Server {
                                 // it is done.
                                 // Add all the players into the game.
                                 this.running = false;
-                                for (RequestHandleTask t: waitClients.get(game)) {
-                                    t.running = false;
+                                synchronized (this) {
+                                    for (RequestHandleTask t : waitClients.get(game)) {
+                                        t.running = false;
+                                    }
+                                    waitClients.put(game, new LinkedList<>());
                                 }
-                                waitClients.put(game, new LinkedList<>());
                                 currentGame = null;
                             }
                         }

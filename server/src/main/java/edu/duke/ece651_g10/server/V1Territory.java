@@ -118,6 +118,17 @@ public class V1Territory implements Territory {
     }
 
     @Override
+    public Set<Territory> getNeighborBelongToOwner() {
+        Set<Territory> result = new HashSet<>();
+        for (Territory t: neighbours) {
+            if (t.getOwner() == this.owner) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void addNeighbour(Territory neighbour) {
         if (!neighbours.contains(neighbour)) {
             neighbours.add(neighbour);

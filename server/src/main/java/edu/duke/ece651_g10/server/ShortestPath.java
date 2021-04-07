@@ -36,7 +36,7 @@ public class ShortestPath {
         while((size2 - size1) != 0) {
             size1 = visited.size();
             String t = visited.lastElement();
-            Set<Territory> neigh = territoryTable.get(t).getNeighbours();
+            Set<Territory> neigh = territoryTable.get(t).getNeighborBelongToOwner();
             Territory minTerritory = source;
             int shortest = Integer.MAX_VALUE;
             for (Territory n : neigh) {
