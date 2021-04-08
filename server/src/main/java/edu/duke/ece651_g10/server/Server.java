@@ -83,6 +83,9 @@ public class Server {
         int size = games.size();
         object.put("numberOfGames", size);
         for (int i = 0; i < size; i++) {
+            if (games.get(i).gameEnds) {
+                continue;
+            }
             object.put(Integer.toString(i), games.get(i).presentGameInfo());
         }
     }

@@ -21,6 +21,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -312,10 +313,35 @@ public class InGameController {
                 @Override
                 public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
                     if (newValue != null) {
+                        // Received the next turn json object.
                         gameInfo = new GameInfo(newValue);
                         setPlayerInfo();
-                        //System.out.println("Changed");
+
+                        //Handle game ends.
+                        if (gameInfo.getPlayerStatus().equals("L")) {
+                            try {
+                                onCommit(null);
+                            } catch (IOException exception) {
+                                exception.printStackTrace();
+                            }
+                        } else if (gameInfo.getPlayerStatus().equals("E")) {
+                            // Create a message box.
+                            //Create a wait box.
+                            Stage stage = App.createChildStage(primaryStage, "Game ends");
+                            VBox dialogBox = new VBox(20);
+                            Text info = new Text(newValue.getString("reason"));
+                            info.setFont(Font.font(18));
+                            dialogBox.getChildren().add(info);
+                            Button button = new Button("Ok");
+                            // We need to make server listen to it again.
+                            dialogBox.getChildren().add(button);
+                            Scene dialogScene = new Scene(dialogBox, 300, 200);
+                            stage.setScene(dialogScene);
+                            button.setOnAction(null);
+                        }
                     }
+
+
                 }
             });
             Thread t = new Thread(task);

@@ -19,6 +19,22 @@ public class GameInfo {
     String playerStatus;
     //HashMap<Integer, String> colorStrategy = new HashMap<>();
 
+    public String getPlayerStatus() {
+        return playerStatus;
+    }
+
+    public void setPlayerInfoLose(JSONObject obj) {
+        try {
+            List<String> info = new LinkedList<>();
+            int playerId = obj.getInt("playerId");
+            info.add("Player " + playerId + ":");
+            info.add("You lost the game.");
+            playerInfo = info;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public GameInfo(JSONObject received) {
         //JSONObject
         //received = generateTestJSON();
@@ -30,7 +46,7 @@ public class GameInfo {
         //setColorStrategy(playerNumber);
         setTerritoryInfos(received);
         if (playerStatus.equals("L")) {
-
+            setPlayerInfoLose(received);
         } else {
             setPlayerInfo(received);
         }

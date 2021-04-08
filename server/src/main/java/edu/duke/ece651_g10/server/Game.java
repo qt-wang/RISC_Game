@@ -52,7 +52,7 @@ public class Game implements Runnable {
      * 2. running.
      * 3. ending.
      */
-    private boolean gameEnds;
+    boolean gameEnds;
 
     boolean gameBegins;
 
@@ -339,6 +339,16 @@ public class Game implements Runnable {
     }
 
     /**
+     * Log out for all players.
+     */
+    private void logOutForAllPlayers() {
+        for (Player p : players.values()) {
+            p.leaveGame();
+            this.serverTaskPool.execute(this.refServer.new RequestHandleTask(p.getJCommunicator(), p.getSocket()));
+        }
+    }
+
+    /**
      * Play one turn of the game.
      * Initially, the player should be in the game.
      * One turn of the game includes:
@@ -466,6 +476,11 @@ public class Game implements Runnable {
     }
 
     static JSONObject mergeJSONObject(JSONObject Obj1, JSONObject Obj2) {
+        if (Obj2 == null) {
+            return Obj1;
+        } else if (Obj1 == null) {
+            return Obj2;
+        }
         JSONObject merged = new JSONObject(Obj1, JSONObject.getNames(Obj1));
         for(String key : JSONObject.getNames(Obj2))
         {
@@ -757,6 +772,18 @@ public class Game implements Runnable {
         }
         gameEnds = true;
         //TODO:
+        String message = "Game ends, the winner is player " + winner.getPlayerID();
+        for (Player p: players.values()) {
+            Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
+            Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
+            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
+            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n",message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
+            try {
+                p.getJCommunicator().send(object);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
 //        String message = "Game ends, the winner is player " + winner.getPlayerID();
 //        message += "\n";
 //        try {
