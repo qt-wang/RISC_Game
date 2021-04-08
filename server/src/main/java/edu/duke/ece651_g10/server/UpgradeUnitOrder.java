@@ -1,6 +1,5 @@
 package edu.duke.ece651_g10.server;
 
-import java.util.HashMap;
 
 public class UpgradeUnitOrder extends OneTerritoryOrder {
   private int level;
@@ -17,9 +16,9 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
     Army toArmy = source.getArmyWithLevel(level + 1);
     fromArmy.decreaseUnits(unitNum);
     toArmy.increaseUnits(unitNum);
-    int foodCost = getFoodCost();
-    int newFoodResource = player.getFoodResourceTotal() - foodCost;
-    player.setFoodResourceTotal(newFoodResource);
+    int technologyCost = getTechnologyCost();
+    int newTechnologyResource = player.getTechnologyResourceTotal() - technologyCost;
+    player.setTechnologyResourceTotal(newTechnologyResource);
   }
 
   public Territory getSourceTerritory() {
@@ -34,7 +33,7 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
     return level;
   }
 
-  public int getFoodCost(){
+  public int getTechnologyCost(){
     return unitUpgradeTable.get(level + 1);
   }
 

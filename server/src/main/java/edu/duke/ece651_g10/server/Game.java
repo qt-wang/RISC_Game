@@ -365,10 +365,6 @@ public class Game implements Runnable {
      * @param playerId The player who will receive the playOneTurn message.
      */
     private void playOneTurn(int playerId) throws IOException {
-        // Record other player's information, this should not change while this turn.
-        //String otherTerritoriesInformation = getEnemyTerritoryInformation(playerId);
-        //String information = secondPhaseInformation(playerId, otherTerritoriesInformation);
-        //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
         Player currentPlayer = players.get(playerId);
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
@@ -415,7 +411,7 @@ public class Game implements Runnable {
      * @param territories The territories needed.
      * @return
      */
-    public JSONObject generateTerritoriesInfo(Set<Territory> territories) {
+    public static JSONObject generateTerritoriesInfo(Set<Territory> territories) {
         JSONObject result = new JSONObject();
         for (Territory t: territories) {
             result.put(t.getName(), t.presentTerritoryInformation());
@@ -476,17 +472,18 @@ public class Game implements Runnable {
     }
 
     static JSONObject mergeJSONObject(JSONObject Obj1, JSONObject Obj2) {
-        if (Obj2 == null) {
-            return Obj1;
-        } else if (Obj1 == null) {
-            return Obj2;
+        if (JSONObject.getNames(Obj1) == null) {
+            return new JSONObject(Obj2, JSONObject.getNames(Obj2));
+        } else if (JSONObject.getNames(Obj2) == null) {
+            return new JSONObject(Obj1, JSONObject.getNames(Obj1));
+        } else {
+            JSONObject merged = new JSONObject(Obj1, JSONObject.getNames(Obj1));
+            for(String key : JSONObject.getNames(Obj2))
+            {
+                merged.put(key, Obj2.get(key));
+            }
+            return merged;
         }
-        JSONObject merged = new JSONObject(Obj1, JSONObject.getNames(Obj1));
-        for(String key : JSONObject.getNames(Obj2))
-        {
-            merged.put(key, Obj2.get(key));
-        }
-        return merged;
     }
 
     /**
@@ -762,7 +759,8 @@ public class Game implements Runnable {
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
-            playMap.addUnitToEachTerritory();
+            //TODO:change this back.
+            //playMap.addUnitToEachTerritory();
             updatePlayerInfo();
             //Update player's food resource and technology resource.
             playMap.updatePlayerResource();
@@ -784,13 +782,6 @@ public class Game implements Runnable {
                 exception.printStackTrace();
             }
         }
-//        String message = "Game ends, the winner is player " + winner.getPlayerID();
-//        message += "\n";
-//        try {
-//            sendToAllPlayer(message, "play");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
 

@@ -18,6 +18,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.json.JSONObject;
 
 import javafx.event.ActionEvent;
@@ -179,6 +181,7 @@ public class UserScenePanelController implements Initializable {
 
                 //Create a wait box.
                 Stage stage = App.createChildStage(primaryStage, "Waiting...");
+                //stage.initStyle(StageStyle.UNDECORATED);
                 VBox dialogBox = new VBox(20);
                 Text info = new Text("Please wait for enough players to join.");
                 info.setFont(Font.font(18));
@@ -188,6 +191,19 @@ public class UserScenePanelController implements Initializable {
                 Scene dialogScene = new Scene(dialogBox, 300, 200);
                 stage.setScene(dialogScene);
 
+                //Cancel it!
+                stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                    @Override
+                    public void handle(WindowEvent event) {
+                        try {
+                            client.sendCancelLogInCommand(gameId);
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                        stage.close();
+                        backTask.cancel();
+                    }
+                });
 
                 backTask.valueProperty().addListener(new ChangeListener<JSONObject>() {
                     @Override
@@ -202,7 +218,7 @@ public class UserScenePanelController implements Initializable {
                             try {
                                 //TODO: Update other maps based on player numbers.
                                 //testScene = factory.createTestScene(newValue);
-                                testScene = factory.createMap(object);
+                                testScene = factory.createMap(newValue);
                             } catch (IOException exception) {
                                 exception.printStackTrace();
                             }

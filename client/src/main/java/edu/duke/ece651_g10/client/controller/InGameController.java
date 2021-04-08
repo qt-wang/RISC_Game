@@ -26,6 +26,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -314,21 +315,12 @@ public class InGameController {
                 public void changed(ObservableValue<? extends JSONObject> observable, JSONObject oldValue, JSONObject newValue) {
                     if (newValue != null) {
                         // Received the next turn json object.
-                        gameInfo = new GameInfo(newValue);
-                        setPlayerInfo();
-
                         //Handle game ends.
-                        if (gameInfo.getPlayerStatus().equals("L")) {
-                            try {
-                                onCommit(null);
-                            } catch (IOException exception) {
-                                exception.printStackTrace();
-                            }
-                        } else if (gameInfo.getPlayerStatus().equals("E")) {
+                        if (gameInfo.getPlayerStatus().equals("E")) {
                             // Create a message box.
                             //Create a wait box.
                             Stage stage = App.createChildStage(primaryStage, "Game ends");
-                            stage.initStyle(StageStyle.UNDECORATED);
+                            //stage.initStyle(StageStyle.UNDECORATED);
                             VBox dialogBox = new VBox(20);
                             Text info = new Text(newValue.getString("reason"));
                             info.setFont(Font.font(18));
@@ -338,6 +330,32 @@ public class InGameController {
                             dialogBox.getChildren().add(button);
                             Scene dialogScene = new Scene(dialogBox, 300, 200);
                             stage.setScene(dialogScene);
+
+                            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                                @Override
+                                public void handle(WindowEvent event) {
+                                    try {
+                                        client.sendOrderToServer(client.sendPasswordToServer(client.getPassword()));
+                                    } catch (IOException exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    JSONObject result = null;
+                                    try {
+                                        result = client.getSocketClient().receive();
+                                    } catch (IOException exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    //System.out.println("Last response, used for generate user pane:" + result);
+                                    Scene loginScene = null;
+                                    try {
+                                        loginScene = factory.createUserScene(result);
+                                    } catch (IOException exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    primaryStage.setScene(loginScene);
+                                }
+                            });
+
                             button.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent event) {
@@ -362,6 +380,17 @@ public class InGameController {
                                     primaryStage.setScene(loginScene);
                                 }
                             });
+                        } else if (gameInfo.getPlayerStatus().equals("L")) {
+                            gameInfo = new GameInfo(newValue);
+                            setPlayerInfo();
+                            try {
+                                onCommit(null);
+                            } catch (IOException exception) {
+                                exception.printStackTrace();
+                            }
+                        } else {
+                            gameInfo = new GameInfo(newValue);
+                            setPlayerInfo();
                         }
                     }
 
