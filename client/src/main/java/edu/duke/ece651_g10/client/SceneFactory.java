@@ -57,10 +57,29 @@ public class SceneFactory {
     }
 
 
-    public Scene createTwoPeopleMap(JSONObject object) throws IOException {
+//    public Scene createTwoPeopleMap(JSONObject object) throws IOException {
+//        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
+//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+//        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
+//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
+//        FXMLLoader loader = new FXMLLoader(fxmlResource);
+//        HashMap<Class<?>,Object> controllers = new HashMap<>();
+//        GameInfo gameInfo = new GameInfo(object);
+//        controllers.put(InGameController.class, new InGameController(gameInfo, primaryStage, client, this));
+//        loader.setControllerFactory((c)->{
+//            return controllers.get(c);
+//        });
+//        GridPane gp = loader.load();
+//        Scene scene = new Scene(gp);
+//        scene.getStylesheets().add(cssResource.toString());
+//        return scene;
+//    }
+
+    private Scene loadScene(String url, JSONObject object) throws IOException {
         URL cssResource = getClass().getResource("/ui/buttonStyles.css");
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+        URL fxmlResource = getClass().getResource(url);
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
         FXMLLoader loader = new FXMLLoader(fxmlResource);
@@ -74,6 +93,29 @@ public class SceneFactory {
         Scene scene = new Scene(gp);
         scene.getStylesheets().add(cssResource.toString());
         return scene;
+    }
+
+    public Scene createMap(JSONObject object) throws IOException {
+        int players = object.getInt("playerNumber");
+        String url;
+        switch (players) {
+            case 2:
+                url = "/ui/GameMapFor2.fxml";
+                break;
+            case 3:
+                url = "/ui/GameMapFor3.fxml";
+                break;
+            case 4:
+                url = "/ui/GameMapFor4.fxml";
+                break;
+            case 5:
+                url = "/ui/GameMapFor5.fxml";
+                break;
+            default:
+                System.out.println("Invalid, bad!");
+                return null;
+        }
+        return loadScene(url, object);
     }
 
     // Create a test scene for the user.

@@ -25,6 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -295,7 +296,6 @@ public class InGameController {
 
     @FXML
     public void onCommit(ActionEvent ae) throws IOException {
-        //initCommit();
         if (toSend != null) {
             invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
             return;
@@ -328,6 +328,7 @@ public class InGameController {
                             // Create a message box.
                             //Create a wait box.
                             Stage stage = App.createChildStage(primaryStage, "Game ends");
+                            stage.initStyle(StageStyle.UNDECORATED);
                             VBox dialogBox = new VBox(20);
                             Text info = new Text(newValue.getString("reason"));
                             info.setFont(Font.font(18));
@@ -337,7 +338,30 @@ public class InGameController {
                             dialogBox.getChildren().add(button);
                             Scene dialogScene = new Scene(dialogBox, 300, 200);
                             stage.setScene(dialogScene);
-                            button.setOnAction(null);
+                            button.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent event) {
+                                    try {
+                                        client.sendOrderToServer(client.sendPasswordToServer(client.getPassword()));
+                                    } catch (IOException exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    JSONObject result = null;
+                                    try {
+                                        result = client.getSocketClient().receive();
+                                    } catch (IOException exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    //System.out.println("Last response, used for generate user pane:" + result);
+                                    Scene loginScene = null;
+                                    try {
+                                        loginScene = factory.createUserScene(result);
+                                    } catch (IOException exception) {
+                                        exception.printStackTrace();
+                                    }
+                                    primaryStage.setScene(loginScene);
+                                }
+                            });
                         }
                     }
 
