@@ -314,6 +314,7 @@ public class InGameController {
                     if (newValue != null) {
                         gameInfo = new GameInfo(newValue);
                         setPlayerInfo();
+                        //System.out.println("Changed");
                     }
                 }
             });

@@ -15,18 +15,25 @@ public class GameInfo {
     boolean canUpgrade;
     HashMap<String,List<String>> territoryInfos;
     HashMap<Integer, List<String>> territoryOwnerShip = new HashMap<>();
+    // Have 3 player status A L E
+    String playerStatus;
     //HashMap<Integer, String> colorStrategy = new HashMap<>();
 
     public GameInfo(JSONObject received) {
         //JSONObject
         //received = generateTestJSON();
-        System.out.println(received);
+        //System.out.println(received);
         sub = received.getString("sub");
         canUpgrade = received.getBoolean("canUpgrade");
+        playerStatus = received.getString("playerStatus");
         int playerNumber = received.getInt("playerNumber");
         //setColorStrategy(playerNumber);
         setTerritoryInfos(received);
-        setPlayerInfo(received);
+        if (playerStatus.equals("L")) {
+
+        } else {
+            setPlayerInfo(received);
+        }
     }
 
     public void setPlayerInfo(JSONObject obj){

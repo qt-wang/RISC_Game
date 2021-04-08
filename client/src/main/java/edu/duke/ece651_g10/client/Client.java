@@ -48,7 +48,7 @@ public class Client {
         //JSONObject ans = socketClient.receive();
         setCurrentJSON(socketClient.receive());
         String prompt = currentJSON.getString("prompt");
-        System.out.println(prompt);
+        //System.out.println(prompt);
         //FGC added
         //this.playerID = getPlayerId(ans);
 

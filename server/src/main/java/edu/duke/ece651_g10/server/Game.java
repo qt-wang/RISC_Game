@@ -751,15 +751,19 @@ public class Game implements Runnable {
             updatePlayerInfo();
             //Update player's food resource and technology resource.
             playMap.updatePlayerResource();
+            for (Player p : players.values()) {
+                p.setCanUpgradeInThisTurn(true);
+            }
         }
         gameEnds = true;
-        String message = "Game ends, the winner is player " + winner.getPlayerID();
-        message += "\n";
-        try {
-            sendToAllPlayer(message, "play");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //TODO:
+//        String message = "Game ends, the winner is player " + winner.getPlayerID();
+//        message += "\n";
+//        try {
+//            sendToAllPlayer(message, "play");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 

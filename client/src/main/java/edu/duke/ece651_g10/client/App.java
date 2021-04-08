@@ -42,7 +42,7 @@ public class App extends Application {
                 while (true) {
                     JSONObject temp = client.socketClient.tryReceive();
                     if (temp != null) {
-                        System.out.println(temp);
+                        //System.out.println(temp);
                         return temp;
                     }
                     if (isCancelled()) {
