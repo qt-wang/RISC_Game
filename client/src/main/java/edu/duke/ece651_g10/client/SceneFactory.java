@@ -57,25 +57,6 @@ public class SceneFactory {
     }
 
 
-//    public Scene createTwoPeopleMap(JSONObject object) throws IOException {
-//        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
-//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-//        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor4.fxml");
-//        //URL fxmlResource = getClass().getResource("/ui/GameMapFor5.fxml");
-//        FXMLLoader loader = new FXMLLoader(fxmlResource);
-//        HashMap<Class<?>,Object> controllers = new HashMap<>();
-//        GameInfo gameInfo = new GameInfo(object);
-//        controllers.put(InGameController.class, new InGameController(gameInfo, primaryStage, client, this));
-//        loader.setControllerFactory((c)->{
-//            return controllers.get(c);
-//        });
-//        GridPane gp = loader.load();
-//        Scene scene = new Scene(gp);
-//        scene.getStylesheets().add(cssResource.toString());
-//        return scene;
-//    }
-
     private Scene loadScene(String url, JSONObject object) throws IOException {
         URL cssResource = getClass().getResource("/ui/buttonStyles.css");
         //URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
@@ -118,20 +99,20 @@ public class SceneFactory {
         return loadScene(url, object);
     }
 
-    // Create a test scene for the user.
-    public Scene createTestScene(JSONObject object) throws IOException {
-        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
-        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
-        FXMLLoader loader = new FXMLLoader(fxmlResource);
-        HashMap<Class<?>,Object> controllers = new HashMap<>();
-        controllers.put(TestSceneController.class, new TestSceneController(this.client, this.primaryStage, this, object));
-        loader.setControllerFactory((c)->{
-            return controllers.get(c);
-        });
-        AnchorPane ap = loader.load();
-        Scene scene = new Scene(ap,900,400);
-        scene.getStylesheets().add(cssResource.toString());
-        return scene;
-    }
+//    // Create a test scene for the user.
+//    public Scene createTestScene(JSONObject object) throws IOException {
+//        URL cssResource = getClass().getResource("/ui/buttonStyles.css");
+//        URL fxmlResource = getClass().getResource("/ui/GameMapFor2.fxml");
+//        FXMLLoader loader = new FXMLLoader(fxmlResource);
+//        HashMap<Class<?>,Object> controllers = new HashMap<>();
+//        controllers.put(TestSceneController.class, new TestSceneController(this.client, this.primaryStage, this, object));
+//        loader.setControllerFactory((c)->{
+//            return controllers.get(c);
+//        });
+//        AnchorPane ap = loader.load();
+//        Scene scene = new Scene(ap,900,400);
+//        scene.getStylesheets().add(cssResource.toString());
+//        return scene;
+//    }
 
 }

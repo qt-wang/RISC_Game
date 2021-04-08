@@ -91,8 +91,8 @@ public class App extends Application {
         Client client = new Client(System.out, input, socketClient);
         primaryStage.setResizable(false);
         SceneFactory factory = new SceneFactory(client, primaryStage);
-        primaryStage.setWidth(900);
-        primaryStage.setHeight(400);
+        primaryStage.setWidth(800);
+        primaryStage.setHeight(640);
         Scene testScene = factory.createLoginScene();
         primaryStage.setScene(testScene);
         primaryStage.show();
