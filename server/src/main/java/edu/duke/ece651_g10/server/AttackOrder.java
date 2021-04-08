@@ -47,6 +47,10 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     initiateAttackLevel();
   }
 
+  /**
+   * This function calculates the lowest level in a set of attack levels in an attack.
+   * @return the lowest level in a set of attack levels
+   */
   private int getLowestAttackerLevel() {
     for (int i = 0; i < attackLevel.size(); ++i) {
       if (attackLevel.get(i) > 0) {
@@ -56,6 +60,10 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     return 0;// should never reach here
   }
 
+  /**
+   * This function calculates the highest level in a set of attack levels in an attack.
+   * @return the highest level in a set of attack levels
+   */
   private int getHighestAttackerLevel() {
     for (int j = attackLevel.size() - 1; j >= 0; --j) {
       if (attackLevel.get(j) > 0) {
@@ -65,6 +73,10 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     return 0;// should never reach here
   }
 
+  /**
+   * This function finds the lowest defender level
+   * @return the lowest level among all levels of defenders
+   */
   private int getLowestDefenderLevel(Territory t) {
     for (int j = 0; j < 7; ++j) {
       if (t.getArmyWithLevel(j).getArmyUnits() > 0) {
@@ -74,6 +86,10 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     return 0;// should never reach here
   }
 
+  /**
+   * This function finds the highest defender level
+   * @return the highest level among all levels of defenders
+   */
   private int getHighestDefenderLevel(Territory t) {
     for (int j = 6; j >= 0; --j) {
       if (t.getArmyWithLevel(j).getArmyUnits() > 0) {
@@ -101,7 +117,7 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     boolean attackerLost = false;
     boolean defenderLost = true;
     int roundLoser = 0;// 0 represents that attacker lost the previous battle of units, 1 represents
-                       // that defender lost, it is initially set to 0 because we will let the higest
+                       // that defender lost, it is initially set to 0 because we will let the highest
                        // bonus unit of attacker to attack the lowest bonus of defender unit first
     while (flag) {
       int attackHighestLevel = this.getHighestAttackerLevel();
@@ -156,14 +172,24 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     }
   }
 
+  /**
+   * @return the source territory
+   */
   public Territory getSourceTerritory() {
     return source;
   }
 
+  /**
+   * @return the unit number
+   */
   public int getNumUnit() {
     return unitNum;
   }
 
+  /**
+   *
+   * @return the target territory
+   */
   public Territory getTargetTerritory() {
     return dest;
   }
@@ -172,14 +198,26 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
     unitNum += number;
   }
 
+  /**
+   *
+   * @return an array list that contains attack levels
+   */
   public ArrayList<Integer> getAttackLevel() {
     return attackLevel;
   }
 
+  /**
+   *
+   * @return the player that starts the attack
+   */
   public Player getPlayer() {
     return player;
   }
 
+  /**
+   * This function aims to modify the attack level array list.
+   * @param atkLevel is an array list containing attack levels
+   */
   public void setAttackLevel(ArrayList<Integer> atkLevel){
     for(int i = 0; i < 7; i++){
       attackLevel.set(i, attackLevel.get(i) + atkLevel.get(i));

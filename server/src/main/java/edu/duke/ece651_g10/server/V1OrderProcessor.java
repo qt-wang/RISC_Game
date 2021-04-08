@@ -3,10 +3,10 @@ package edu.duke.ece651_g10.server;
 import java.util.*;
 
 /**
- * This class is an order processor for v1. It aims to handle all move and
- * attack orders in one turn. If it receives a move order, it executes move
- * order immediately. If it receives an attack order, it stores the order in a
- * hashmap temporarily and executes them at last.
+ * This class is an order processor. It aims to handle all move orders,
+ * attack orders, upgrade orders in one turn. If it receives a move order, it executes move
+ * order or upgrade unit immediately. If it receives an attack order or upgrade technology order,
+ * it stores the order in a hashmap temporarily and executes them at last.
  */
 public class V1OrderProcessor implements OrderProcessor {
   private HashMap<Player, Vector<AttackOrder>> attacksInOneTurn;
@@ -18,8 +18,8 @@ public class V1OrderProcessor implements OrderProcessor {
   }
 
   /**
-   * If the order is a move order, execute it immediately. If the order is an
-   * attack order, store it into a container.
+   * If the order is a move order or upgrade unit order, execute it immediately. If the order is an
+   * attack order or upgrade technology order, store it into a container.
    * 
    * @param order The order to be accepted.
    */
@@ -73,6 +73,10 @@ public class V1OrderProcessor implements OrderProcessor {
     }
   }
 
+  /**
+   * This function aims to create a set of attack level
+   * @param vector is all attack orders. These orders have same source territory, same target.
+   */
   private void mergeAttackLevel(Vector<AttackOrder> vector){
     int length = vector.size();
     int index = -1;
@@ -124,7 +128,7 @@ public class V1OrderProcessor implements OrderProcessor {
   }
 
   /**
-   * execute all attack orders randomly.
+   * execute all attack orders randomly and execute upgrade technology order
    */
   public void executeEndTurnOrders() {
     Vector<Order> allAttacks = obtainAllAttackOrders();

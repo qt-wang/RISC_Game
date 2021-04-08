@@ -7,6 +7,12 @@ public abstract class ZeroTerritoryOrder extends Order {
   protected Player player;
   final HashMap<Integer, Integer> maxTechLevelTable;
 
+    /**
+     *
+     * @param playerID is the ID of player that initiate the order
+     * @param gMap is the game map
+     * @param player is the player that initiate the order
+     */
   public ZeroTerritoryOrder(int playerID, GameMap gMap, Player player) {
         super(playerID);
         this.gMap = gMap;
