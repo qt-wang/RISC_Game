@@ -101,8 +101,8 @@ public class Server {
         int count = 0;
         for (int i = 0; i < games.size(); i++) {
             if (!games.get(i).isGameFull() && !inGames.contains(games.get(i))) {
+                object.put(Integer.toString(count), games.get(i).presentGameInfo());
                 count += 1;
-                object.put(Integer.toString(i), games.get(i).presentGameInfo());
             }
         }
         object.put("numberOfGames", count);
