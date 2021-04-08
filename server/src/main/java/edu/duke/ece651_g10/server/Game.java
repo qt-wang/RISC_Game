@@ -109,9 +109,10 @@ public class Game implements Runnable {
     public void addPlayer(Player p) {
         int playerNums = players.size();
         p.joinGame();
+        System.out.println(p.getPlayerID());
         if (!players.containsValue(p) && playerNums < numPlayers) {
             System.out.println("Player added successfully");
-            players.put(playerNums + 1, p);
+            players.put(p.getPlayerID(), p);
         }
     }
 
@@ -542,11 +543,20 @@ public class Game implements Runnable {
      */
     private void assignInitialTerritories() {
         HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
-        for (int i = 1; i <= players.size(); i++) {
-            // Get the player.
-            Player p = players.get(i);
+//        for (int i = 1; i <= players.size(); i++) {
+//            // Get the player.
+//            Player p = players.get(i);
+//            Territory end = null;
+//            for (Territory t : groups.get(i)) {
+//                t.setOwner(p);
+//                end = t;
+//            }
+//            end.setUnitNumber(numUnitPerPlayer);
+//        }
+        int count = 1;
+        for (Player p: players.values()) {
             Territory end = null;
-            for (Territory t : groups.get(i)) {
+            for (Territory t: groups.get(count)) {
                 t.setOwner(p);
                 end = t;
             }

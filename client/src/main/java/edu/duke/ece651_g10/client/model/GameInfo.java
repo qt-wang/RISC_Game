@@ -59,9 +59,11 @@ public class GameInfo {
             info.add("Player "+playerId+":");
 
             StringBuilder sb = new StringBuilder("Owns territory: ");
-            for(String str : territoryOwnerShip.get(playerId)){
-                String toAppend = str+" ";
-                sb.append(toAppend);
+            if (territoryOwnerShip != null) {
+                for(String str : territoryOwnerShip.get(playerId)){
+                    String toAppend = str+" ";
+                    sb.append(toAppend);
+                }
             }
             info.add(sb.toString());
             //info.add("Territory color: "+colorStrategy.get(playerId));

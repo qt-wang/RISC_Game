@@ -150,11 +150,6 @@ public class Player {
    */
   public void joinGame() {
     this.inGame = true;
-//    synchronized (Game.class) {
-//      if (waitGroup != null && waitGroup.count != 0) {
-//        waitGroup.decrease();
-//      }
-//    }
   }
 
   /**
@@ -184,7 +179,9 @@ public class Player {
    * @param socket The socket which can be used to read/write to it.
    */
   Player(Socket socket, JSONCommunicator jc) {
-    this.playerId = availableId++;
+    synchronized (Player.class) {
+      this.playerId = availableId++;
+    }
     this.connectedSocket = socket;
     this.jCommunicate = jc;
     // TODO: Change the default value?

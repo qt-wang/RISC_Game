@@ -219,6 +219,7 @@ public class UserScenePanelController implements Initializable {
                             try {
                                 //TODO: Update other maps based on player numbers.
                                 //testScene = factory.createTestScene(newValue);
+                                System.out.println(newValue);
                                 testScene = factory.createMap(newValue);
                             } catch (IOException exception) {
                                 exception.printStackTrace();
