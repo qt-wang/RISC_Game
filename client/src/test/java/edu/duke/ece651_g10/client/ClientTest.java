@@ -12,10 +12,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.json.JSONObject;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -32,6 +32,30 @@ public class ClientTest {
   }
 
   @Test
+  public void test_read_and_set_password() throws IOException{
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    Client client = create_client("\n", bytes, 1);
+    bytes.reset();
+    client.setPassword("123");
+    String password = client.getPassword();
+    client.sendPasswordToServer(password);
+    assertEquals("123", password);
+  }
+
+  @Test
+  public void test_get_list_game() throws IOException{
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    Client client = create_client("\n", bytes, 1);
+    bytes.reset();
+    HashMap<Integer, JSONObject> listedGames = new HashMap<Integer, JSONObject>();
+    listedGames.put(1, new JSONObject());
+    listedGames.put(2, new JSONObject());
+    client.setListedGames(listedGames);
+    HashMap<Integer, JSONObject> listedGamesCopy = client.getListedGames();
+    assertEquals(listedGames, listedGamesCopy);
+  }
+
+  @Test
   public void test_read_string() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     String expectString = "123";
@@ -41,37 +65,6 @@ public class ClientTest {
     String prompt = "valid\n";
     assertEquals(expectString, c1.readString(prompt));
     assertEquals(prompt + "\n", bytes.toString());
-    bytes.reset();
-  }
-
-  @Disabled
-  @Test
-  public void test_read_action() throws IOException {
-    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    HashSet<String> legalAction = new HashSet<>();
-    legalAction.add("A");
-    legalAction.add("B");
-    Client client = create_client("123\nC\nb\n", bytes, 2);
-    bytes.reset();
-
-    String prompt = "Please input your command.";
-    String error = "Please input valid actions.";
-    String s = client.readAction(prompt, legalAction);
-    assertEquals("B", s);
-    assertEquals(prompt + "\n" + error + "\n" + prompt + "\n", bytes.toString());
-    bytes.reset();
-  }
-
-  @Disabled
-  @Test
-  public void test_read_integer() throws IOException {
-    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    Client client = create_client("123\n1.23\nb\n55\n", bytes, 3);
-    bytes.reset();
-    String prompt = "Please input your number.";
-    String error = "Please input valid integer.";
-    assertEquals("55", client.readInteger(prompt));
-    assertEquals(prompt + "\n" + error + "\n" + prompt + "\n" + error + "\n" + prompt + "\n", bytes.toString());
     bytes.reset();
   }
 
@@ -216,26 +209,6 @@ public class ClientTest {
     assertEquals("connection", client1.getCurrentMessageType());
   }
 
-  @Disabled
-  @Test
-  public void test_logout_game() throws IOException {
-    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    BufferedReader input = new BufferedReader(new StringReader("\n123\n\n"));
-    PrintStream output = new PrintStream(bytes, true);
-    SocketClient mockSocketClient = mock(SocketClient.class);
-    JSONObject jsonObject = new JSONObject().put("type", "connection").put("playerID", 1).put("prompt", "valid\n")
-        .put("password", "123");
-    when(mockSocketClient.receive()).thenReturn(jsonObject);
-    Client client1 = new Client(output, input, mockSocketClient);
-    jsonObject = new JSONObject().put("type", "logout");
-    when(mockSocketClient.receive()).thenReturn(jsonObject);
-    client1.setCurrentJSON(mockSocketClient.receive());
-    client1.commandMap.get("logout").run();
-    assertEquals("logout", client1.getCurrentMessageType());
-    client1.commandMap.get("logout").run();
-    assertEquals("logout", client1.getCurrentMessageType());
-  }
-
   @Test
   public void test_play_game_end() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -353,6 +326,18 @@ public class ClientTest {
     Client client1 = new Client(output, input, mockSocketClient);
     client1.setCurrentJSON(mockSocketClient.receive());
     client1.commandMap.get("play").run();
+  }
+
+  @Test
+  public void test_send_json() throws IOException {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    Client client = create_client("\n", bytes, 1);
+    bytes.reset();
+    client.sendListOpenGameJSON(true);
+    client.sendListOpenGameJSON(false);
+    client.sendCreateGameJSON(10);
+    client.sendJoinGameJSON(1);
+    client.sendLogOutCommand();
   }
 
   @Test

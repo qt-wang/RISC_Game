@@ -387,17 +387,6 @@ public class Client {
         this.socketClient.send(object);
     }
 
-
-    private void FGCConnection() throws IOException {
-        // Receive the password.
-        // JSONObject object = socketClient.receive();
-        String password = currentJSON.getString("password");
-
-        System.out.println(password);
-        // Send a JSON object which contains the password.
-        socketClient.send(generateConnectJSON(password));
-    }
-
     /**
      * Connect to one of the game FGC changed.
      */
@@ -413,18 +402,6 @@ public class Client {
             connectGame();
         }
         sendOrderToServer(generateConnectJSON(password));
-    }
-
-    /**
-     * Logout the current game
-     */
-    public void logoutGame() throws IOException {
-        out.println(getPrompt(currentJSON));
-        String prompt = "If you want to logout, please input a non-empty string, otherwise directly press Enter.";
-        String response = readString(prompt);
-        if (!response.equals("")) {
-            sendOrderToServer(new JSONObject().put("type", "logout"));
-        }
     }
 
     public void sendLogOutCommand() throws IOException {
