@@ -771,6 +771,7 @@ public class Game implements Runnable {
         gameEnds = true;
         System.out.println("End game procedure begins!");
         String message = "Game ends, the winner is player " + winner.getPlayerID();
+        logOutForAllPlayers();
         for (Player p: players.values()) {
             Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
             Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);

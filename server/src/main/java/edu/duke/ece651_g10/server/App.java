@@ -12,7 +12,7 @@ public class App {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
-        Server server = new Server(12345, new FixedGameMapFactory(), passwordGenerator);
+        Server server = new Server(12345, passwordGenerator);
         server.run();
     }
 }

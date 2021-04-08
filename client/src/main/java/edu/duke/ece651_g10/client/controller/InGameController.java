@@ -361,6 +361,7 @@ public class InGameController {
                                 @Override
                                 public void handle(ActionEvent event) {
                                     try {
+                                        stage.close();
                                         client.sendOrderToServer(client.sendPasswordToServer(client.getPassword()));
                                     } catch (IOException exception) {
                                         exception.printStackTrace();

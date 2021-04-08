@@ -124,6 +124,7 @@ public class UserScenePanelController implements Initializable {
         this.createGameLayOut = false;
         client.sendListOpenGameJSON(true);
         JSONObject object = client.socketClient.receive();
+        System.out.println(object);
         choiceBox.setDisable(true);
         if (choiceBox.getItems() != null) {
             choiceBox.getItems().clear();

@@ -80,14 +80,15 @@ public class Server {
      */
     void appendGameInformation(String password, JSONObject object) {
         List<Game> games = clientGames.get(password);
-        int size = games.size();
-        object.put("numberOfGames", size);
-        for (int i = 0; i < size; i++) {
+        int count = 0;
+        for (int i = 0; i < games.size(); i++) {
             if (games.get(i).gameEnds) {
                 continue;
             }
-            object.put(Integer.toString(i), games.get(i).presentGameInfo());
+            object.put(Integer.toString(count), games.get(i).presentGameInfo());
+            count += 1;
         }
+        object.put("numberOfGames", count);
     }
 
     /**
@@ -324,10 +325,9 @@ public class Server {
      * Construct a server.
      *
      * @param port    The port the server is listening for.
-     * @param factory
      * @throws IOException
      */
-    public Server(int port, GameMapFactory factory, PasswordGenerator serverPasswordGenerator) throws IOException {
+    public Server(int port, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
         games = new HashMap<>();
         gameFactory = new V2GameFactory(this);
@@ -337,7 +337,6 @@ public class Server {
         this.threadPool = Executors.newCachedThreadPool();
         clientInfo = new HashMap<>();
         clientGames = new HashMap<>();
-        //TODO: shall we only have fixed number of games? what if game ends?
         waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             games.put(i, gameFactory.createFixedGame(2));
