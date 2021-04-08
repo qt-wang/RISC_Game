@@ -5,17 +5,25 @@
 .panel{
     -fx-background-color: #403e3e;
 }
-.BtnColor{
-    -track-color: #F30404;
 
-}
-.BtnColor.track{
-    -fx-background-color: black,-track-color;
+.greyButton{
+    -fx-background-color: black, #b5b5b5;
     -fx-text-fill: black;
     -fx-background-radius: 5, 5;
     -fx-background-insets: 2, 4;
 }
-
+.greyButton:hover{
+    -fx-background-color: #ffffff, #b5b5b5;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
+}
+.greyButton:pressed{
+    -fx-background-color: #414141,#414141;
+    -fx-text-fill: black;
+    -fx-background-radius: 5, 5;
+    -fx-background-insets: 2, 4;
+}
 .redButton{
     -fx-background-color: black,#F30404;
     -fx-text-fill: black;

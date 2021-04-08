@@ -31,7 +31,7 @@
             <styleClass>
                <String fx:value="btnA" />
                <String fx:value="expandable" />
-               <String fx:value="redButton" />
+               <String fx:value="greyButton" />
             </styleClass>
             <stylesheets>
                <URL value="@buttonStyles.css" />
@@ -40,7 +40,7 @@
          </Button>
          <Button layoutX="96.0" layoutY="115.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="61.0" prefWidth="106.0" text="B">
             <styleClass>
-               <String fx:value="redButton" />
+               <String fx:value="greyButton" />
                <String fx:value="btnB" />
                <String fx:value="expandable" />
             </styleClass>
@@ -53,7 +53,7 @@
             <styleClass>
                <String fx:value="btnD" />
                <String fx:value="expandable" />
-               <String fx:value="redButton" />
+               <String fx:value="greyButton" />
             </styleClass>
             <stylesheets>
                <URL value="@buttonStyles.css" />
@@ -64,7 +64,7 @@
             <styleClass>
                <String fx:value="btnE" />
                <String fx:value="expandable" />
-               <String fx:value="yellowButton" />
+               <String fx:value="greyButton" />
             </styleClass>
             <stylesheets>
                <URL value="@buttonStyles.css" />
@@ -75,7 +75,7 @@
             <styleClass>
                <String fx:value="btnC" />
                <String fx:value="expandable" />
-               <String fx:value="greenButton" />
+               <String fx:value="greyButton" />
             </styleClass>
             <stylesheets>
                <URL value="@buttonStyles.css" />
@@ -86,7 +86,7 @@
             <styleClass>
                <String fx:value="btnF" />
                <String fx:value="expandable" />
-               <String fx:value="greenButton" />
+               <String fx:value="greyButton" />
             </styleClass>
             <stylesheets>
                <URL value="@buttonStyles.css" />
@@ -97,7 +97,7 @@
             <styleClass>
                <String fx:value="btnH" />
                <String fx:value="expandable" />
-               <String fx:value="yellowButton" />
+               <String fx:value="greyButton" />
             </styleClass>
             <stylesheets>
                <URL value="@buttonStyles.css" />
@@ -109,7 +109,7 @@
          </Button>
          <Button layoutX="240.0" layoutY="98.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="33.0" prefWidth="99.0" text="L">
             <styleClass>
-               <String fx:value="greenButton" />
+               <String fx:value="greyButton" />
                <String fx:value="btnL" />
                <String fx:value="expandable" />
             </styleClass>
@@ -120,7 +120,7 @@
          </Button>
          <Button layoutX="276.0" layoutY="101.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="39.0" prefWidth="99.0" text="G">
             <styleClass>
-               <String fx:value="yellowButton" />
+               <String fx:value="greyButton" />
                <String fx:value="btnG" />
                <String fx:value="expandable" />
             </styleClass>
@@ -131,7 +131,7 @@
          </Button>
          <Button layoutX="374.0" layoutY="90.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="114.0" prefWidth="56.0" text="I">
             <styleClass>
-               <String fx:value="blueButton" />
+               <String fx:value="greyButton" />
                <String fx:value="btnI" />
                <String fx:value="expandable" />
             </styleClass>
@@ -142,7 +142,7 @@
          </Button>
          <Button layoutX="420.0" layoutY="42.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="122.0" prefWidth="49.0" text="J">
             <styleClass>
-               <String fx:value="blueButton" />
+               <String fx:value="greyButton" />
                <String fx:value="expandable" />
                <String fx:value="btnJ" />
             </styleClass>
@@ -154,7 +154,7 @@
          <Button layoutX="447.0" layoutY="42.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="106.0" prefWidth="76.0" text="K">
             <styleClass>
                <String fx:value="btnK" />
-               <String fx:value="blueButton" />
+               <String fx:value="greyButton" />
                <String fx:value="expandable" />
             </styleClass>
             <stylesheets>
