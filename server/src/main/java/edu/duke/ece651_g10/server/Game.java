@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -18,8 +19,15 @@ import java.util.function.Function;
  */
 public class Game implements Runnable {
 
-    // Indicates the players in this game.
     // Each player has a unique integer represent its identity.
+    /**
+     * Clarify, the player id is not continuous.
+     * It can be random values.
+     * For instance, if first player join the game, he will have the player id 1.
+     * If another player join another game, he will have the player id 2.
+     * Then the final player join the game, it may have the player id 3.
+     * Therefore, the player id for this game is 1 and 3.
+     */
     private HashMap<Integer, Player> players;
 
     static int gameIdentifier = 0;
@@ -61,10 +69,6 @@ public class Game implements Runnable {
     private ExecutorService serverTaskPool;
 
     Server refServer;
-
-
-    //TODO: may need to add State, so that the server can detect ended game.
-    //public enum State {Waiting, Running, Ending};
 
     /**
      * Construct a game based on the arguments given in the argument list.
@@ -116,79 +120,6 @@ public class Game implements Runnable {
         }
     }
 
-    /**
-     * Get all the territory information for all other players (alive player).
-     *
-     * @param playerId The current player Id
-     * @return A String representation of the player information.
-     */
-    String getEnemyTerritoryInformation(int playerId) {
-        // We need to iterate through all the players.
-        StringBuilder sb = new StringBuilder();
-        for (Player p : players.values()) {
-            if (p.getPlayerID() == playerId || p.getIsLost()) {
-                continue;
-            } else {
-                sb.append("Player ");
-                sb.append(p.getPlayerID());
-                sb.append(":\n");
-                sb.append("-----------------------\n");
-                sb.append(view.territoryForUser(p));
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * generate a JSONObject of type: inform
-     *
-     * @param playerId the player's id
-     * @param prompt   the information
-     * @return the constructed JSONObject
-     */
-    public JSONObject generateInfoJSON(int playerId, String prompt, String type) {
-        JSONObject info = new JSONObject().put("type", type);
-        info = info.put("prompt", prompt).put("playerID", playerId);
-        boolean isLost = players.get(playerId).getIsLost();
-        info = isLost ? info.put("playerStatus", "L") : info.put("playerStatus", "A");
-        info = gameEnds ? info.put("playerStatus", "E") : info.put("playerStatus", info.get("playerStatus"));
-        return info;
-    }
-
-    public JSONObject generateServerResponse(String prompt, String reason, String type) {
-        JSONObject response = new JSONObject().put("type", type);
-        response = response.put("prompt", prompt);
-        response = response.put("reason", reason);
-        return response;
-    }
-
-
-    /**
-     * Provide the phase information used to send to the users.
-     *
-     * @param phaseInfo The phase info indicates which phase the player in.
-     * @param playerId  The player's id number.
-     * @return The string representation of the message.
-     */
-    String phaseInformation(String phaseInfo, int playerId) {
-        StringBuilder sb = new StringBuilder(phaseInfo);
-        //sb.append(getPlayerInfo(playerId));
-        sb.append("Player ");
-        sb.append(playerId);
-        sb.append(":\n");
-        sb.append("-----------------------\n");
-        sb.append(view.territoryForUser(players.get(playerId)));
-        return sb.toString();
-    }
-
-    public JSONObject secondPhaseInformation(int playerId, String otherTerritoryMessage) {
-        //StringBuilder sb = new StringBuilder("Second phase, attack territories\n");
-        String str = "Second phase, attack territories\n";
-        str = phaseInformation(str, playerId);
-        //sb.append(phaseInformation(sb.toString()))
-        str += otherTerritoryMessage;
-        return generateInfoJSON(playerId, str, "play");
-    }
 
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
@@ -244,17 +175,24 @@ public class Game implements Runnable {
     }
 
 
+    /**
+     * Send valid response to the client.
+     *
+     * @param playerId Which player to send back the information.
+     * @throws IOException
+     */
     private void sendServerValidResponse(int playerId) throws IOException {
         players.get(playerId).getJCommunicator().sendServerValidResponse();
     }
 
+    /**
+     * Send back the invalid response back to the server.
+     * @param playerId   Which player to send back the invalid response.
+     * @param reason     The reason why it is invalid.
+     * @throws IOException
+     */
     private void sendServerInvalidResponse(int playerId, String reason) throws IOException {
-        //sendToPlayer(playerId, generateServerResponse("invalid\n", reason, "connection"));
         players.get(playerId).getJCommunicator().sendServerInvalidResponse(reason);
-    }
-
-    private void sendValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "connection"));
     }
 
     /**
@@ -281,13 +219,13 @@ public class Game implements Runnable {
                 int unitNum = obj.getInt("unitNumber");
                 Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
                 return order;
-            } else if (orderType.equals("upgradeUnit")){
+            } else if (orderType.equals("upgradeUnit")) {
                 String sourceT = obj.getString("sourceTerritory");
                 int uLevel = obj.getInt("unitLevel");
                 int unitNum = obj.getInt("unitNumber");
                 Order order = new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));
                 return order;
-            } else if (orderType.equals("upgradeTech")){
+            } else if (orderType.equals("upgradeTech")) {
                 Order order = new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
                 return order;
             } else {
@@ -297,10 +235,6 @@ public class Game implements Runnable {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private void sendInvalidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n", "test"));
     }
 
 
@@ -341,6 +275,9 @@ public class Game implements Runnable {
 
     /**
      * Log out for all players.
+     * Which should do:
+     * 1. Disconnect client from the game server.
+     * 2. Make server reconnect to the client.
      */
     private void logOutForAllPlayers() {
         for (Player p : players.values()) {
@@ -348,6 +285,7 @@ public class Game implements Runnable {
             this.serverTaskPool.execute(this.refServer.new RequestHandleTask(p.getJCommunicator(), p.getSocket()));
         }
     }
+
 
     /**
      * Play one turn of the game.
@@ -396,7 +334,6 @@ public class Game implements Runnable {
                 }
                 if (message == null) {
                     orderProcessor.acceptOrder(order);
-                    //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
                     sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
                 } else {
                     sendServerInvalidResponse(playerId, message);
@@ -414,7 +351,7 @@ public class Game implements Runnable {
      */
     public static JSONObject generateTerritoriesInfo(Set<Territory> territories) {
         JSONObject result = new JSONObject();
-        for (Territory t: territories) {
+        for (Territory t : territories) {
             result.put(t.getName(), t.presentTerritoryInformation());
         }
         return result;
@@ -422,13 +359,14 @@ public class Game implements Runnable {
 
     /**
      * Generate the JSON object needed to update the information about the server.
-     * @param playerId  The player id of the player.
-     * @param sub       Can be "Placement" / "Attack"
-     * @param prompt    Whether the previous command send from client is valid or not.
-     * @param reason    The reason if invalid.
-     * @param fixedJSON The fixed part of the territories' info.
-     * @param variableJSON  The variable part of the territories' info.
-     * @return  The json object sent to the server.
+     *
+     * @param playerId     The player id of the player.
+     * @param sub          Can be "Placement" / "Attack"
+     * @param prompt       Whether the previous command send from client is valid or not.
+     * @param reason       The reason if invalid.
+     * @param fixedJSON    The fixed part of the territories' info.
+     * @param variableJSON The variable part of the territories' info.
+     * @return The json object sent to the server.
      */
     public JSONObject generateClientNeededInformation(int playerId, String sub, String prompt, String reason,
                                                       JSONObject fixedJSON, JSONObject variableJSON) {
@@ -448,12 +386,6 @@ public class Game implements Runnable {
         return object;
     }
 
-    public JSONObject firstPhaseInformation(int playerId) {
-        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
-        sb.append(view.territoryForUser(players.get(playerId)));
-        return generateInfoJSON(playerId, sb.toString(), "placement");
-    }
-
 
     /**
      * Handle logout message sent from invalid phase.
@@ -465,13 +397,18 @@ public class Game implements Runnable {
      */
     private boolean handleInvalidLogOutMessage(JSONObject object, int playerId) throws IOException {
         if (object.getString("type").equals("logout")) {
-            // Send invalid message back.
             sendServerInvalidResponse(playerId, "You can only logout after you commit!");
             return true;
         }
         return false;
     }
 
+    /**
+     * Merge two json object into one, with all the keys and values from Obj1 and Obj2
+     * @param Obj1 The first JSON object to be merged.
+     * @param Obj2 The second JSON object to be merged.
+     * @return The merged JSON object.
+     */
     static JSONObject mergeJSONObject(JSONObject Obj1, JSONObject Obj2) {
         if (JSONObject.getNames(Obj1) == null) {
             return new JSONObject(Obj2, JSONObject.getNames(Obj2));
@@ -479,8 +416,7 @@ public class Game implements Runnable {
             return new JSONObject(Obj1, JSONObject.getNames(Obj1));
         } else {
             JSONObject merged = new JSONObject(Obj1, JSONObject.getNames(Obj1));
-            for(String key : JSONObject.getNames(Obj2))
-            {
+            for (String key : JSONObject.getNames(Obj2)) {
                 merged.put(key, Obj2.get(key));
             }
             return merged;
@@ -491,19 +427,15 @@ public class Game implements Runnable {
      * Setup the units distribution of the territories for each player.
      * Each player shall have the same number of initial units, which she may place in her territories as she wishes.
      * This phase should occur simultaneously.
-     * Consider using a ThreadPool for this, and waiting all the threads to be done.
      */
     private void setupInitialUnitsDistribution(int playerId) throws IOException {
-        // Assume we can receive orders from the client.
-        // Send the view to the user.
-        // The player should not see the units distributions of other players.
         boolean receiveCommit = false;
         Player currentPlayer = players.get(playerId);
+        // Get fixed territories, and changeable territories.
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
         JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
         sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
-        // Get fixed territories, and changeable territories.
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
@@ -515,7 +447,6 @@ public class Game implements Runnable {
                 continue;
             }
             synchronized (this) {
-                System.out.println(obj);
                 Order order = toOrder(playerId, obj);
                 if (order == null) {
                     sendServerInvalidResponse(playerId, "Received null order!");
@@ -528,10 +459,8 @@ public class Game implements Runnable {
                     orderProcessor.acceptOrder(order);
                     // Send upgrade information back to the client.
                     sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
-                    System.out.println("Send back valid response");
                 } else {
                     sendServerInvalidResponse(playerId, message);
-                    System.out.println("Send back invalid response");
                 }
             }
         }
@@ -543,24 +472,18 @@ public class Game implements Runnable {
      */
     private void assignInitialTerritories() {
         HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
-//        for (int i = 1; i <= players.size(); i++) {
-//            // Get the player.
-//            Player p = players.get(i);
-//            Territory end = null;
-//            for (Territory t : groups.get(i)) {
-//                t.setOwner(p);
-//                end = t;
-//            }
-//            end.setUnitNumber(numUnitPerPlayer);
-//        }
-        int count = 1;
-        for (Player p: players.values()) {
+        int group = 1;
+        // Iterate through the players.
+        for (Map.Entry<Integer, Player> entry : players.entrySet()) {
+            // Get the player.
+            Player p = entry.getValue();
             Territory end = null;
-            for (Territory t: groups.get(count)) {
+            for (Territory t : groups.get(group)) {
                 t.setOwner(p);
                 end = t;
             }
             end.setUnitNumber(numUnitPerPlayer);
+            group += 1;
         }
     }
 
@@ -662,14 +585,15 @@ public class Game implements Runnable {
         // Generate a waitGroup.
         WaitGroup waitGroup;
         synchronized (this) {
-             waitGroup = new WaitGroup(players.size());
+            waitGroup = new WaitGroup(players.size());
             this.currentWaitGroup = waitGroup;
         }
-        for (int i = 1; i <= players.size(); i++) {
+        for (Map.Entry<Integer, Player> entry: players.entrySet()) {
             // We create multiple tasks here.
-            players.get(i).setWaitGroup(waitGroup);
-            Runnable task = toDo.apply(i);
-            int currentPlayer = i;
+            Player currentPlayer = entry.getValue();
+            currentPlayer.setWaitGroup(waitGroup);
+            int currentPlayerId = currentPlayer.getPlayerID();
+            Runnable task = toDo.apply(currentPlayerId);
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -686,7 +610,7 @@ public class Game implements Runnable {
                          * Add version 2, LogOut phase.
                          * The player is free to logout after they commit.
                          */
-                        logOutPhase(currentPlayer, waitGroup);
+                        logOutPhase(currentPlayerId, waitGroup);
                         barrier.await();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -731,11 +655,6 @@ public class Game implements Runnable {
         }
     }
 
-    private void sendToAllPlayer(String message, String type) throws IOException {
-        for (Player p : players.values()) {
-            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message, type));
-        }
-    }
 
     public int getNumPlayers() {
         return players.size();
@@ -745,7 +664,7 @@ public class Game implements Runnable {
         return players.size() == numPlayers && !gameBegins && currentWaitGroup.getState();
     }
 
-    public WaitGroup getCurrentWaitGroup () {
+    public WaitGroup getCurrentWaitGroup() {
         return currentWaitGroup;
     }
 
@@ -769,8 +688,7 @@ public class Game implements Runnable {
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
-            //TODO:change this back.
-            //playMap.addUnitToEachTerritory();
+            playMap.addUnitToEachTerritory();
             updatePlayerInfo();
             //Update player's food resource and technology resource.
             playMap.updatePlayerResource();
@@ -782,11 +700,11 @@ public class Game implements Runnable {
         System.out.println("End game procedure begins!");
         String message = "Game ends, the winner is player " + winner.getPlayerID();
         logOutForAllPlayers();
-        for (Player p: players.values()) {
+        for (Player p : players.values()) {
             Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
             Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
             JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n",message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
+            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
             System.out.println(object.getString("playerStatus"));
             try {
                 p.getJCommunicator().send(object);

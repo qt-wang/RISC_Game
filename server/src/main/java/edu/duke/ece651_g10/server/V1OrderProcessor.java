@@ -31,7 +31,7 @@ public class V1OrderProcessor implements OrderProcessor {
       // territory at
       // very beginning.
       ((AttackOrder) order).getPlayer()
-          .setFoodResourceTotal(((AttackOrder) order).getPlayer().getFoodResourceTotal() - 1);
+          .setFoodResourceTotal(((AttackOrder) order).getPlayer().getFoodResourceTotal() - ((AttackOrder) order).getNumUnit());
       ArrayList<Integer> atkLevel = ((AttackOrder) order).getAttackLevel();
       // ((AttackOrder)order).getSourceTerritory().decreaseUnit(((AttackOrder)order).getNumUnit(),
       // 0);
