@@ -2,9 +2,9 @@
 
 ## Running Instruction
  1. Go to root directory in the project.
- 2. Run './gradlew installDist'
- 3. Run server first through './server/build/install/server/bin/server'.
- 4. Run several clients through './client/build/install/client/bin/client'
+ 2. Run 'gradle build'
+ 3. Run server first by 'gradle run-server'.
+ 4. Run several clients by 'gradle run-client'
  5. Enjoy the game!
 
 ```mermaid
