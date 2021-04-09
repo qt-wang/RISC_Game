@@ -697,15 +697,14 @@ public class Game implements Runnable {
             }
         }
         gameEnds = true;
-        System.out.println("End game procedure begins!");
+        //TODO:
         String message = "Game ends, the winner is player " + winner.getPlayerID();
         logOutForAllPlayers();
         for (Player p : players.values()) {
             Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
             Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
             JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
-            System.out.println(object.getString("playerStatus"));
+            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n",message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
             try {
                 p.getJCommunicator().send(object);
             } catch (IOException exception) {

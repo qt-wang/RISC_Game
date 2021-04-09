@@ -10,6 +10,12 @@ public class ShortestPath {
         this.gMap = gMap;
     }
 
+    /**
+     * This function calculates the minimum cost from source territory to target territory.
+     * @param source the source territory
+     * @param target the target territory
+     * @return the minimum cost from source territory to target territory
+     */
   public int minCost(Territory source, Territory target){
       Player player = source.getOwner();
         HashMap<String, Integer> distanceTable = new HashMap<>();

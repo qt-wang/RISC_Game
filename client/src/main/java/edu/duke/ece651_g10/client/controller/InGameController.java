@@ -33,9 +33,13 @@ import java.io.IOException;
 import java.util.*;
 
 public class InGameController {
+
     GameInfo gameInfo;
+
     Stage primaryStage;
+
     Client client;
+
     @FXML
     ListView<String> playerInfo;
 
@@ -52,6 +56,13 @@ public class InGameController {
 
     SceneFactory factory;
 
+    /**
+     * initiate the game controller with given parameters
+     * @param gameInfo the model contains game info
+     * @param primaryStage the stage where the game runs
+     * @param client the client object used to send and receive json
+     * @param factory the factory used to create scene
+     */
     public InGameController(GameInfo gameInfo, Stage primaryStage, Client client, SceneFactory factory) {
         this.gameInfo = gameInfo;
         this.primaryStage = primaryStage;
@@ -59,21 +70,29 @@ public class InGameController {
         this.factory = factory;
     }
 
+    /**
+     * set the prompt area with given str
+     * @param str the given str
+     */
     public void setPrompt(String str) {
         prompt.setText(str);
     }
 
-    //TODO:
-//    public void updateGameInfo(JSONObject obj){
-//        gameInfo = new GameInfo(obj);
-//    }
-
+    /**
+     * update player info listview according to the model gameinfo
+     * and refresh to show the new info
+     */
     public void setPlayerInfo() {
         ObservableList<String> obl = FXCollections.observableArrayList(gameInfo.getPlayerInfo());
         playerInfo.setItems(obl);
         playerInfo.refresh();
     }
 
+    /**
+     * update the territory listview to show the info of the given territory
+     * and refresh to show
+     * @param territoryName the name of the territory
+     */
     public void setTerritoryInfo(String territoryName) {
         ObservableList<String> obl;
         List<String> territoryInfos = gameInfo.getTerritoryInfo(territoryName);
@@ -87,16 +106,29 @@ public class InGameController {
         territoryInfo.refresh();
     }
 
+    /**
+     * when first start the game, the player's info cannot be initiated properly
+     * so we leave it until the user's mouse enter the stage
+     * @param ae
+     */
     @FXML
     public void onEnterStage(MouseEvent ae) {
         setPlayerInfo();
     }
 
+    /**
+     * click on the anchorpane to clear the territory's listview
+     * @param ae
+     */
     @FXML
     public void onClickPane(MouseEvent ae) {
         setTerritoryInfo("");
     }
 
+    /**
+     * pop up a window with a message and the user can only press "OK"
+     * @param msg the message to show
+     */
     public void invalidPrompt(String msg) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -116,6 +148,13 @@ public class InGameController {
         dialog.show();
     }
 
+    /**
+     * set fields in toSend with numeric input, all other characters cannot be input
+     * @param infos the prompts for different fields
+     * @param fields the fields to be put into toSend jsonobject
+     * @param finalStep true if it's the final step of the order and the next step is to send
+     *                  false if there are other information needed and not ready to send after this function finishes
+     */
     public void setNumbersPrompt(String[] infos, String[] fields, boolean finalStep) {
         assert (infos.length == fields.length);
         int num = infos.length;
@@ -178,6 +217,11 @@ public class InGameController {
         dialog.show();
     }
 
+    /**
+     * send the toSend json object to the server and receive a response
+     * update info according to it
+     * @throws IOException
+     */
     public void sendJSON() throws IOException {
         //send and receive reply
         System.out.println(toSend.toString());
@@ -194,6 +238,10 @@ public class InGameController {
         toSend = null;
     }
 
+    /**
+     * handle the user's clicking on territory event
+     * @param ae click on the territory
+     */
     @FXML
     public void onClickTerritory(ActionEvent ae) {
         Object source = ae.getSource();
@@ -228,6 +276,12 @@ public class InGameController {
         }
     }
 
+    /**
+     * init the toSend to make it not null and put some basic fields in
+     * if toSend is not null, pop up a error msg and ask the user to cancel first
+     * @param orderType the type of the order: "move","attack","upgradeUnit","upgradeTech"
+     * @param prompt the prompt to show in the prompt area
+     */
     public void initOrder(String orderType, String prompt) {
         if (toSend == null) {
             toSend = new JSONObject();
@@ -238,11 +292,19 @@ public class InGameController {
         }
     }
 
+    /**
+     * for move button
+     * @param ae mouse click the button
+     */
     @FXML
     public void onMove(ActionEvent ae) {
         initOrder("move", "Please select the source territory!");
     }
 
+    /**
+     * for attack button
+     * @param ae mouse click the button
+     */
     @FXML
     public void onAttack(ActionEvent ae) {
         if (gameInfo.getSub().equals("Placement")) {
@@ -252,6 +314,10 @@ public class InGameController {
         }
     }
 
+    /**
+     * for upgrade unit button
+     * @param ae mouse click the button
+     */
     @FXML
     public void onUpgradeUnit(ActionEvent ae) {
         if (gameInfo.getSub().equals("Placement")) {
@@ -261,6 +327,11 @@ public class InGameController {
         }
     }
 
+    /**
+     * for upgradeTech button
+     * @param ae mouse click the button
+     * @throws IOException
+     */
     @FXML
     public void onUpgradeTech(ActionEvent ae) throws IOException {
         if (gameInfo.getSub().equals("Placement")) {
@@ -277,6 +348,10 @@ public class InGameController {
 
     }
 
+    /**
+     * for cancel button
+     * @param ae mouse click the button
+     */
     @FXML
     public void onCancel(ActionEvent ae) {
         if (toSend != null) {
@@ -316,8 +391,7 @@ public class InGameController {
                     if (newValue != null) {
                         // Received the next turn json object.
                         //Handle game ends.
-                        if (newValue.getString("playerStatus").equals("E")) {
-                            System.out.println(newValue);
+                        if (gameInfo.getPlayerStatus().equals("E")) {
                             // Create a message box.
                             //Create a wait box.
                             Stage stage = App.createChildStage(primaryStage, "Game ends");
@@ -382,8 +456,7 @@ public class InGameController {
                                     primaryStage.setScene(loginScene);
                                 }
                             });
-                            stage.show();
-                        } else if (newValue.getString("playerStatus").equals("L")) {
+                        } else if (gameInfo.getPlayerStatus().equals("L")) {
                             gameInfo = new GameInfo(newValue);
                             setPlayerInfo();
                             try {
