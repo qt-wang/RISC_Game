@@ -102,8 +102,8 @@ public class Server {
         int count = 0;
         for (int i = 0; i < games.size(); i++) {
             if (!games.get(i).isGameFull() && !inGames.contains(games.get(i))) {
+                object.put(Integer.toString(count), games.get(i).presentGameInfo());
                 count += 1;
-                object.put(Integer.toString(i), games.get(i).presentGameInfo());
             }
         }
         object.put("numberOfGames", count);
@@ -186,10 +186,9 @@ public class Server {
                     break;
                 }
                 case "joinGame": {
-                    // TODO: Change this logic for other phases.
                     String providedPassword = obj.getString("password");
                     int gameId = obj.getInt("gameId");
-                    String reason = null; //addPlayerToGame(providedPassword, gameId, socket, jc);
+                    String reason = null;
                     String success = checkValidOpenGame(providedPassword, gameId);
                     if (success != null) {
                         reason = success;
@@ -214,39 +213,44 @@ public class Server {
                     }
                     // Player in game. need to check it.
 
-                    synchronized (game) {
-                        game.getCurrentWaitGroup().decrease();
-                        // If the game is not started yet!
-                        if (game.canGameStart()) {
-                            startGame(game);
-                        }
-                        // If game already starts, just disconnect from the server.
-                        if (game.getCurrentWaitGroup().getState()) {
-                            // Disconnect from the thread.
-                            // We should also free the previous waiting player.
-                            this.running = false;
-                            for (RequestHandleTask t : waitClients.get(game)) {
-                                t.running = false;
-                            }
-                            waitClients.put(game, new LinkedList<>());
-                        } else {
-                            // Add it to the wait group.
-                            currentGame = game;
-                            synchronized (this) {
-                                if (!waitClients.containsKey(game)) {
+                    synchronized (RequestHandleTask.class) {
+                        synchronized (game) {
+                            game.getCurrentWaitGroup().decrease();
+                            // If the game is not started yet!
+                            // If game already starts, just disconnect from the server.
+                            if (game.getCurrentWaitGroup().getState()) {
+                                // Disconnect from the thread.
+                                // We should also free the previous waiting player.
+                                synchronized (Server.class) {
+                                    this.running = false;
+                                    for (RequestHandleTask t : waitClients.get(game)) {
+                                        t.currentGame = null;
+                                        t.running = false;
+                                    }
                                     waitClients.put(game, new LinkedList<>());
                                 }
-                                waitClients.get(game).add(this);
+                            } else {
+                                // Add it to the wait group.
+                                currentGame = game;
+                                synchronized (Server.class) {
+                                    if (!waitClients.containsKey(game)) {
+                                        waitClients.put(game, new LinkedList<>());
+                                    }
+                                    waitClients.get(game).add(this);
+                                }
                             }
+                            if (game.canGameStart()) {
+                                startGame(game);
+                            }
+                            if (reason == null) {
+                                // We should not monitor on this port anymore.
+                                JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                                jc.send(response);
+                            } else {
+                                jc.sendServerInvalidResponse(reason);
+                            }
+                            break;
                         }
-                        if (reason == null) {
-                            // We should not monitor on this port anymore.
-                            JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
-                            jc.send(response);
-                        } else {
-                            jc.sendServerInvalidResponse(reason);
-                        }
-                        break;
                     }
                 }
                 case "cancelLogIn": {
@@ -289,20 +293,29 @@ public class Server {
                         handleJSONObject(obj);
                     }
                     // Check if the wait game can be done.
-                    if (currentGame != null) {
-                        // check if it is ready.
-                        synchronized (currentGame) {
-                            if (currentGame.getCurrentWaitGroup().getState()) {
-                                // it is done.
-                                // Add all the players into the game.
-                                this.running = false;
-                                synchronized (this) {
-                                    for (RequestHandleTask t : waitClients.get(game)) {
-                                        t.running = false;
+                    synchronized (RequestHandleTask.class) {
+                        if (!this.running) {
+                            break;
+                        }
+                        if (currentGame != null) {
+                            // check if it is ready.
+                            synchronized (currentGame) {
+                                synchronized (Server.class) {
+                                    if (currentGame.getCurrentWaitGroup() == null) {
+                                        break;
+                                    } else {
+                                        if (currentGame.getCurrentWaitGroup().getState()) {
+                                            // it is done.
+                                            // Add all the players into the game.
+                                            this.running = false;
+                                            for (RequestHandleTask t : waitClients.get(game)) {
+                                                t.running = false;
+                                            }
+                                            waitClients.put(game, new LinkedList<>());
+                                            currentGame = null;
+                                        }
                                     }
-                                    waitClients.put(game, new LinkedList<>());
                                 }
-                                currentGame = null;
                             }
                         }
                     }
@@ -324,7 +337,7 @@ public class Server {
     /**
      * Construct a server.
      *
-     * @param port    The port the server is listening for.
+     * @param port The port the server is listening for.
      * @throws IOException
      */
     public Server(int port, PasswordGenerator serverPasswordGenerator) throws IOException {

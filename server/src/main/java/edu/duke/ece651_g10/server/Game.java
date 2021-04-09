@@ -51,7 +51,7 @@ public class Game implements Runnable {
 
     private OrderProcessor orderProcessor;
 
-    private WaitGroup currentWaitGroup;
+    private volatile WaitGroup currentWaitGroup;
 
     /**
      * These two variables keep the game states.
