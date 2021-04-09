@@ -760,7 +760,7 @@ public class Game implements Runnable {
             //When this is done.
             orderProcessor.executeEndTurnOrders();
             //TODO:change this back.
-            //playMap.addUnitToEachTerritory();
+            playMap.addUnitToEachTerritory();
             updatePlayerInfo();
             //Update player's food resource and technology resource.
             playMap.updatePlayerResource();
