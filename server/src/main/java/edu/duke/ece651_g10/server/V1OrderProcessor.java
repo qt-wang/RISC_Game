@@ -145,6 +145,7 @@ public class V1OrderProcessor implements OrderProcessor {
         order.execute();
       }
     }
+    upgradeTechInOneTurn.clear();
   }
 
   /**
