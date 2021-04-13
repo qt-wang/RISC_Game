@@ -134,7 +134,6 @@ public class Server {
         Boolean running;
         Game currentGame;
 
-        //TODO: later abstract out this as a method?
         private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
 

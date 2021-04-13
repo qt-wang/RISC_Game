@@ -13,7 +13,6 @@ public class V2ServerPasswordGenerator implements  PasswordGenerator{
     }
 
     @Override
-    //TODO: Implementation.
     public String generate() {
         return Integer.toString(password++);
     }

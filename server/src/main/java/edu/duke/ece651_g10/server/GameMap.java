@@ -74,6 +74,18 @@ public interface GameMap {
      */
     public void updatePlayerResource();
 
+    /**
+     * Decrease the cloak last time for each territory.
+     */
+    public void decreaseCloakLastTime();
+
+    /**
+     * Return true if the territory is visible to the player player.
+     * @param p The requested player.
+     * @param territory The territory.
+     * @return True if the territory is visible to the player.
+     */
+    public boolean visibleToPlayer(Player p, Territory territory);
 }
 
 

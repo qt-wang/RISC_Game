@@ -2,6 +2,7 @@ package edu.duke.ece651_g10.server;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -23,6 +24,7 @@ public interface Territory {
      */
     public void addNeighbour(Territory neighbour);
 
+
     /**
      * Set the territory's unit number to unit.
      *
@@ -33,7 +35,7 @@ public interface Territory {
     /**
      * Increase the owner's soldier number by unit.
      *
-     * @param unit The number of units to increase.
+     * @param unit  The number of units to increase.
      * @param level The level of the unit.
      */
     public void increaseUnit(int unit, int level);
@@ -42,7 +44,7 @@ public interface Territory {
     /**
      * Decrease the owner's soldier number by unit.
      *
-     * @param unit The number of units to decrease.
+     * @param unit  The number of units to decrease.
      * @param level The level to decrease.
      */
     public void decreaseUnit(int unit, int level);
@@ -120,7 +122,8 @@ public interface Territory {
 
     /**
      * Get how many units in specific level.
-     * @param level  The level for units.  level in the range [0, 6]
+     *
+     * @param level The level for units.  level in the range [0, 6]
      * @return The number of units in this level.
      */
     public int getUnitNumber(int level);
@@ -128,23 +131,79 @@ public interface Territory {
 
     /**
      * Get the army from territory with level specified by "level".
+     *
      * @param level The level of army
-     * @return  The army object.
+     * @return The army object.
      */
     public Army getArmyWithLevel(int level);
 
     /**
      * Present the information of this territory.
+     *
      * @return The json object that represents the territory's game info.
      */
     public JSONObject presentTerritoryInformation();
 
 
     /**
+     * Present the information of this territory.
+     *
+     * @param player The player to display the information to.
+     * @return The json object that represents the territory's game info.
+     */
+    public JSONObject presentTerritoryInformation(Player player);
+
+
+    /**
+     * Add a enemy spy to the territory.
+     *
+     * @param spy The spy to be added.
+     */
+    public void addEnemySpy(Spy spy);
+
+    /**
+     * Get the oldView from the territory for player.
+     * If not exist, return null.
+     * @return
+     */
+    public JSONObject getOldView(Player player);
+
+    /**
+     * Remove a spy from the current territory.
+     *
+     * @param spy The spy to be removed from the list.
+     */
+    public void decreaseSpy(Spy spy);
+
+    /**
      * Return all the territories belong to the owner that are neighbor to the current player.
+     *
      * @return A set of territories that belong to the owner.
      */
     public Set<Territory> getNeighborBelongToOwner();
 
+    /**
+     * Check if the territory is hidden or not.
+     *
+     * @return True if the territory is hidden.
+     */
+    public boolean isHidden();
 
+    /**
+     * Decrease the cloak's last round.
+     */
+    public void decreaseCloakLastTime();
+
+    /**
+     * Cloak the territory area.
+     */
+    public void getCloaked();
+
+
+    /**
+     * Check if the player 'p' has a spy within the territory.
+     * @param p The player.
+     * @return True if the player p has a spy within the territory.
+     */
+    public boolean spyInTerritory(Player p);
 }

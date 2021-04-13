@@ -114,6 +114,57 @@ public class V1GameMap implements GameMap {
     }
 
     @Override
+    public void decreaseCloakLastTime() {
+        for (Territory t: territories) {
+            t.decreaseCloakLastTime();
+        }
+    }
+
+    //TODO:Implement
+    /**
+     * Check if the territory is the neighbor land to player p.
+     * @param p    The checked player.
+     * @param territory   The checked territory.
+     * @return True if the territory is the neighbor land of player p.
+     */
+    boolean isNeighborToTerritory(Player p, Territory territory) {
+        for (Territory t: getTerritoriesForPlayer(p)) {
+            if (t.getNeighbours().contains(territory)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //TODO:Implement, test and think again.
+    @Override
+    public boolean visibleToPlayer(Player p, Territory territory) {
+        if (territory.getOwner() == p) {
+            return true;
+        }
+        if (territory.spyInTerritory(p)) {
+            return true;
+        }
+        if (isNeighborToTerritory(p, territory)) {
+            if (territory.isHidden()) {
+                if (territory.getOldView(p) != null) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            if (territory.getOldView(p) != null) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    @Override
     public Set<Territory> getTerritoriesNotBelongToPlayer(Player p) {
         Set<Territory> result = new HashSet<>();
         for (Territory t: territories) {

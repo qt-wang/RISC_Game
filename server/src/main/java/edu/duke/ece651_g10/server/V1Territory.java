@@ -31,7 +31,6 @@ public class V1Territory implements Territory {
 
     private final String name;
     private Player owner;
-    private HashMap<Player, Integer> units;
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
@@ -43,6 +42,16 @@ public class V1Territory implements Territory {
     private int foodResourceGenerationRate;
     private int technologyResourceGenerationRate;
     LinkedList<Army> armies;
+
+    // Version 3 variables.
+    Set<Spy> ownedSpies;
+    Set<Spy> enemySpies;
+    //TODO: Update the oldViews at the beginning of the initialization.
+    HashMap<Player, JSONObject> oldViews;
+    //TODO: If user use the command, then set this number to 4 (it will be automatically decreased at the end of turn.)
+    //If this number is 0, then this territory is not hidden.
+    private int hiddenFromOthers;
+
 
     @Override
     public void setOwner(Player player) {
@@ -70,12 +79,15 @@ public class V1Territory implements Territory {
     public V1Territory(String name) {
         this.name = name;
         neighbours = new HashSet<>();
-        units = new HashMap<>();
         size = 0;
         foodResourceGenerationRate = 0;
         technologyResourceGenerationRate = 0;
         armies = new LinkedList<>();
         initiateArmies();
+        this.ownedSpies = new HashSet<>();
+        this.enemySpies = new HashSet<>();
+        this.oldViews = new HashMap<>();
+        this.hiddenFromOthers = 0;
     }
 
 
@@ -92,6 +104,7 @@ public class V1Territory implements Territory {
         }
         return sum;
     }
+
 
     @Override
     public Set<Territory> getNeighbours() {
@@ -118,6 +131,55 @@ public class V1Territory implements Territory {
         return result;
     }
 
+
+
+    /**
+     * Check if the player 'p' has a spy within the territory.
+     * @param p The player.
+     * @return True if the player p has a spy within the territory.
+     */
+    public boolean spyInTerritory(Player p) {
+        for (Spy spy: enemySpies) {
+            if (spy.getOwner() == p) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //TODO: Implement
+    @Override
+    public JSONObject presentTerritoryInformation(Player player) {
+        return null;
+    }
+
+    @Override
+    public void addEnemySpy(Spy spy) {
+        enemySpies.add(spy);
+    }
+
+    //TODO:Need test.
+    @Override
+    public JSONObject getOldView(Player player) {
+        if (oldViews.containsKey(player)) {
+            return oldViews.get(player);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void decreaseSpy(Spy spy) {
+        if (ownedSpies.contains(spy)) {
+            ownedSpies.remove(spy);
+            return;
+        }
+        if (enemySpies.contains(spy)) {
+            enemySpies.remove(spy);
+        }
+    }
+
+
     @Override
     public Set<Territory> getNeighborBelongToOwner() {
         Set<Territory> result = new HashSet<>();
@@ -128,6 +190,24 @@ public class V1Territory implements Territory {
         }
         return result;
     }
+
+    @Override
+    public boolean isHidden() {
+        return !(this.hiddenFromOthers == 0);
+    }
+
+    @Override
+    public void decreaseCloakLastTime() {
+        if (this.hiddenFromOthers != 0) {
+            this.hiddenFromOthers -= 1;
+        }
+    }
+
+    @Override
+    public void getCloaked() {
+        this.hiddenFromOthers += 4;
+    }
+
 
     @Override
     public void addNeighbour(Territory neighbour) {

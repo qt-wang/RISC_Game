@@ -684,20 +684,20 @@ public class Game implements Runnable {
         // All threads has finished the execution of the units distribution.
         while ((winner = checkGameEnds()) == null) {
             // We create multiple threads to tell the user what to do.
-            System.out.println("Ready to play the turn");
+            //System.out.println("Ready to play the turn");
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
             playMap.addUnitToEachTerritory();
             updatePlayerInfo();
             //Update player's food resource and technology resource.
+            playMap.decreaseCloakLastTime();
             playMap.updatePlayerResource();
             for (Player p : players.values()) {
                 p.setCanUpgradeInThisTurn(true);
             }
         }
         gameEnds = true;
-        //TODO:
         String message = "Game ends, the winner is player " + winner.getPlayerID();
         logOutForAllPlayers();
         for (Player p : players.values()) {

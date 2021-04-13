@@ -184,7 +184,6 @@ public class Player {
     }
     this.connectedSocket = socket;
     this.jCommunicate = jc;
-    // TODO: Change the default value?
     this.foodResourceTotal = 0;
     this.technologyResourceTotal = 0;
     this.technologyLevel = 1;
