@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -136,6 +138,30 @@ public class V1GameMap implements GameMap {
         return false;
     }
 
+    //TODO: Need test.
+    /**
+     * Check if the player p can see the newest view of a territory.
+     * @param p         The player.
+     * @param territory The territory
+     * @return True if the player can see the newest view of the territory.
+     */
+    private boolean canSeeNewView(Player p, Territory territory) {
+        if (territory.getOwner() == p) {
+            return true;
+        }
+        if (territory.spyInTerritory(p)) {
+            return true;
+        }
+        if (isNeighborToTerritory(p, territory)) {
+            if (territory.isHidden()) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //TODO:Implement, test and think again.
     @Override
     public boolean visibleToPlayer(Player p, Territory territory) {
@@ -164,6 +190,38 @@ public class V1GameMap implements GameMap {
         }
     }
 
+    //TODO: Implement and test.
+    @Override
+    public JSONObject getTerritoryInformation(Player p, Territory territory) {
+        JSONObject object = territory.presentTerritoryInformation();
+        if (visibleToPlayer(p, territory)) {
+            if (canSeeNewView(p, territory)) {
+                object.put("visible", true);
+                object.put("isNew", true);
+            } else {
+                // Get the old view.
+                object = territory.getOldView(p);
+                object.put("visible", true);
+                object.put("isNew", false);
+            }
+        } else {
+            object.put("visible", false);
+            object.put("isNew", false);
+        }
+        return object;
+    }
+
+    //TODO: Test
+    @Override
+    public void updatePlayerView(Player player) {
+        for (Territory t: territories) {
+            if (canSeeNewView(player, t)) {
+                // Update its view.
+                t.setPlayerView(player, t.presentTerritoryInformation());
+            }
+        }
+    }
+
     @Override
     public Set<Territory> getTerritoriesNotBelongToPlayer(Player p) {
         Set<Territory> result = new HashSet<>();
@@ -174,6 +232,8 @@ public class V1GameMap implements GameMap {
         }
         return result;
     }
+
+
 }
 
 

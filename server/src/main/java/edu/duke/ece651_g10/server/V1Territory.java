@@ -147,11 +147,23 @@ public class V1Territory implements Territory {
         return false;
     }
 
-    //TODO: Implement
     @Override
-    public JSONObject presentTerritoryInformation(Player player) {
-        return null;
+    public void addOwnedSpy(Spy spy) {
+        if (!this.ownedSpies.contains(spy)) {
+            this.ownedSpies.add(spy);
+        }
     }
+
+    @Override
+    public void setPlayerView(Player player, JSONObject view) {
+        oldViews.put(player, view);
+    }
+
+//
+//    @Override
+//    public JSONObject presentTerritoryInformation(Player player) {
+//        return null;
+//    }
 
     @Override
     public void addEnemySpy(Spy spy) {
@@ -178,6 +190,7 @@ public class V1Territory implements Territory {
             enemySpies.remove(spy);
         }
     }
+
 
 
     @Override

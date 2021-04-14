@@ -145,13 +145,13 @@ public interface Territory {
     public JSONObject presentTerritoryInformation();
 
 
-    /**
-     * Present the information of this territory.
-     *
-     * @param player The player to display the information to.
-     * @return The json object that represents the territory's game info.
-     */
-    public JSONObject presentTerritoryInformation(Player player);
+//    /**
+//     * Present the information of this territory.
+//     *
+//     * @param player The player to display the information to.
+//     * @return The json object that represents the territory's game info.
+//     */
+//    public JSONObject presentTerritoryInformation(Player player);
 
 
     /**
@@ -206,4 +206,19 @@ public interface Territory {
      * @return True if the player p has a spy within the territory.
      */
     public boolean spyInTerritory(Player p);
+
+
+    /**
+     * Add a spy into the owned spy set.
+     * @param spy  The added spy.
+     */
+    public void addOwnedSpy(Spy spy);
+
+
+    /**
+     * Setup the oldView's view for player p.
+     * @param player   The player to setup the view.
+     * @param view     The view.
+     */
+    public void setPlayerView(Player player, JSONObject view);
 }

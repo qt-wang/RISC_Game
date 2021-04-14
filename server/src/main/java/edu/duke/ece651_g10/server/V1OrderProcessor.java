@@ -17,6 +17,7 @@ public class V1OrderProcessor implements OrderProcessor {
     upgradeTechInOneTurn = new Vector<>();
   }
 
+  //TODO: Change spy units after the owner of the territory changed.
   /**
    * If the order is a move order or upgrade unit order, execute it immediately. If the order is an
    * attack order or upgrade technology order, store it into a container.

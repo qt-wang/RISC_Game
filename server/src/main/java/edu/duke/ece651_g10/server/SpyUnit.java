@@ -19,11 +19,17 @@ public class SpyUnit implements Spy{
         return this.currentPosition;
     }
 
+
     @Override
     public void moveTo(Territory territory) {
         if (territory != currentPosition) {
             currentPosition.decreaseSpy(this);
-            territory.addEnemySpy(this);
+
+            if (territory.getOwner() == owner) {
+                territory.addOwnedSpy(this);
+            } else {
+                territory.addEnemySpy(this);
+            }
             this.currentPosition = territory;
         }
     }

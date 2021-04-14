@@ -187,8 +187,9 @@ public class Game implements Runnable {
 
     /**
      * Send back the invalid response back to the server.
-     * @param playerId   Which player to send back the invalid response.
-     * @param reason     The reason why it is invalid.
+     *
+     * @param playerId Which player to send back the invalid response.
+     * @param reason   The reason why it is invalid.
      * @throws IOException
      */
     private void sendServerInvalidResponse(int playerId, String reason) throws IOException {
@@ -307,8 +308,8 @@ public class Game implements Runnable {
         Player currentPlayer = players.get(playerId);
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
-        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, currentPlayer);
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
         boolean receiveCommit = false;
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
@@ -334,7 +335,7 @@ public class Game implements Runnable {
                 }
                 if (message == null) {
                     orderProcessor.acceptOrder(order);
-                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
                 } else {
                     sendServerInvalidResponse(playerId, message);
                 }
@@ -342,6 +343,7 @@ public class Game implements Runnable {
         }
     }
 
+    //TODO: test new views.
     /**
      * generate the json object which describe the territories information about it.
      * The key is the territories' name, the value is the territories' information.
@@ -349,10 +351,10 @@ public class Game implements Runnable {
      * @param territories The territories needed.
      * @return
      */
-    public static JSONObject generateTerritoriesInfo(Set<Territory> territories) {
+    public JSONObject generateTerritoriesInfo(Set<Territory> territories, Player player) {
         JSONObject result = new JSONObject();
         for (Territory t : territories) {
-            result.put(t.getName(), t.presentTerritoryInformation());
+            result.put(t.getName(), playMap.getTerritoryInformation(player, t));
         }
         return result;
     }
@@ -405,6 +407,7 @@ public class Game implements Runnable {
 
     /**
      * Merge two json object into one, with all the keys and values from Obj1 and Obj2
+     *
      * @param Obj1 The first JSON object to be merged.
      * @param Obj2 The second JSON object to be merged.
      * @return The merged JSON object.
@@ -434,8 +437,8 @@ public class Game implements Runnable {
         // Get fixed territories, and changeable territories.
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
-        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, players.get(playerId));
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
@@ -458,7 +461,7 @@ public class Game implements Runnable {
                 if (message == null) {
                     orderProcessor.acceptOrder(order);
                     // Send upgrade information back to the client.
-                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
                 } else {
                     sendServerInvalidResponse(playerId, message);
                 }
@@ -588,7 +591,7 @@ public class Game implements Runnable {
             waitGroup = new WaitGroup(players.size());
             this.currentWaitGroup = waitGroup;
         }
-        for (Map.Entry<Integer, Player> entry: players.entrySet()) {
+        for (Map.Entry<Integer, Player> entry : players.entrySet()) {
             // We create multiple tasks here.
             Player currentPlayer = entry.getValue();
             currentPlayer.setWaitGroup(waitGroup);
@@ -655,6 +658,16 @@ public class Game implements Runnable {
         }
     }
 
+    //TODO: Test
+    /**
+     * Update player's old view, change the default value in each territory.
+     *
+     */
+    void updatePlayerView() {
+        for (Player p: players.values()) {
+            playMap.updatePlayerView(p);
+        }
+    }
 
     public int getNumPlayers() {
         return players.size();
@@ -680,6 +693,7 @@ public class Game implements Runnable {
         assignInitialTerritories();
         runTasksForAllPlayer(getUnitsDistributionTask());
         System.out.println("Initial units distribution done.");
+        updatePlayerView();
         Player winner = null;
         // All threads has finished the execution of the units distribution.
         while ((winner = checkGameEnds()) == null) {
@@ -696,6 +710,7 @@ public class Game implements Runnable {
             for (Player p : players.values()) {
                 p.setCanUpgradeInThisTurn(true);
             }
+            updatePlayerView();
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -703,8 +718,8 @@ public class Game implements Runnable {
         for (Player p : players.values()) {
             Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
             Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
-            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n",message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
+            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, p);
+            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories, p));
             try {
                 p.getJCommunicator().send(object);
             } catch (IOException exception) {
