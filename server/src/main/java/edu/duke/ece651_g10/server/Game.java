@@ -105,6 +105,10 @@ public class Game implements Runnable {
         return this.gameId;
     }
 
+  public boolean getGameEnd() {
+    return this.gameEnds;
+  }
+
     /**
      * Add a new player to this game.
      *
