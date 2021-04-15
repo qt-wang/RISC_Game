@@ -61,7 +61,8 @@ public class V1GameMap implements GameMap {
         return null;
     }
 
-  public HashSet<Territory> getAllTerritoty() {
+  @Override
+  public HashSet<Territory> getAllTerritory() {
     return territories;
   }
 
