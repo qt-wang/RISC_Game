@@ -131,6 +131,14 @@ public class Game implements Runnable {
         return this.gameId;
     }
 
+  public boolean getGameEnd() {
+    return this.gameEnds;
+  }
+
+  public GameMap getGameMap() {
+    return this.playMap;
+  }
+
     /**
      * Add a new player to this game.
      *
@@ -146,6 +154,9 @@ public class Game implements Runnable {
         }
     }
 
+  public HashMap<Integer, Player> getAllPlayers() {
+    return this.players;
+  }
 
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
