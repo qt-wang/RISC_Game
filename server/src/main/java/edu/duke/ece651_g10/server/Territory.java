@@ -164,6 +164,7 @@ public interface Territory {
     /**
      * Get the oldView from the territory for player.
      * If not exist, return null.
+     *
      * @return
      */
     public JSONObject getOldView(Player player);
@@ -202,6 +203,7 @@ public interface Territory {
 
     /**
      * Check if the player 'p' has a spy within the territory.
+     *
      * @param p The player.
      * @return True if the player p has a spy within the territory.
      */
@@ -210,15 +212,17 @@ public interface Territory {
 
     /**
      * Add a spy into the owned spy set.
-     * @param spy  The added spy.
+     *
+     * @param spy The added spy.
      */
     public void addOwnedSpy(Spy spy);
 
 
     /**
      * Setup the oldView's view for player p.
-     * @param player   The player to setup the view.
-     * @param view     The view.
+     *
+     * @param player The player to setup the view.
+     * @param view   The view.
      */
     public void setPlayerView(Player player, JSONObject view);
 }

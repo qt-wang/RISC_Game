@@ -47,8 +47,6 @@ public class Game implements Runnable {
 
     private RuleChecker upgradeUnitChecker;
 
-    private GameBoardView view;
-
     private OrderProcessor orderProcessor;
 
     private volatile WaitGroup currentWaitGroup;
@@ -85,7 +83,6 @@ public class Game implements Runnable {
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
         this.attackRuleChecker = attackRuleChecker;
-        this.view = view;
         this.orderProcessor = orderProcessor;
         this.gameEnds = false;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -99,6 +96,35 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
+    }
+
+    /**
+     * Create a test game, not for real use.
+     * This cannot support real use.
+     * @param map
+     * @param moveRuleChecker
+     * @param attackRuleChecker
+     * @param orderProcessor
+     * @param numUnitPerPlayer
+     * @param numPlayers
+     * @param upgradeTechChecker
+     * @param upgradeUnitChecker
+     */
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
+        this.playMap = map;
+        this.players = new HashMap<>();
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
+        this.orderProcessor = orderProcessor;
+        this.gameEnds = false;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        this.numPlayers = numPlayers;
+        synchronized (Game.class) {
+            this.gameId = gameIdentifier++;
+        }
+        this.gameBegins = false;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
     }
 
     public int getGameId() {
@@ -344,6 +370,7 @@ public class Game implements Runnable {
     }
 
     //TODO: test new views.
+
     /**
      * generate the json object which describe the territories information about it.
      * The key is the territories' name, the value is the territories' information.
@@ -659,12 +686,12 @@ public class Game implements Runnable {
     }
 
     //TODO: Test
+
     /**
      * Update player's old view, change the default value in each territory.
-     *
      */
     void updatePlayerView() {
-        for (Player p: players.values()) {
+        for (Player p : players.values()) {
             playMap.updatePlayerView(p);
         }
     }

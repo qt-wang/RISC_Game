@@ -7,4 +7,11 @@ public interface GameFactory {
 
     public Game createFixedGame(int people);
 
+    /**
+     * Create a test game for the purpose of testing persistence.
+     * Test whether all the attributes of a game can be saved into the db.
+     * @param people
+     * @return
+     */
+    public Game createTestGame(int people);
 }
