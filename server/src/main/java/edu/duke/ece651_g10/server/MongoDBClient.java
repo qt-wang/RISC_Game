@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import static com.mongodb.client.model.Filters.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,11 +11,10 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import static com.mongodb.client.model.Filters.*;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.json.JSONObject;
 
 /**
  * The class to update the game and user information into database
@@ -37,6 +38,8 @@ public class MongoDBClient {
     try (MongoClient mongoClient = MongoClients.create(connectionString)) {
       MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
       MongoCollection<Document> gameCollection = riskDB.getCollection("games");
+      Bson filter = eq("game_id", game.getGameId());
+      gameCollection.deleteMany(filter);
       Document gameDoc = new Document("_id", new ObjectId());
       gameDoc.append("game_id", game.getGameId()).append("end_game", game.getGameEnd())
           .append("num_players", game.getNumPlayers()).append("territories", generateTerritoryList(game.getGameMap()))
