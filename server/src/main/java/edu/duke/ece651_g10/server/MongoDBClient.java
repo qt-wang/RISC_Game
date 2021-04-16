@@ -82,7 +82,7 @@ public class MongoDBClient {
    */
   private List<Document> generateArmyDoc(Territory territory) {
     List<Document> armyDoc = new ArrayList<Document>();
-    for (int i = 1; i <= 6; i++) {
+    for (int i = 0; i <= 6; i++) {
       armyDoc.add(new Document(String.valueOf(i), territory.getUnitNumber(i)));
     }
     return armyDoc;
@@ -110,19 +110,11 @@ public class MongoDBClient {
    */
   private Document generatePlayerDoc(Player player) {
     Document playerDoc = new Document("id", player.getPlayerID());
-    playerDoc.append("food", player.getFoodResourceTotal()).append("tech", player.getTechnologyResourceTotal()).append("tech_level", player.getTechnologyLevel()).append("can_upgrade", player.getCanUpgradeInThisTurn());
+    playerDoc.append("food", player.getFoodResourceTotal()).append("tech", player.getTechnologyResourceTotal())
+        .append("tech_level", player.getTechnologyLevel()).append("can_upgrade", player.getCanUpgradeInThisTurn());
     return playerDoc;
   }
 
+  
+
 }
-
-
-
-
-
-
-
-
-
-
-
