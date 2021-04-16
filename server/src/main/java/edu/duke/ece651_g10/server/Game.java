@@ -511,7 +511,7 @@ public class Game implements Runnable {
      * Assign territories to each player, changed the attributes for the territories.
      * Each player shall pick (or be assigned) one such group as her starting territories.
      */
-    private void assignInitialTerritories() {
+    public void assignInitialTerritories() {
         HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
         int group = 1;
         // Iterate through the players.

@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import static com.mongodb.client.model.Filters.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +13,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 /**
@@ -35,9 +38,11 @@ public class MongoDBClient {
     try (MongoClient mongoClient = MongoClients.create(connectionString)) {
       MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
       MongoCollection<Document> gameCollection = riskDB.getCollection("games");
+      Bson filter = eq("game_id", game.getGameId());
+      gameCollection.deleteMany(filter);
       Document gameDoc = new Document("_id", new ObjectId());
       gameDoc.append("game_id", game.getGameId()).append("end_game", game.getGameEnd())
-          .append("territories", generateTerritoryList(game.getGameMap()))
+          .append("num_players", game.getNumPlayers()).append("territories", generateTerritoryList(game.getGameMap()))
           .append("players", generatePlayerList(game.getAllPlayers()));
 
       gameCollection.insertOne(gameDoc);
@@ -69,7 +74,7 @@ public class MongoDBClient {
     Document territoryDoc = new Document("name", territory.getName());
     territoryDoc.append("size", territory.getSize()).append("food_rate", territory.getFoodResourceGenerationRate())
         .append("tech_rate", territory.getTechnologyResourceGenerationRate())
-        .append("owener", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory));
+        .append("owner", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory));
     // TODO:append neighbours
     return territoryDoc;
   }
@@ -78,12 +83,12 @@ public class MongoDBClient {
    * Generate one territory army documentation
    *
    * @param territory The territory in the game
-   * @return return the list of Document descirbe the army
+   * @return return the Document descirbe the army
    */
-  private List<Document> generateArmyDoc(Territory territory) {
-    List<Document> armyDoc = new ArrayList<Document>();
-    for (int i = 1; i <= 6; i++) {
-      armyDoc.add(new Document(String.valueOf(i), territory.getUnitNumber(i)));
+  private Document generateArmyDoc(Territory territory) {
+    Document armyDoc = new Document();
+    for (int i = 0; i <= 6; i++) {
+      armyDoc.append(String.valueOf(i), territory.getUnitNumber(i));
     }
     return armyDoc;
   }
@@ -110,19 +115,85 @@ public class MongoDBClient {
    */
   private Document generatePlayerDoc(Player player) {
     Document playerDoc = new Document("id", player.getPlayerID());
-    playerDoc.append("food", player.getFoodResourceTotal()).append("tech", player.getTechnologyResourceTotal()).append("tech_level", player.getTechnologyLevel()).append("can_upgrade", player.getCanUpgradeInThisTurn());
+    playerDoc.append("food", player.getFoodResourceTotal()).append("tech", player.getTechnologyResourceTotal())
+        .append("tech_level", player.getTechnologyLevel()).append("can_upgrade", player.getCanUpgradeInThisTurn())
+        .append("lost", player.getIsLost());
     return playerDoc;
   }
 
+  /**
+   * Reconstruct the game from the database
+   *
+   * @return the arraylist of the game objects
+   */
+  public ArrayList<Game> reconstructGameFromDatabase() {
+    try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+      MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
+      MongoCollection<Document> gameCollection = riskDB.getCollection("games");
+      ArrayList<Game> gameList = new ArrayList<Game>();
+      List<Document> gameListDoc = gameCollection.find(gte("game_id", -1)).into(new ArrayList<>());
+      for (Document d : gameListDoc) {
+        if ((boolean) (d.get("end_game")) == true) {
+          continue;
+        }
+        V2GameFactory gameFactory = new V2GameFactory(null);
+        Game game = gameFactory.createTestGame((int) d.get("num_players"));
+        game = reconstructPlayers(game, d);
+        game = reconstructTerritories(game, d);
+      }
+      return gameList;
+    }
+  }
+
+  /**
+   * Reconstruct the players
+   *
+   * @param game The game needs to reconstruct the players
+   * @param doc  the document that store the whole game info in the database
+   *             collection
+   * @return the players reconstructed game
+   */
+  private Game reconstructPlayers(Game game, Document doc) {
+    List<Document> playerList = (List<Document>) doc.get("players");
+    for (Document p : playerList) {
+      // TODO: Set up socket and jCommunicater
+      Player player = new Player(null, null);
+      player.setCanUpgradeInThisTurn(p.getBoolean("can_upgrade"));
+      player.setFoodResourceTotal(p.getInteger("food"));
+      player.setTechnologyResourceTotal(p.getInteger("tech"));
+      player.setTechnologyLevel(p.getInteger("tech_level"));
+      if (p.getBoolean("lost") == true) {
+        player.setIsLost();
+      }
+      // player.setPlayerId(p.getplayerId);
+      game.addPlayer(player);
+    }
+    return game;
+  }
+
+  /**
+   * Reconstruct the territories
+   *
+   * @param game The game needs to reconstruct the territories
+   * @param doc  the document that store the whole game info in the database
+   *             collection
+   * @return the territories reconstructed game
+   */
+  private Game reconstructTerritories(Game game, Document doc) {
+    List<Document> territoryList = (List<Document>) doc.get("territories");
+    GameMap gameMap = game.getGameMap();
+    for (Document t : territoryList) {
+      Territory territory = gameMap.getTerritory(t.getString("name"));
+      territory.setFoodResourceGenerationRate(t.getInteger("food_rate"));
+      territory.setTechnologyResourceGenerationRate(t.getInteger("tech_rate"));
+      territory.setSize(t.getInteger("size"));
+      territory.setOwner(game.getAllPlayers().get(t.getInteger("owner")));
+      Document army = (Document) t.get("army");
+      territory.setUnitNumber(0);
+      for (int i = 0; i <= 6; i++) {
+        territory.increaseUnit(army.getInteger(String.valueOf(i)), i);
+      }
+    }
+    return game;
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
