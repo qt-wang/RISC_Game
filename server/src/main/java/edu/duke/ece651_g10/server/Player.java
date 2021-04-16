@@ -146,6 +146,13 @@ public class Player {
   }
 
   /**
+   * Change the player's technology level by 1.
+   */
+  public void setTechnologyLevel(int level) {
+    this.technologyLevel = level;
+  }
+
+  /**
    * Mark the player as join the game.
    */
   public void joinGame() {
