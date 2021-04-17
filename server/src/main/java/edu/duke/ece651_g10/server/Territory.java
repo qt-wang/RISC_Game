@@ -170,6 +170,14 @@ public interface Territory {
      */
     public JSONObject getOldView(Player player);
 
+  /**
+     * Get all oldViews from the territory.
+     * If not exist, return null.
+     *
+     * @return HashMap of old views
+     */
+  public HashMap<Player, JSONObject> getAllOldView();
+
     /**
      * Remove a spy from the current territory.
      *

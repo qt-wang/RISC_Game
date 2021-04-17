@@ -190,6 +190,11 @@ public class V1Territory implements Territory {
         }
     }
 
+  @Override
+  public HashMap<Player, JSONObject> getAllOldView() {
+    return oldViews;
+  }
+
     @Override
     public void decreaseSpy(Spy spy) {
         if (ownedSpies.contains(spy)) {

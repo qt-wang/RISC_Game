@@ -135,6 +135,14 @@ public class Game implements Runnable {
     return this.gameEnds;
   }
 
+  public boolean getGameBegins() {
+    return this.gameBegins;
+  }
+
+  public void setGameBegins(boolean begin) {
+    this.gameBegins = begin;
+  }
+
   public GameMap getGameMap() {
     return this.playMap;
   }

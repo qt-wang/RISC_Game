@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.mongodb.client.MongoClient;
@@ -17,6 +18,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 
 /**
  * The class to update the game and user information into database
@@ -44,7 +46,8 @@ public class MongoDBClient {
       gameCollection.deleteMany(filter);
       Document gameDoc = new Document("_id", new ObjectId());
       gameDoc.append("game_id", game.getGameId()).append("end_game", game.getGameEnd())
-          .append("num_players", game.getNumPlayers()).append("territories", generateTerritoryList(game.getGameMap()))
+          .append("begin_game", game.getGameBegins()).append("num_players", game.getNumPlayers())
+          .append("territories", generateTerritoryList(game.getGameMap()))
           .append("players", generatePlayerList(game.getAllPlayers()));
 
       gameCollection.insertOne(gameDoc);
@@ -78,7 +81,8 @@ public class MongoDBClient {
         .append("tech_rate", territory.getTechnologyResourceGenerationRate())
         .append("owner", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory))
         .append("owned_spies", generateSpyDocList(territory.getOwnedSpy()))
-        .append("enemy_spies", generateSpyDocList(territory.getEnemySpy()));
+        .append("enemy_spies", generateSpyDocList(territory.getEnemySpy()))
+        .append("old_views", generateOldViewDoc(territory.getAllOldView()));
     return territoryDoc;
   }
 
@@ -109,6 +113,22 @@ public class MongoDBClient {
       spiesDoc.add(spyDoc);
     }
     return spiesDoc;
+  }
+
+  /**
+   * Generate one territory old views documentation
+   *
+   * @param the hash map for the old views for different player
+   * @return the list of document for the old views
+   */
+  private List<Document> generateOldViewDoc(HashMap<Player, JSONObject> oldViews) {
+    List<Document> oldViewsDoc = new ArrayList<Document>();
+    for (Map.Entry<Player, JSONObject> entry : oldViews.entrySet()) {
+      Document viewDoc = new Document("player_id", entry.getKey().getPlayerID()).append("view",
+          Document.parse(entry.getValue().toString()));
+      oldViewsDoc.add(viewDoc);
+    }
+    return oldViewsDoc;
   }
 
   /**
@@ -158,6 +178,7 @@ public class MongoDBClient {
         Game game = gameFactory.createTestGame((int) d.get("num_players"));
         game = reconstructPlayers(game, d);
         game = reconstructTerritories(game, d);
+        game.setGameBegins(d.getBoolean("begin_game"));
         gameList.add(game);
       }
       return gameList;
@@ -212,7 +233,26 @@ public class MongoDBClient {
       for (int i = 0; i <= 6; i++) {
         territory.increaseUnit(army.getInteger(String.valueOf(i)), i);
       }
+      List<Document> ownSpiesList = (List<Document>) t.get("owned_spies");
+      for (Document s : ownSpiesList) {
+        territory.addOwnedSpy(new SpyUnit(game.getAllPlayers().get(s.get("owner_id")), territory));
+      }
+      List<Document> enemySpiesList = (List<Document>) t.get("enemy_spies");
+      for (Document s : enemySpiesList) {
+        territory.addEnemySpy(new SpyUnit(game.getAllPlayers().get(s.get("owner_id")), territory));
+      }
+      List<Document> oldViewList = (List<Document>) t.get("old_views");
+      for (Document o : oldViewList) {
+        territory.setPlayerView(game.getAllPlayers().get(o.get("player_id")), new JSONObject(o.get("view", Document.class).toJson()));
+      }
     }
     return game;
   }
 }
+
+
+
+
+
+
+
