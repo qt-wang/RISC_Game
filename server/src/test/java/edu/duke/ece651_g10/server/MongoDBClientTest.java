@@ -1,5 +1,7 @@
 package edu.duke.ece651_g10.server;
 
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +17,6 @@ public class MongoDBClientTest {
     MongoDBClient mongoClient = new MongoDBClient(
         "mongodb+srv://g10:ece651@cluster0.jjos5.mongodb.net/ece651_risk?retryWrites=true&w=majority");
     mongoClient.addGame2DB(game);
-    mongoClient.reconstructGameFromDatabase();
+    ArrayList<Game> gameList = mongoClient.reconstructGameFromDatabase(null);
   }
 }
