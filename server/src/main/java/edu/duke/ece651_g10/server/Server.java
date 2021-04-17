@@ -36,6 +36,7 @@ public class Server {
     // Add a map from client to multiple games.
     HashMap<String, List<Player>> clientInfo;
 
+
     HashMap<String, Socket> clientSocket;
 
     /**

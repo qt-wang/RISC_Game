@@ -126,7 +126,7 @@ public class MongoDBClient {
    *
    * @return the arraylist of the game objects
    */
-  public ArrayList<Game> reconstructGameFromDatabase() {
+  public ArrayList<Game> reconstructGameFromDatabase(Server runServer) {
     try (MongoClient mongoClient = MongoClients.create(connectionString)) {
       MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
       MongoCollection<Document> gameCollection = riskDB.getCollection("games");
@@ -136,7 +136,7 @@ public class MongoDBClient {
         if ((boolean) (d.get("end_game")) == true) {
           continue;
         }
-        V2GameFactory gameFactory = new V2GameFactory(null);
+        V2GameFactory gameFactory = new V2GameFactory(runServer);
         Game game = gameFactory.createTestGame((int) d.get("num_players"));
         game = reconstructPlayers(game, d);
         game = reconstructTerritories(game, d);
