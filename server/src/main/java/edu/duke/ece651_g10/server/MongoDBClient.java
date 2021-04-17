@@ -1,11 +1,13 @@
 package edu.duke.ece651_g10.server;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gte;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -74,8 +76,9 @@ public class MongoDBClient {
     Document territoryDoc = new Document("name", territory.getName());
     territoryDoc.append("size", territory.getSize()).append("food_rate", territory.getFoodResourceGenerationRate())
         .append("tech_rate", territory.getTechnologyResourceGenerationRate())
-        .append("owner", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory));
-    // TODO:append neighbours
+        .append("owner", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory))
+        .append("owned_spies", generateSpyDocList(territory.getOwnedSpy()))
+        .append("enemy_spies", generateSpyDocList(territory.getEnemySpy()));
     return territoryDoc;
   }
 
@@ -91,6 +94,21 @@ public class MongoDBClient {
       armyDoc.append(String.valueOf(i), territory.getUnitNumber(i));
     }
     return armyDoc;
+  }
+
+  /**
+   * Generate one territory spies documentation
+   *
+   * @param spies The set of spies
+   * @return the list of documentation store the spies information
+   */
+  private List<Document> generateSpyDocList(Set<Spy> spies) {
+    List<Document> spiesDoc = new ArrayList<Document>();
+    for (Spy s : spies) {
+      Document spyDoc = new Document("owner_id", s.getOwner().getPlayerID());
+      spiesDoc.add(spyDoc);
+    }
+    return spiesDoc;
   }
 
   /**
@@ -140,6 +158,7 @@ public class MongoDBClient {
         Game game = gameFactory.createTestGame((int) d.get("num_players"));
         game = reconstructPlayers(game, d);
         game = reconstructTerritories(game, d);
+        gameList.add(game);
       }
       return gameList;
     }

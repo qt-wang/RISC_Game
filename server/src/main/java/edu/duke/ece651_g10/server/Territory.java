@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.server;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -176,6 +177,20 @@ public interface Territory {
      */
     public void decreaseSpy(Spy spy);
 
+  /**
+   * Get the owned spies in this territory
+   *
+   * @return return the spy hashset
+   */
+  public Set<Spy> getOwnedSpy();
+
+  /**
+   * Get the enemy spies in this territory
+   *
+   * @return return the spy hashset
+   */
+  public Set<Spy> getEnemySpy();
+  
     /**
      * Return all the territories belong to the owner that are neighbor to the current player.
      *

@@ -154,6 +154,16 @@ public class V1Territory implements Territory {
         }
     }
 
+  @Override
+  public Set<Spy> getOwnedSpy() {
+    return ownedSpies;
+  }
+
+  @Override
+  public Set<Spy> getEnemySpy() {
+    return enemySpies;
+  }
+
     @Override
     public void setPlayerView(Player player, JSONObject view) {
         oldViews.put(player, view);
