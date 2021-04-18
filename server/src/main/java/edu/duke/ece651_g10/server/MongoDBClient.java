@@ -51,6 +51,18 @@ public class MongoDBClient {
           .append("players", generatePlayerList(game.getAllPlayers()));
 
       gameCollection.insertOne(gameDoc);
+
+      filter = gte("static_game_id", -1);
+      gameCollection.deleteMany(filter);
+      Document gameIdDoc = new Document("_id", new ObjectId());
+      gameIdDoc.append("static_game_id", Game.gameIdentifier);
+      gameCollection.insertOne(gameIdDoc);
+
+      filter = gte("static_player_id", -1);
+      gameCollection.deleteMany(filter);
+      Document playerIdDoc = new Document("_id", new ObjectId());
+      playerIdDoc.append("static_player_id", Player.availableId);
+      gameCollection.insertOne(playerIdDoc);
     }
   }
 
@@ -181,6 +193,13 @@ public class MongoDBClient {
         game.setGameBegins(d.getBoolean("begin_game"));
         gameList.add(game);
       }
+
+      Document gameIdDoc = gameCollection.find(gte("static_game_id", -1)).first();
+      Game.gameIdentifier = gameIdDoc.getInteger("static_game_id");
+
+      Document playerIdDoc = gameCollection.find(gte("static_player_id", -1)).first();
+      Player.availableId = playerIdDoc.getInteger("static_player_id");
+
       return gameList;
     }
   }
@@ -243,16 +262,89 @@ public class MongoDBClient {
       }
       List<Document> oldViewList = (List<Document>) t.get("old_views");
       for (Document o : oldViewList) {
-        territory.setPlayerView(game.getAllPlayers().get(o.get("player_id")), new JSONObject(o.get("view", Document.class).toJson()));
+        JSONObject json = new JSONObject();
+        o.get("view", Document.class).forEach((prop, value) -> json.put(prop, value));
+        territory.setPlayerView(game.getAllPlayers().get(o.get("player_id")), json);
       }
     }
     return game;
   }
+
+  /**
+   * Add server information to database
+   *
+   * @param server The Server object contains infomation that will be uploaded to
+   *               database
+   */
+  public void addServer2DB(Server server) {
+    try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+      MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
+      MongoCollection<Document> serverCollection = riskDB.getCollection("server");
+      Bson filter = gte("static_passowrd", -1);
+      serverCollection.deleteMany(filter);
+      Document serverDoc = new Document("_id", new ObjectId());
+      serverDoc.append("static_password", Server.password)
+          .append("client_info", generateClientInfoDoc(server.getClientInfo()))
+          .append("client_games", generateClientGamesDoc(server.getClientGames()));
+
+      serverCollection.insertOne(serverDoc);
+    }
+  }
+
+  /**
+   * Generate the client information document
+   *
+   * @param clientInfo The clients' information with their password
+   * @return the client info document
+   */
+  private Document generateClientInfoDoc(HashMap<String, List<Player>> clientInfo) {
+    Document clientDoc = new Document();
+    for (Map.Entry<String, List<Player>> entry : clientInfo.entrySet()) {
+      ArrayList<Integer> playerIdList = new ArrayList<>();
+      for (Player p : entry.getValue()) {
+        playerIdList.add(p.getPlayerID());
+      }
+      clientDoc.append(entry.getKey(), playerIdList);
+    }
+    return clientDoc;
+  }
+
+  /**
+   * Generate the client game document
+   *
+   * @param gameInfo The clients' information with their password
+   * @return the game info document
+   */
+  private Document generateClientGamesDoc(HashMap<String, List<Game>> gameInfo) {
+    Document gameDoc = new Document();
+    for (Map.Entry<String, List<Game>> entry : gameInfo.entrySet()) {
+      ArrayList<Integer> gameIdList = new ArrayList<>();
+      for (Game g : entry.getValue()) {
+        gameIdList.add(g.getGameId());
+      }
+      gameDoc.append(entry.getKey(), gameIdList);
+    }
+    return gameDoc;
+  }
+
+  /**
+   * Reconstruct the server
+   * 
+   * @param server The server needs to be reconstructed
+   * @return The reconstructed server
+   */
+  public Server reconstructServerFromDatabase(Server server) {
+    try (MongoClient mongoClient = MongoClients.create(connectionString)) {
+      MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
+      MongoCollection<Document> serverCollection = riskDB.getCollection("server");
+      Document serverDoc = serverCollection.find(gte("static_password", -1)).first();
+      Server.password = serverDoc.getInteger("static_password");
+      HashMap<String, List<Integer>> clientInfo = new HashMap<String, List<Integer>>();
+      serverDoc.get("client_info", Document.class).forEach((key, value) -> clientInfo.put(key, (List<Integer>) value));
+      HashMap<String, List<Integer>> clientGames = new HashMap<String, List<Integer>>();
+      serverDoc.get("client_games", Document.class)
+          .forEach((key, value) -> clientGames.put(key, (List<Integer>) value));
+      return server;
+    }
+  }
 }
-
-
-
-
-
-
-
