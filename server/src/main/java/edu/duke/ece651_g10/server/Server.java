@@ -51,6 +51,24 @@ public class Server {
 
     volatile HashMap<Game, List<RequestHandleTask>> waitClients;
 
+  /**
+   * Get the hash map of client information
+   *
+   * @return hash map of the client information
+   */
+  public HashMap<String, List<Player>> getClientInfo() {
+    return clientInfo;
+  }
+
+  /**
+   * Get the hash map of clientGames
+   *
+   * @return hash map of the client games
+   */
+  public HashMap<String, List<Game>> getClientGames() {
+    return clientGames;
+  }
+
     /**
      * Setup the server socket.
      *
