@@ -67,7 +67,7 @@ public class MongoDBClient {
   /**
    * Generate one terrritory documentation
    *
-   * @param terriroty The territory that be transfered to documentation
+   * @param territory The territory that be transfered to documentation
    * @return the territory document
    */
   private Document generateTerritoryDoc(Territory territory) {

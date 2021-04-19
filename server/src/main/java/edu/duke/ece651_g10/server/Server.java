@@ -23,13 +23,14 @@ import java.util.concurrent.Executors;
 public class Server {
 
     static int password = 0;
-    // The server socket the server is listening to.
+    // The server socket the server is listening to, no need to be stored in the database.
     private ServerSocket serverSocket;
 
+    // No need to be stored in db.
     private GameFactory gameFactory;
 
     // Each game has a specific identification.
-    Game game;
+    // This need to be stored in the database.
     HashMap<Integer, Game> games;
 
     // Add a map from client to multiple players.
@@ -308,10 +309,10 @@ public class Server {
                                             // it is done.
                                             // Add all the players into the game.
                                             this.running = false;
-                                            for (RequestHandleTask t : waitClients.get(game)) {
+                                            for (RequestHandleTask t : waitClients.get(currentGame)) {
                                                 t.running = false;
                                             }
-                                            waitClients.put(game, new LinkedList<>());
+                                            waitClients.put(currentGame, new LinkedList<>());
                                             currentGame = null;
                                         }
                                     }
