@@ -101,9 +101,9 @@ public class Game implements Runnable {
     /**
      * Constructor which is used to reconstruct the game from the database.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId, HashMap<Integer, Player> players,
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
                 boolean gameEnds, boolean gameBegins) {
-        this.players = players;
+        this.players = new HashMap<>();
         this.gameId = gameId;
         this.numPlayers = numPlayers;
         this.playMap = map;
@@ -214,6 +214,23 @@ public class Game implements Runnable {
             System.out.println("Player added successfully");
             players.put(p.getPlayerID(), p);
         }
+    }
+
+    /**
+     * Use this method to add player to the game.
+     * @param player
+     */
+    public void addPlayerFromDb(Player player) {
+        int playerNums = players.size();
+        if (players.containsValue(player)) {
+            System.out.println("Error: duplicate player were added for game");
+            return;
+        }
+        if (playerNums >= numPlayers) {
+            System.out.println("Error: too much players were added for this game.");
+            return;
+        }
+        players.put(player.getPlayerID(), player);
     }
 
     public HashMap<Integer, Player> getAllPlayers() {
