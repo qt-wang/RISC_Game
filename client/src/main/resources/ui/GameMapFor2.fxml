@@ -26,7 +26,7 @@
 <children>
    <AnchorPane onMouseClicked="#onClickPane" pickOnBounds="false" prefHeight="404.0" prefWidth="617.0" styleClass="panel" stylesheets="@buttonStyles.css" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.rowSpan="2">
       <children>
-         <Button layoutX="44.0" layoutY="63.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="86.0" prefWidth="86.0" stylesheets="@mapShapeFor2.css" text="A">
+         <Button fx:id = "A" layoutX="44.0" layoutY="63.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="86.0" prefWidth="86.0" stylesheets="@mapShapeFor2.css" text="A">
             <styleClass>
                <String fx:value="btnA" />
                <String fx:value="expandable" />

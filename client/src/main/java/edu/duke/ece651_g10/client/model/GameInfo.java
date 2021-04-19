@@ -17,7 +17,7 @@ public class GameInfo {
     HashMap<Integer, List<String>> territoryOwnerShip = new HashMap<>();
     // Have 3 player status A L E
     String playerStatus;
-    //HashMap<Integer, String> colorStrategy = new HashMap<>();
+    HashMap<Integer, String> colorStrategy = new HashMap<>();
 
     public String getPlayerStatus() {
         return playerStatus;
@@ -90,19 +90,20 @@ public class GameInfo {
         return canUpgrade;
     }
 
-    //    public void setColorStrategy(int playerNum){
-//        colorStrategy.put(1,"Red");
-//        colorStrategy.put(2,"Blue");
-//        if(playerNum>=3){
-//            colorStrategy.put(3,"Yellow");
-//        }
-//        if(playerNum>=4){
-//            colorStrategy.put(4,"Green");
-//        }
-//        if(playerNum>=5){
-//            colorStrategy.put(5,"Purple");
-//        }
-//    }
+        public void initColorStrategy(int playerNum){
+            colorStrategy.put(1,"Red");
+            colorStrategy.put(2,"Blue");
+            if(playerNum>=3){
+                colorStrategy.put(3,"Yellow");
+            }
+            if(playerNum>=4){
+                colorStrategy.put(4,"Green");
+            }
+            if(playerNum>=5){
+                colorStrategy.put(5,"Purple");
+            }
+        }
+
     public void setTerritoryInfos(JSONObject obj){
         try{
             HashMap<String,List<String>> infos = new HashMap<>();
