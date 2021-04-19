@@ -427,47 +427,6 @@ public class Server {
         newThread.start();
     }
 
-//    /**
-//     * Add the player to game with gameId "gameId"
-//     * Decrease the current game's wait group.
-//     * If wait group becomes 0, then make the thread not running anymore.
-//     * @param password The password provided by the user.
-//     * @param gameId   The game id which represents a open game.
-//     */
-//    private synchronized String addPlayerToGame(String password, int gameId, Socket socket, JSONCommunicator jc) {
-//        String success = checkValidOpenGame(password, gameId);
-//        if (success != null) {
-//            return success;
-//        }
-//        Game game = games.get(gameId);
-//        if (isPlayerInGame(password, gameId)) {
-//            // Mark the player as enter the game.
-//            Player p = getPlayerWithPassword(password, gameId);
-//            assert (p != null);
-//            p.joinGame();
-//        } else {
-//            Player newPlayer = new Player(socket, jc);
-//            clientInfo.get(password).add(newPlayer);
-//            Game joinedGame = games.get(gameId);
-//            joinedGame.addPlayer(newPlayer);
-//            List<Game> gameList = clientGames.get(password);
-//            gameList.add(joinedGame);
-//        }
-//
-//        synchronized (game) {
-//            game.getCurrentWaitGroup().decrease();
-//            // If the game is not started yet!
-//            if (game.canGameStart()) {
-//                startGame(game);
-//            }
-//            // If game already starts, just disconnect from the server.
-//            if (game.getCurrentWaitGroup().getState()) {
-//                // Disconnect from the thread.
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Keep receive new orders, handle these orders.
      * Order likes:

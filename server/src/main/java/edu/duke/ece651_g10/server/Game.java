@@ -99,8 +99,62 @@ public class Game implements Runnable {
     }
 
     /**
+     * Constructor which is used to reconstruct the game from the database.
+     */
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId, HashMap<Integer, Player> players,
+                boolean gameEnds, boolean gameBegins) {
+        this.players = players;
+        this.gameId = gameId;
+        this.numPlayers = numPlayers;
+        this.playMap = map;
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.orderProcessor = orderProcessor;
+        this.currentWaitGroup = null;
+        this.gameEnds = gameEnds;
+        this.gameBegins = gameBegins;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        this.serverTaskPool = null;
+        this.refServer = null;
+    }
+
+    /**
+     * Set the serverTaskPool for the game.
+     * Only used when the new server is resumed.
+     */
+    public void setServerTaskPool(ExecutorService serverTaskPool) {
+        this.serverTaskPool = serverTaskPool;
+    }
+
+    /**
+     * Set the game identifier for the Game class.
+     * Only used when resumed the game class from the database.
+     *
+     * @param identifier The identifier used to reset the game.
+     */
+    public static void setGameIdentifier(int identifier) {
+        Game.gameIdentifier = identifier;
+    }
+
+
+    /**
+     * Set the refServer for this game.
+     * Only used when resume the game from the database.
+     * After the new server is initialized, use this method to set the server.
+     *
+     * @param refServer
+     */
+    public void setRefServer(Server refServer) {
+        this.refServer = refServer;
+    }
+
+
+    /**
      * Create a test game, not for real use.
      * This cannot support real use.
+     *
      * @param map
      * @param moveRuleChecker
      * @param attackRuleChecker
@@ -131,21 +185,21 @@ public class Game implements Runnable {
         return this.gameId;
     }
 
-  public boolean getGameEnd() {
-    return this.gameEnds;
-  }
+    public boolean getGameEnd() {
+        return this.gameEnds;
+    }
 
-  public boolean getGameBegins() {
-    return this.gameBegins;
-  }
+    public boolean getGameBegins() {
+        return this.gameBegins;
+    }
 
-  public void setGameBegins(boolean begin) {
-    this.gameBegins = begin;
-  }
+    public void setGameBegins(boolean begin) {
+        this.gameBegins = begin;
+    }
 
-  public GameMap getGameMap() {
-    return this.playMap;
-  }
+    public GameMap getGameMap() {
+        return this.playMap;
+    }
 
     /**
      * Add a new player to this game.
@@ -162,9 +216,9 @@ public class Game implements Runnable {
         }
     }
 
-  public HashMap<Integer, Player> getAllPlayers() {
-    return this.players;
-  }
+    public HashMap<Integer, Player> getAllPlayers() {
+        return this.players;
+    }
 
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
