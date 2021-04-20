@@ -134,6 +134,17 @@ public class AttackOrder extends TerritoryToTerritoryOrder {
             for (int i = 0; i < 7; ++i) {
                 dest.getArmyWithLevel(i).increaseUnits(attackLevel.get(i));
             }
+            //version3
+            for(Spy spy : dest.getOwnedSpies()){
+                dest.getEnemySpies().add(spy);
+                dest.getOwnedSpies().remove(spy);
+            }
+            for(Spy spy : dest.getEnemySpies()) {
+                if (spy.getOwner().equals(player)) {
+                    dest.getOwnedSpies().add(spy);
+                    dest.getEnemySpies().remove(spy);
+                }
+            }
         }
     }
 

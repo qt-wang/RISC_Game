@@ -7,13 +7,15 @@ public abstract class OneTerritoryOrder extends Order {
   protected int unitNum;
   protected GameMap gMap;
   protected Player player;
+  protected int level;
   final HashMap<Integer, Integer> unitUpgradeTable;
 
-  public OneTerritoryOrder(int playerID, String source, int unitNum, GameMap gMap, Player player) {
+  public OneTerritoryOrder(int playerID, String source, int unitNum, GameMap gMap, int level, Player player) {
     super(playerID);
     this.gMap = gMap;
     this.source = gMap.getTerritory(source);
     this.unitNum = unitNum;
+    this.level = level;
     this.player = player;
     this.unitUpgradeTable = new HashMap<Integer, Integer>();
     this.unitUpgradeTable.put(0, 3);

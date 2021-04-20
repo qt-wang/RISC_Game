@@ -6,6 +6,8 @@ public abstract class ZeroTerritoryOrder extends Order {
   protected GameMap gMap;
   protected Player player;
   final HashMap<Integer, Integer> maxTechLevelTable;
+  final HashMap<Integer, Integer> maxVirusLevelTable;
+  final HashMap<Integer, Integer> maxVaccineLevelTable;
 
     /**
      *
@@ -23,6 +25,18 @@ public abstract class ZeroTerritoryOrder extends Order {
         this.maxTechLevelTable.put(3, 125);
         this.maxTechLevelTable.put(4, 200);
         this.maxTechLevelTable.put(5, 300);
+        this.maxVirusLevelTable = new HashMap<>();
+        this.maxVirusLevelTable.put(1, 30);
+        this.maxVirusLevelTable.put(2, 60);
+        this.maxVirusLevelTable.put(3, 110);
+        this.maxVirusLevelTable.put(4, 220);
+        this.maxVirusLevelTable.put(5, 330);
+        this.maxVaccineLevelTable = new HashMap<>();
+        this.maxVaccineLevelTable.put(1, 60);
+        this.maxVaccineLevelTable.put(2, 100);
+        this.maxVaccineLevelTable.put(3, 170);
+        this.maxVaccineLevelTable.put(4, 250);
+        this.maxVaccineLevelTable.put(5, 340);
    }
 
   public abstract void execute();

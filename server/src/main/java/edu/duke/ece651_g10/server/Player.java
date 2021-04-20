@@ -189,6 +189,37 @@ public class Player {
     this.technologyLevel = 1;
     this.canUpgradeInThisTurn = true;
     this.inGame = false;
+    this.virusMaxLevel = 1; //Added by qw99
+    this.vaccineLevel = 0; // Added by qw99
+    this.vaccineMaxLevel = 1; //Added by qw99
+    this.canBombInThisGame = true; //Added by qw99
+    this.canVaccine = true; //Added by qw99
+    this.canVirus = true; // Added by qw99
   }
 
+  //Added by qw99
+  private int virusMaxLevel;
+  private int vaccineLevel;
+  private int vaccineMaxLevel;
+  private boolean canBombInThisGame;
+  private boolean canVaccine;
+  private boolean canVirus;
+  public int getVirusMaxLevel(){
+    return virusMaxLevel;
+  }
+  public int getVaccineLevel(){
+    return vaccineLevel;
+  }
+  public void incrementVirusMaxLevel(){
+    this.virusMaxLevel += 1;
+  }
+  public void setVaccineLevel(int vaccineLevel){
+    this.vaccineLevel = vaccineLevel;
+  }
+  public int getVaccineMaxLevel(){
+    return vaccineMaxLevel;
+  }
+  public void incrementVaccineMaxLevel(){
+    this.vaccineMaxLevel += 1;
+  }
 }

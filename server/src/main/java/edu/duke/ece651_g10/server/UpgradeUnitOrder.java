@@ -2,7 +2,6 @@ package edu.duke.ece651_g10.server;
 
 
 public class UpgradeUnitOrder extends OneTerritoryOrder {
-  private int level;
 
   /**
    *
@@ -14,8 +13,7 @@ public class UpgradeUnitOrder extends OneTerritoryOrder {
    * @param player is the player that initiate the order
    */
   public UpgradeUnitOrder(int playerID, String source, int unitNum, GameMap gMap, int level, Player player) {
-    super(playerID, source, unitNum, gMap, player);
-    this.level = level;
+    super(playerID, source, unitNum, gMap, level, player);
   }
 
   /**
