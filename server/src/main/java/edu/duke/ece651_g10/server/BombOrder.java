@@ -12,21 +12,6 @@ public class BombOrder extends OneTerritoryOrder{
         for(int i = 0; i < 7; i++){
             source.getArmyWithLevel(i).decreaseUnits(source.getArmyWithLevel(i).getArmyUnits());
         }
-        Set<Spy> helper = new HashSet<>();
-        for(Spy spy : source.getEnemySpies()) {
-            if(spy.getOwner().equals(player)){
-                helper.add(spy);
-            }
-        }
-        source.getOwnedSpies().clear();
-        source.getEnemySpies().clear();
-        for(Spy spy : helper){
-            source.getOwnedSpies().add(spy);
-        }
-        helper.clear();
-        player.setTechnologyResourceTotal(0);
-        source.setOwner(player);
-        //TODO: change the flag.
     }
 
     /**

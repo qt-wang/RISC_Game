@@ -7,7 +7,6 @@ public class CloakOrder extends OneTerritoryOrder{
 
     public void execute(){
         source.getCloaked();
-        player.setTechnologyResourceTotal(player.getTechnologyResourceTotal() - 20);
     }
 
     /**

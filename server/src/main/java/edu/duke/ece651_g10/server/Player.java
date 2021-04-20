@@ -224,7 +224,8 @@ public class Player {
         this.vaccineLevel = 0; //added by qw99
         this.canBombInThisGame = true; //added by qw99
         this.canVaccine = true; //added by qw99
-        this.canVirus = true; //added by qw99
+        this.canResearchCloak = true;
+        this.canCloak = false;
     }
 
     /**
@@ -252,7 +253,8 @@ public class Player {
   private int vaccineMaxLevel;
   private boolean canBombInThisGame;
   private boolean canVaccine;
-  private boolean canVirus;
+  private boolean canResearchCloak;
+  private boolean canCloak;
   public int getVirusMaxLevel(){
     return virusMaxLevel;
   }
@@ -270,5 +272,29 @@ public class Player {
   }
   public void incrementVaccineMaxLevel(){
     this.vaccineMaxLevel += 1;
+  }
+  public boolean getCanBombInThisGame(){
+      return this.canBombInThisGame;
+  }
+  public boolean getCanVaccine(){
+      return this.canVaccine;
+  }
+  public void setCanBombInThisGame(boolean canBombInThisGame){
+      this.canBombInThisGame = canBombInThisGame;
+  }
+  public void setCanVaccine(boolean canVaccine){
+      this.canVaccine = canVaccine;
+  }
+  public boolean getCanResearchCloak(){
+      return this.canResearchCloak;
+  }
+  public void setCanResearchCloak(boolean canResearchCloak){
+      this.canResearchCloak = canResearchCloak;
+  }
+  public boolean getHasCloak(){
+      return canCloak;
+  }
+  public void setCanCloak(boolean canCloak){
+      this.canCloak = canCloak;
   }
 }

@@ -22,7 +22,7 @@ class VirusOrderTest {
         vOrder.execute();
         assertEquals(400, player2.getTechnologyResourceTotal());
         assertEquals(1300, player2.getFoodResourceTotal());
-        assertEquals(900, player1.getTechnologyResourceTotal());
+        assertEquals(800, player1.getTechnologyResourceTotal());
         assertEquals(2000, player1.getFoodResourceTotal());
 
         player1.setTechnologyResourceTotal(1000);
@@ -33,7 +33,7 @@ class VirusOrderTest {
         vOrder2.execute();
         assertEquals(0, player2.getTechnologyResourceTotal());
         assertEquals(0, player2.getFoodResourceTotal());
-        assertEquals(900, player1.getTechnologyResourceTotal());
+        assertEquals(800, player1.getTechnologyResourceTotal());
         assertEquals(2000, player1.getFoodResourceTotal());
     }
 }

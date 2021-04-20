@@ -8,8 +8,12 @@ public class VaccineOrder extends ZeroTerritoryOrder{
     }
 
     public void execute(){
-        player.setVaccineLevel(vaccineLevel);
-        int techCost = 50 * vaccineLevel;
-        player.setTechnologyResourceTotal(player.getTechnologyResourceTotal() - techCost);
+        if(vaccineLevel > player.getVaccineLevel()) {
+            player.setVaccineLevel(vaccineLevel);
+        }
+    }
+
+    public int getVaccineLevel(){
+        return getVaccineLevel();
     }
 }

@@ -23,8 +23,7 @@ public class VirusOrder extends ZeroTerritoryOrder{
             } else{
                 targetPlayer.setFoodResourceTotal(targetPlayer.getFoodResourceTotal() - foodAttack);
             }
-            player.setTechnologyResourceTotal(player.getTechnologyResourceTotal() - 100); // One virus attack costs 100 tech resources
-            //TODO:change the flag.
+            player.setTechnologyResourceTotal(player.getTechnologyResourceTotal() - 200); // One virus attack costs 100 tech resources
         }
     }
 }

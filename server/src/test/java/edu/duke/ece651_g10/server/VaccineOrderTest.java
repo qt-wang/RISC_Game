@@ -15,7 +15,6 @@ class VaccineOrderTest {
         VaccineOrder vOrder = new VaccineOrder(player.getPlayerID(), gMap, player, 1);
         vOrder.execute();
         assertEquals(1, player.getVaccineLevel());
-        assertEquals(950, player.getTechnologyResourceTotal());
     }
 
 }

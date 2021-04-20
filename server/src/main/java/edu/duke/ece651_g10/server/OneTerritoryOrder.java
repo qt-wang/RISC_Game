@@ -38,4 +38,8 @@ public abstract class OneTerritoryOrder extends Order {
 
   public abstract int getLevel();
 
+  public Player getPlayer() {
+    return player;
+  }
+
 }
