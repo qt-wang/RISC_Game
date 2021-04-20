@@ -18,6 +18,18 @@ public class V1GameMap implements GameMap {
     int totalPlayers;
 
     int territoriesPerPlayer;
+
+    /**
+     * Create a blank map, which can later set up all the attributes of the map.
+     */
+    public V1GameMap() {
+        territories = new HashSet<>();
+        initialGroups = new HashMap<>();
+        totalPlayers = 0;
+        territoriesPerPlayer = 0;
+    }
+
+
     /**
      * Generate a Version 1 game map.
      *
@@ -60,6 +72,11 @@ public class V1GameMap implements GameMap {
         }
         return null;
     }
+
+  @Override
+  public HashSet<Territory> getAllTerritory() {
+    return territories;
+  }
 
 
 

@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.server;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -164,9 +165,18 @@ public interface Territory {
     /**
      * Get the oldView from the territory for player.
      * If not exist, return null.
+     *
      * @return
      */
     public JSONObject getOldView(Player player);
+
+  /**
+     * Get all oldViews from the territory.
+     * If not exist, return null.
+     *
+     * @return HashMap of old views
+     */
+  public HashMap<Player, JSONObject> getAllOldView();
 
     /**
      * Remove a spy from the current territory.
@@ -175,6 +185,20 @@ public interface Territory {
      */
     public void decreaseSpy(Spy spy);
 
+  /**
+   * Get the owned spies in this territory
+   *
+   * @return return the spy hashset
+   */
+  public Set<Spy> getOwnedSpy();
+
+  /**
+   * Get the enemy spies in this territory
+   *
+   * @return return the spy hashset
+   */
+  public Set<Spy> getEnemySpy();
+  
     /**
      * Return all the territories belong to the owner that are neighbor to the current player.
      *
@@ -202,6 +226,7 @@ public interface Territory {
 
     /**
      * Check if the player 'p' has a spy within the territory.
+     *
      * @param p The player.
      * @return True if the player p has a spy within the territory.
      */
@@ -210,15 +235,17 @@ public interface Territory {
 
     /**
      * Add a spy into the owned spy set.
-     * @param spy  The added spy.
+     *
+     * @param spy The added spy.
      */
     public void addOwnedSpy(Spy spy);
 
 
     /**
      * Setup the oldView's view for player p.
-     * @param player   The player to setup the view.
-     * @param view     The view.
+     *
+     * @param player The player to setup the view.
+     * @param view   The view.
      */
     public void setPlayerView(Player player, JSONObject view);
 

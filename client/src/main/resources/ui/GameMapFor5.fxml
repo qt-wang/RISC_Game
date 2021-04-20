@@ -27,7 +27,7 @@
    <children>
       <AnchorPane onMouseClicked="#onClickPane" pickOnBounds="false" prefHeight="404.0" prefWidth="617.0" styleClass="panel" stylesheets="@buttonStyles.css" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.rowSpan="2">
          <children>
-            <Button layoutX="104.0" layoutY="54.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="60.0" prefWidth="80.0" text="A" AnchorPane.leftAnchor="104.0">
+            <Button layoutX="102.0" layoutY="55.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="60.0" prefWidth="80.0" text="A" AnchorPane.leftAnchor="102.0">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -38,7 +38,7 @@
                   <String fx:value="greyButton" />
                </styleClass>
             </Button>
-            <Button layoutX="185.0" layoutY="54.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="40.0" prefWidth="20.0" text="B">
+            <Button layoutX="177.0" layoutY="55.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="42.0" prefWidth="20.0" text="B">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />
@@ -49,7 +49,7 @@
                   <String fx:value="btnB" />
                </styleClass>
             </Button>
-            <Button layoutX="209.0" layoutY="54.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="40.0" prefWidth="120.0" text="C">
+            <Button layoutX="197.0" layoutY="55.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="42.0" prefWidth="111.0" text="C">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />
@@ -60,7 +60,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="324.0" layoutY="55.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="100.0" prefWidth="20.0" text="D">
+            <Button layoutX="303.0" layoutY="55.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="98.0" prefWidth="19.0" text="D">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -71,7 +71,7 @@
                   <String fx:value="greyButton" />
                </styleClass>
             </Button>
-            <Button layoutX="102.0" layoutY="284.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="65.0" prefWidth="145.0" text="G">
+            <Button layoutX="103.0" layoutY="285.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="60.0" prefWidth="135.0" text="G">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />
@@ -82,7 +82,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="325.0" layoutY="152.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="140.0" prefWidth="20.0" text="E">
+            <Button layoutX="303.0" layoutY="147.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="140.0" prefWidth="20.0" text="E">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -93,7 +93,7 @@
                   <String fx:value="greyButton" />
                </styleClass>
             </Button>
-            <Button layoutX="164.0" layoutY="251.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="100.0" prefWidth="185.0" text="F">
+            <Button layoutX="160.0" layoutY="240.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="110.0" prefWidth="167.0" text="F">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -107,7 +107,7 @@
                   <Insets left="110.0" />
                </padding>
             </Button>
-            <Button layoutX="164.0" layoutY="75.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="155.0" prefWidth="120.0" text="K">
+            <Button layoutX="157.0" layoutY="73.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="155.0" prefWidth="115.0" text="K">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -118,7 +118,7 @@
                   <String fx:value="greyButton" />
                </styleClass>
             </Button>
-            <Button layoutX="242.0" layoutY="90.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="120.0" prefWidth="85.0" text="L">
+            <Button layoutX="231.0" layoutY="91.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="117.0" prefWidth="78.0" text="L">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -129,7 +129,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="108.0" layoutY="94.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="95.0" prefWidth="40.0" text="I">
+            <Button layoutX="101.0" layoutY="91.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="100.0" prefWidth="45.0" text="I">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />
@@ -140,7 +140,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="105.0" layoutY="187.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="140.0" prefWidth="40.0" text="H">
+            <Button layoutX="101.0" layoutY="185.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="140.0" prefWidth="45.0" text="H">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -151,7 +151,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="244.0" layoutY="230.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="100.0" prefWidth="40.0" text="N">
+            <Button layoutX="232.0" layoutY="222.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="105.0" prefWidth="40.0" text="N">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />
@@ -162,7 +162,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="202.0" layoutY="229.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="60.0" prefWidth="45.0" text="O">
+            <Button layoutX="193.0" layoutY="222.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="68.0" prefWidth="44.0" text="O">
                <stylesheets>
                   <URL value="@buttonStyles.css" />
                   <URL value="@mapShapeFor5.css" />
@@ -173,7 +173,7 @@
                   <String fx:value="greyButton" />
                </styleClass>
             </Button>
-            <Button layoutX="261.0" layoutY="207.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="48.0" prefWidth="65.0" text="M">
+            <Button layoutX="248.0" layoutY="203.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="42.0" prefWidth="61.0" text="M">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />
@@ -184,7 +184,7 @@
                   <String fx:value="expandable" />
                </styleClass>
             </Button>
-            <Button layoutX="144.0" layoutY="95.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="195.0" prefWidth="60.0" text="J">
+            <Button layoutX="140.0" layoutY="91.0" mnemonicParsing="false" onAction="#onClickTerritory" pickOnBounds="false" prefHeight="200.0" prefWidth="58.0" text="J">
                <stylesheets>
                   <URL value="@mapShapeFor5.css" />
                   <URL value="@buttonStyles.css" />

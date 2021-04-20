@@ -47,8 +47,6 @@ public class Game implements Runnable {
 
     private RuleChecker upgradeUnitChecker;
 
-    private GameBoardView view;
-
     private OrderProcessor orderProcessor;
 
     private volatile WaitGroup currentWaitGroup;
@@ -85,7 +83,6 @@ public class Game implements Runnable {
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
         this.attackRuleChecker = attackRuleChecker;
-        this.view = view;
         this.orderProcessor = orderProcessor;
         this.gameEnds = false;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -101,8 +98,107 @@ public class Game implements Runnable {
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
     }
 
+    /**
+     * Constructor which is used to reconstruct the game from the database.
+     */
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
+                boolean gameEnds, boolean gameBegins) {
+        this.players = new HashMap<>();
+        this.gameId = gameId;
+        this.numPlayers = numPlayers;
+        this.playMap = map;
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.orderProcessor = orderProcessor;
+        this.currentWaitGroup = null;
+        this.gameEnds = gameEnds;
+        this.gameBegins = gameBegins;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        this.serverTaskPool = null;
+        this.refServer = null;
+    }
+
+    /**
+     * Set the serverTaskPool for the game.
+     * Only used when the new server is resumed.
+     */
+    public void setServerTaskPool(ExecutorService serverTaskPool) {
+        this.serverTaskPool = serverTaskPool;
+    }
+
+    /**
+     * Set the game identifier for the Game class.
+     * Only used when resumed the game class from the database.
+     *
+     * @param identifier The identifier used to reset the game.
+     */
+    public static void setGameIdentifier(int identifier) {
+        Game.gameIdentifier = identifier;
+    }
+
+
+    /**
+     * Set the refServer for this game.
+     * Only used when resume the game from the database.
+     * After the new server is initialized, use this method to set the server.
+     *
+     * @param refServer
+     */
+    public void setRefServer(Server refServer) {
+        this.refServer = refServer;
+    }
+
+
+    /**
+     * Create a test game, not for real use.
+     * This cannot support real use.
+     *
+     * @param map
+     * @param moveRuleChecker
+     * @param attackRuleChecker
+     * @param orderProcessor
+     * @param numUnitPerPlayer
+     * @param numPlayers
+     * @param upgradeTechChecker
+     * @param upgradeUnitChecker
+     */
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
+        this.playMap = map;
+        this.players = new HashMap<>();
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
+        this.orderProcessor = orderProcessor;
+        this.gameEnds = false;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        this.numPlayers = numPlayers;
+        synchronized (Game.class) {
+            this.gameId = gameIdentifier++;
+        }
+        this.gameBegins = false;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
+    }
+
     public int getGameId() {
         return this.gameId;
+    }
+
+    public boolean getGameEnd() {
+        return this.gameEnds;
+    }
+
+    public boolean getGameBegins() {
+        return this.gameBegins;
+    }
+
+    public void setGameBegins(boolean begin) {
+        this.gameBegins = begin;
+    }
+
+    public GameMap getGameMap() {
+        return this.playMap;
     }
 
     /**
@@ -120,6 +216,26 @@ public class Game implements Runnable {
         }
     }
 
+    /**
+     * Use this method to add player to the game.
+     * @param player
+     */
+    public void addPlayerFromDb(Player player) {
+        int playerNums = players.size();
+        if (players.containsValue(player)) {
+            System.out.println("Error: duplicate player were added for game");
+            return;
+        }
+        if (playerNums >= numPlayers) {
+            System.out.println("Error: too much players were added for this game.");
+            return;
+        }
+        players.put(player.getPlayerID(), player);
+    }
+
+    public HashMap<Integer, Player> getAllPlayers() {
+        return this.players;
+    }
 
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
         Player p = players.get(playerId);
@@ -344,6 +460,7 @@ public class Game implements Runnable {
     }
 
     //TODO: test new views.
+
     /**
      * generate the json object which describe the territories information about it.
      * The key is the territories' name, the value is the territories' information.
@@ -473,7 +590,7 @@ public class Game implements Runnable {
      * Assign territories to each player, changed the attributes for the territories.
      * Each player shall pick (or be assigned) one such group as her starting territories.
      */
-    private void assignInitialTerritories() {
+    public void assignInitialTerritories() {
         HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
         int group = 1;
         // Iterate through the players.
@@ -659,12 +776,12 @@ public class Game implements Runnable {
     }
 
     //TODO: Test
+
     /**
      * Update player's old view, change the default value in each territory.
-     *
      */
     void updatePlayerView() {
-        for (Player p: players.values()) {
+        for (Player p : players.values()) {
             playMap.updatePlayerView(p);
         }
     }

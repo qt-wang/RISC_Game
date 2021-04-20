@@ -1,10 +1,10 @@
 package edu.duke.ece651_g10.server;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.json.JSONObject;
 
 /**
  * Map indicates the play board of the game. Maintained by Guancheng Fu
@@ -39,6 +39,8 @@ public interface GameMap {
      * @return null If the territory is not existed.
      */
     public Territory getTerritory(String name);
+
+  public HashSet<Territory> getAllTerritory();
 
     /**
      * Add one unit to each territory.
