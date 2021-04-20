@@ -66,13 +66,18 @@ public class SceneFactory {
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         HashMap<Class<?>,Object> controllers = new HashMap<>();
         GameInfo gameInfo = new GameInfo(object);
-        controllers.put(InGameController.class, new InGameController(gameInfo, primaryStage, client, this));
+        TerritoryButtonStyleController tbsc = new TerritoryFor2ButtonStyleController();
+        controllers.put(tbsc.getClass(), tbsc);
+        InGameController igc = new InGameController(gameInfo, primaryStage, client, this,tbsc);
+        controllers.put(InGameController.class, igc);
+        tbsc.setInGameController(igc);
         loader.setControllerFactory((c)->{
             return controllers.get(c);
         });
         GridPane gp = loader.load();
         Scene scene = new Scene(gp);
         scene.getStylesheets().add(cssResource.toString());
+        tbsc.addButtons();
         return scene;
     }
 

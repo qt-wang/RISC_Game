@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.client.controller;
 import edu.duke.ece651_g10.client.App;
 import edu.duke.ece651_g10.client.Client;
 import edu.duke.ece651_g10.client.SceneFactory;
+import edu.duke.ece651_g10.client.model.ColorStrategy;
 import edu.duke.ece651_g10.client.model.GameInfo;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
@@ -14,6 +15,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,9 +32,10 @@ import javafx.stage.WindowEvent;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
-public class InGameController {
+public class InGameController{
 
     GameInfo gameInfo;
 
@@ -56,6 +59,8 @@ public class InGameController {
 
     SceneFactory factory;
 
+    TerritoryButtonStyleController buttonStyleController;
+
     /**
      * initiate the game controller with given parameters
      * @param gameInfo the model contains game info
@@ -63,11 +68,12 @@ public class InGameController {
      * @param client the client object used to send and receive json
      * @param factory the factory used to create scene
      */
-    public InGameController(GameInfo gameInfo, Stage primaryStage, Client client, SceneFactory factory) {
+    public InGameController(GameInfo gameInfo, Stage primaryStage, Client client, SceneFactory factory, TerritoryButtonStyleController buttonStyleController) {
         this.gameInfo = gameInfo;
         this.primaryStage = primaryStage;
         this.client = client;
         this.factory = factory;
+        this.buttonStyleController = buttonStyleController;
     }
 
     /**
@@ -86,6 +92,23 @@ public class InGameController {
         ObservableList<String> obl = FXCollections.observableArrayList(gameInfo.getPlayerInfo());
         playerInfo.setItems(obl);
         playerInfo.refresh();
+    }
+
+    public void updatePlayerAndTerritory(){
+        setPlayerInfo();
+        setTerritoryColor();
+    }
+
+    public void setTerritoryColor(){
+        HashMap<Integer,List<String>> territoryOwnerShip = gameInfo.territoryOwnerShip;
+        for(Integer i : territoryOwnerShip.keySet()){
+            for(String terrName : territoryOwnerShip.get(i)){
+                String color = gameInfo.getPlayerColor(i);
+                buttonStyleController.setButtonStyle(terrName,color);
+                //String cssStyle = cs.getRegularStyle(color);
+                //buttonStyleController.setButtonStyle(terrName,cssStyle);
+            }
+        }
     }
 
     /**
@@ -113,7 +136,13 @@ public class InGameController {
      */
     @FXML
     public void onEnterStage(MouseEvent ae) {
-        setPlayerInfo();
+        updatePlayerAndTerritory();
+//        boolean res = buttonStyleController.setButtonStyle("A",cs.getRegularStyle("red"));
+//        if(res){
+//            System.out.println("true");
+//        }else{
+//            System.out.println("false");
+//        }
     }
 
     /**
@@ -216,7 +245,6 @@ public class InGameController {
         });
         dialog.show();
     }
-
     /**
      * send the toSend json object to the server and receive a response
      * update info according to it
@@ -229,7 +257,7 @@ public class InGameController {
         JSONObject object = client.getSocketClient().receive();
         if (object.getString("prompt").equals("valid\n")) {
             gameInfo = new GameInfo(object);
-            playerInfo.refresh();
+            updatePlayerAndTerritory();
             setPrompt("What would you like to do?");
         } else {
             invalidPrompt(object.getString("reason"));
@@ -458,7 +486,7 @@ public class InGameController {
                             });
                         } else if (gameInfo.getPlayerStatus().equals("L")) {
                             gameInfo = new GameInfo(newValue);
-                            setPlayerInfo();
+                            updatePlayerAndTerritory();
                             try {
                                 onCommit(null);
                             } catch (IOException exception) {
@@ -466,7 +494,7 @@ public class InGameController {
                             }
                         } else {
                             gameInfo = new GameInfo(newValue);
-                            setPlayerInfo();
+                            updatePlayerAndTerritory();
                         }
                     }
 

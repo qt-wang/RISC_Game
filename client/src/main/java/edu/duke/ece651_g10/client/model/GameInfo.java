@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.client.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +15,10 @@ public class GameInfo {
     String sub;
     boolean canUpgrade;
     HashMap<String,List<String>> territoryInfos;
-    HashMap<Integer, List<String>> territoryOwnerShip = new HashMap<>();
+    public HashMap<Integer, List<String>> territoryOwnerShip = new HashMap<>();
     // Have 3 player status A L E
     String playerStatus;
-    HashMap<Integer, String> colorStrategy = new HashMap<>();
+    private HashMap<Integer,String> playerColor;
 
     public String getPlayerStatus() {
         return playerStatus;
@@ -43,13 +44,26 @@ public class GameInfo {
         canUpgrade = received.getBoolean("canUpgrade");
         playerStatus = received.getString("playerStatus");
         int playerNumber = received.getInt("playerNumber");
-        //setColorStrategy(playerNumber);
+        setPlayerColor();
         setTerritoryInfos(received);
         if (playerStatus.equals("L")) {
             setPlayerInfoLose(received);
         } else {
             setPlayerInfo(received);
         }
+    }
+
+    private void setPlayerColor() {
+        playerColor = new HashMap<>();
+        playerColor.put(1,"red");
+        playerColor.put(2,"yellow");
+        playerColor.put(3,"green");
+        playerColor.put(4,"blue");
+        playerColor.put(5,"purple");
+    }
+
+    public String getPlayerColor(int playerId){
+        return playerColor.getOrDefault(playerId,null);
     }
 
     public void setPlayerInfo(JSONObject obj){
@@ -90,31 +104,18 @@ public class GameInfo {
         return canUpgrade;
     }
 
-        public void initColorStrategy(int playerNum){
-            colorStrategy.put(1,"Red");
-            colorStrategy.put(2,"Blue");
-            if(playerNum>=3){
-                colorStrategy.put(3,"Yellow");
-            }
-            if(playerNum>=4){
-                colorStrategy.put(4,"Green");
-            }
-            if(playerNum>=5){
-                colorStrategy.put(5,"Purple");
-            }
-        }
-
     public void setTerritoryInfos(JSONObject obj){
         try{
             HashMap<String,List<String>> infos = new HashMap<>();
+            HashMap<Integer, List<String>> ownerShip = new HashMap<>();
             JSONObject tInfos = obj.getJSONObject("TerritoriesInformation");
             for(String key:tInfos.keySet()){
                 JSONObject singleT = tInfos.getJSONObject(key);
                 JSONObject armies = singleT.getJSONObject("armies");
                 int ownerId = singleT.getInt("owner");
-                List<String> currOwners = territoryOwnerShip.getOrDefault(ownerId,new LinkedList<String>());
+                List<String> currOwners = ownerShip.getOrDefault(ownerId,new LinkedList<String>());
                 currOwners.add(key);
-                territoryOwnerShip.put(ownerId, currOwners);
+                ownerShip.put(ownerId, currOwners);
                 List<String> terrInfo = new LinkedList<>();
                 terrInfo.add("Territory name: "+key);
                 terrInfo.add("Owner: " + ownerId);
@@ -133,6 +134,8 @@ public class GameInfo {
                 infos.put(key,terrInfo);
             }
             territoryInfos = infos;
+            territoryOwnerShip = ownerShip;
+            showOwnerShip();
         }catch(JSONException e){
             e.printStackTrace();
         }
@@ -145,4 +148,12 @@ public class GameInfo {
         return playerInfo;
     }
 
+    public void showOwnerShip(){
+        for(Integer i : territoryOwnerShip.keySet()){
+            System.out.println("PlayerID: "+i);
+            for(String name:territoryOwnerShip.get(i)){
+                System.out.println("Territory: "+name);
+            }
+        }
+    }
 }
