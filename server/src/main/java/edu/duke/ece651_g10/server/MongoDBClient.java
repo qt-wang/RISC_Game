@@ -225,7 +225,7 @@ public class MongoDBClient {
                 player.setIsLost();
             }
             // player.setPlayerId(p.getplayerId);
-            game.addPlayer(player);
+            game.addPlayerFromDb(player);
         }
         return game;
     }

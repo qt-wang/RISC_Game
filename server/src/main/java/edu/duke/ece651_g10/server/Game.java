@@ -388,6 +388,33 @@ public class Game implements Runnable {
             } else if (orderType.equals("upgradeTech")) {
                 Order order = new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
                 return order;
+            } else if (orderType.equals("bombOrder")) {
+                Order order = new BombOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("cloakOrder")) {
+                Order order = new CloakOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("upgradeSpyOrder")) {
+                Order order = new UpgradeSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("researchClockOrder")) {
+                Order order = new ResearchCloakOrder(playerId, playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("moveSpyOrder")) {
+                Order order = new MoveSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getString("destTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("virusOrder")){
+                Order order = new VirusOrder(playerId, playMap, players.get(playerId), obj.getString("sourceTerritory"), obj.getInt("unitLevel"));
+                return order;
+            } else if (orderType.equals("vaccineOrder")) {
+                Order order = new VaccineOrder(playerId, playMap, players.get(playerId), obj.getInt("unitLevel"));
+                return order;
+            } else if (orderType.equals("upgradeVirusMaxLevelOrder")) {
+                Order order = new UpgradeVirusMaxLevelOrder(playerId, playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("upgradeVaccineMaxLevelOrder")) {
+                Order order = new UpgradeVaccineMaxLevelOrder(playerId, playMap, players.get(playerId));
+                return order;
             } else {
                 return null;
             }
