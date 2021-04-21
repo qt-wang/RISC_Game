@@ -344,12 +344,18 @@ public class Server {
      *                                The key is the player id, the value is the player.
      * @param clientGamesInfo         The client games list.
      *                                The key is the password, the value is a list of game id that the client in.
+     * @param gameIdentifier          The previous stored game identifier (static variable)
+     * @param playerIdentifier        The previous stored player identifier (static variable)
      */
     public Server(int port, PasswordGenerator serverPasswordGenerator, ArrayList<Game> gameList, HashMap<String, List<Integer>> clientInfoList, HashMap<Integer, Player> playerList,
-                  HashMap<String, List<Integer>> clientGamesInfo) throws IOException {
+                  HashMap<String, List<Integer>> clientGamesInfo, int gameIdentifier, int playerIdentifier) throws IOException {
         setServerSocket(port);
+        Game.setGameIdentifier(gameIdentifier);
+        Player.setAvailableId(playerIdentifier);
         games = new HashMap<>();
         for (Game game : gameList) {
+            game.setRefServer(this);
+            game.setServerTaskPool(this.threadPool);
             games.put(game.getGameId(), game);
         }
         gameFactory = new V2GameFactory(this);
