@@ -50,22 +50,38 @@ public class Player {
 
     private int playerId;
 
+    //Added by qw99
+    private int virusMaxLevel;
+    private int vaccineLevel;
+    private int vaccineMaxLevel;
+    private boolean canBombInThisGame;
+    private boolean canVaccine;
+    private boolean canResearchCloak;
+    private boolean canCloak;
+
     /**
      * Constructor to be used when resume the game from the db.
-     * TODO: Whether we should record the canUpgradeInThisTurn -- maybe we start from a new turn?
      *
      * @param playerId                The player id.
      * @param foodResourceTotal       The food resource owned by the player.
      * @param technologyResourceTotal The technology resource owned by the player.
      * @param technologyLevel         The technology level of the player.
-     * @param canUpgradeInThisTurn    Whether the user can upgrade in this turn.
      * @param isLost                  Whether the player is lost or not.
      */
-    Player(int playerId, int foodResourceTotal, int technologyResourceTotal, int technologyLevel, boolean canUpgradeInThisTurn, boolean isLost) {
+    Player(int playerId, int foodResourceTotal, int technologyResourceTotal, int technologyLevel, boolean isLost,
+           int virusMaxLevel, int vaccineLevel, int vaccineMaxLevel, boolean canBombInThisGame, boolean canVaccine, boolean canResearchCloak,
+           boolean canCloak) {
+        this.virusMaxLevel = virusMaxLevel;
+        this.vaccineLevel = vaccineLevel;
+        this.vaccineMaxLevel = vaccineMaxLevel;
+        this.canBombInThisGame = canBombInThisGame;
+        this.canVaccine = canVaccine;
+        this.canResearchCloak = canResearchCloak;
+        this.canCloak = canCloak;
         this.foodResourceTotal = foodResourceTotal;
         this.technologyResourceTotal = technologyResourceTotal;
         this.technologyLevel = technologyLevel;
-        this.canUpgradeInThisTurn = canUpgradeInThisTurn;
+        this.canUpgradeInThisTurn = true;
         this.inGame = false;
         this.waitGroup = null;
         this.isLost = isLost;
@@ -247,54 +263,61 @@ public class Player {
         Player.availableId = availableId;
     }
 
-  //Added by qw99
-  private int virusMaxLevel;
-  private int vaccineLevel;
-  private int vaccineMaxLevel;
-  private boolean canBombInThisGame;
-  private boolean canVaccine;
-  private boolean canResearchCloak;
-  private boolean canCloak;
-  public int getVirusMaxLevel(){
-    return virusMaxLevel;
-  }
-  public int getVaccineLevel(){
-    return vaccineLevel;
-  }
-  public void incrementVirusMaxLevel(){
-    this.virusMaxLevel += 1;
-  }
-  public void setVaccineLevel(int vaccineLevel){
-    this.vaccineLevel = vaccineLevel;
-  }
-  public int getVaccineMaxLevel(){
-    return vaccineMaxLevel;
-  }
-  public void incrementVaccineMaxLevel(){
-    this.vaccineMaxLevel += 1;
-  }
-  public boolean getCanBombInThisGame(){
-      return this.canBombInThisGame;
-  }
-  public boolean getCanVaccine(){
-      return this.canVaccine;
-  }
-  public void setCanBombInThisGame(boolean canBombInThisGame){
-      this.canBombInThisGame = canBombInThisGame;
-  }
-  public void setCanVaccine(boolean canVaccine){
-      this.canVaccine = canVaccine;
-  }
-  public boolean getCanResearchCloak(){
-      return this.canResearchCloak;
-  }
-  public void setCanResearchCloak(boolean canResearchCloak){
-      this.canResearchCloak = canResearchCloak;
-  }
-  public boolean getHasCloak(){
-      return canCloak;
-  }
-  public void setCanCloak(boolean canCloak){
-      this.canCloak = canCloak;
-  }
+
+    // Add by Qiutong.
+    public int getVirusMaxLevel() {
+        return virusMaxLevel;
+    }
+
+    public int getVaccineLevel() {
+        return vaccineLevel;
+    }
+
+    public void incrementVirusMaxLevel() {
+        this.virusMaxLevel += 1;
+    }
+
+    public void setVaccineLevel(int vaccineLevel) {
+        this.vaccineLevel = vaccineLevel;
+    }
+
+    public int getVaccineMaxLevel() {
+        return vaccineMaxLevel;
+    }
+
+    public void incrementVaccineMaxLevel() {
+        this.vaccineMaxLevel += 1;
+    }
+
+    public boolean getCanBombInThisGame() {
+        return this.canBombInThisGame;
+    }
+
+    public boolean getCanVaccine() {
+        return this.canVaccine;
+    }
+
+    public void setCanBombInThisGame(boolean canBombInThisGame) {
+        this.canBombInThisGame = canBombInThisGame;
+    }
+
+    public void setCanVaccine(boolean canVaccine) {
+        this.canVaccine = canVaccine;
+    }
+
+    public boolean getCanResearchCloak() {
+        return this.canResearchCloak;
+    }
+
+    public void setCanResearchCloak(boolean canResearchCloak) {
+        this.canResearchCloak = canResearchCloak;
+    }
+
+    public boolean getHasCloak() {
+        return canCloak;
+    }
+
+    public void setCanCloak(boolean canCloak) {
+        this.canCloak = canCloak;
+    }
 }

@@ -70,6 +70,8 @@ public class Game implements Runnable {
 
     private List<String> colorSet;
 
+    private boolean unitsDistributionDone;
+
     /**
      * Set up the initial colors used in this game.
      */
@@ -85,12 +87,13 @@ public class Game implements Runnable {
 
     /**
      * Generate the color json used by the client to setup the color.
+     *
      * @return A json object, which contains the key value pair such that:
      * player_id (int) : color (string)
      */
     JSONObject generateColorJson() {
         JSONObject object = new JSONObject();
-        for (Map.Entry<Integer, String> entry: playerColor.entrySet()){
+        for (Map.Entry<Integer, String> entry : playerColor.entrySet()) {
             object.put(Integer.toString(entry.getKey()), entry.getValue());
         }
         return object;
@@ -124,14 +127,15 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
+        unitsDistributionDone = false;
         initialColorSet();
     }
 
     /**
      * Constructor which is used to reconstruct the game from the database.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
-                boolean gameEnds, boolean gameBegins) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
+                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone) {
         this.players = new HashMap<>();
         this.gameId = gameId;
         this.numPlayers = numPlayers;
@@ -140,7 +144,7 @@ public class Game implements Runnable {
         this.attackRuleChecker = attackRuleChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         this.upgradeUnitChecker = upgradeUnitChecker;
-        this.orderProcessor = orderProcessor;
+        this.orderProcessor = new V1OrderProcessor();
         this.currentWaitGroup = null;
         this.gameEnds = gameEnds;
         this.gameBegins = gameBegins;
@@ -148,6 +152,7 @@ public class Game implements Runnable {
         this.serverTaskPool = null;
         this.refServer = null;
         playerColor = new HashMap<>();
+        this.unitsDistributionDone = unitsDistributionDone;
         initialColorSet();
     }
 
@@ -253,7 +258,7 @@ public class Game implements Runnable {
     /**
      * Use this method to add player to the game.
      *
-     * @param player
+     * @param player The player to be added.
      */
     public void addPlayerFromDb(Player player) {
         int playerNums = players.size();
@@ -771,6 +776,7 @@ public class Game implements Runnable {
                          */
                         logOutPhase(currentPlayerId, waitGroup);
                         barrier.await();
+                        unitsDistributionDone = true;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (BrokenBarrierException e) {
@@ -837,21 +843,24 @@ public class Game implements Runnable {
         return currentWaitGroup;
     }
 
-    /**
-     * Run this game, this should be the only method posted to the outer world.
-     * ie. Server newServer(port)
-     * newServer.run() will automatically start the game until the game is over.
-     */
-    @Override
-    public void run() {
-        // Create the map used in this game.
+    void runFromStart() {
         gameBegins = true;
         assignInitialTerritories();
+        MongoDBClient.addGame2DB(this);
+        runFromUnitsDistributionPhase();
+    }
+
+    void runFromUnitsDistributionPhase() {
         runTasksForAllPlayer(getUnitsDistributionTask());
         System.out.println("Initial units distribution done.");
         updatePlayerView();
+        MongoDBClient.addGame2DB(this);
+        // Game has record that some fields has changed.
+        runFromAttackPhase();
+    }
+
+    void runFromAttackPhase() {
         Player winner = null;
-        // All threads has finished the execution of the units distribution.
         while ((winner = checkGameEnds()) == null) {
             // We create multiple threads to tell the user what to do.
             //System.out.println("Ready to play the turn");
@@ -867,6 +876,7 @@ public class Game implements Runnable {
                 p.setCanUpgradeInThisTurn(true);
             }
             updatePlayerView();
+            MongoDBClient.addGame2DB(this);
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -882,7 +892,73 @@ public class Game implements Runnable {
                 exception.printStackTrace();
             }
         }
+        MongoDBClient.addGame2DB(this);
     }
+
+    /**
+     * Run this game, this should be the only method posted to the outer world.
+     * ie. Server newServer(port)
+     * newServer.run() will automatically start the game until the game is over.
+     */
+    @Override
+    public void run() {
+        if (gameEnds) {
+            return;
+        }
+        if (unitsDistributionDone) {
+            runFromAttackPhase();
+            return;
+        }
+        runFromStart();
+
+    }
+
+//    /**
+//     * Run this game, this should be the only method posted to the outer world.
+//     * ie. Server newServer(port)
+//     * newServer.run() will automatically start the game until the game is over.
+//     */
+//    @Override
+//    public void run() {
+//        // Create the map used in this game.
+//        gameBegins = true;
+//        assignInitialTerritories();
+//        runTasksForAllPlayer(getUnitsDistributionTask());
+//        System.out.println("Initial units distribution done.");
+//        updatePlayerView();
+//        Player winner = null;
+//        // All threads has finished the execution of the units distribution.
+//        while ((winner = checkGameEnds()) == null) {
+//            // We create multiple threads to tell the user what to do.
+//            //System.out.println("Ready to play the turn");
+//            runTasksForAllPlayer(getPlayOneTurnTask());
+//            //When this is done.
+//            orderProcessor.executeEndTurnOrders();
+//            playMap.addUnitToEachTerritory();
+//            updatePlayerInfo();
+//            //Update player's food resource and technology resource.
+//            playMap.decreaseCloakLastTime();
+//            playMap.updatePlayerResource();
+//            for (Player p : players.values()) {
+//                p.setCanUpgradeInThisTurn(true);
+//            }
+//            updatePlayerView();
+//        }
+//        gameEnds = true;
+//        String message = "Game ends, the winner is player " + winner.getPlayerID();
+//        logOutForAllPlayers();
+//        for (Player p : players.values()) {
+//            Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
+//            Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
+//            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, p);
+//            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories, p));
+//            try {
+//                p.getJCommunicator().send(object);
+//            } catch (IOException exception) {
+//                exception.printStackTrace();
+//            }
+//        }
+//    }
 
 
     /**
