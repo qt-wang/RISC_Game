@@ -284,4 +284,14 @@ public class V1Territory implements Territory {
     public int getUnitNumber(int level) {
         return armies.get(level).getArmyUnits();
     }
+
+    @Override
+    public Set<Spy> getOwnedSpies(){
+        return ownedSpies;
+    }
+
+    @Override
+    public Set<Spy> getEnemySpies(){
+        return enemySpies;
+    }
 }

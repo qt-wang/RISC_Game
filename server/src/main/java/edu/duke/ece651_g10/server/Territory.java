@@ -248,4 +248,8 @@ public interface Territory {
      * @param view   The view.
      */
     public void setPlayerView(Player player, JSONObject view);
+
+    public Set<Spy> getOwnedSpies();
+
+    public Set<Spy> getEnemySpies();
 }

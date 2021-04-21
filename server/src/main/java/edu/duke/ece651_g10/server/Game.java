@@ -4,10 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -68,6 +65,37 @@ public class Game implements Runnable {
 
     Server refServer;
 
+    // Do not need to be stored.
+    private HashMap<Integer, String> playerColor;
+
+    private List<String> colorSet;
+
+    /**
+     * Set up the initial colors used in this game.
+     */
+    private void initialColorSet() {
+        playerColor = new HashMap<>();
+        colorSet = new LinkedList<>();
+        colorSet.add("red");
+        colorSet.add("yellow");
+        colorSet.add("green");
+        colorSet.add("blue");
+        colorSet.add("purple");
+    }
+
+    /**
+     * Generate the color json used by the client to setup the color.
+     * @return A json object, which contains the key value pair such that:
+     * player_id (int) : color (string)
+     */
+    JSONObject generateColorJson() {
+        JSONObject object = new JSONObject();
+        for (Map.Entry<Integer, String> entry: playerColor.entrySet()){
+            object.put(Integer.toString(entry.getKey()), entry.getValue());
+        }
+        return object;
+    }
+
     /**
      * Construct a game based on the arguments given in the argument list.
      *
@@ -96,6 +124,7 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
+        initialColorSet();
     }
 
     /**
@@ -118,6 +147,8 @@ public class Game implements Runnable {
         this.numUnitPerPlayer = numUnitPerPlayer;
         this.serverTaskPool = null;
         this.refServer = null;
+        playerColor = new HashMap<>();
+        initialColorSet();
     }
 
     /**
@@ -213,11 +244,15 @@ public class Game implements Runnable {
         if (!players.containsValue(p) && playerNums < numPlayers) {
             System.out.println("Player added successfully");
             players.put(p.getPlayerID(), p);
+            if (!playerColor.containsKey(p.getPlayerID())) {
+                playerColor.put(p.getPlayerID(), colorSet.remove(0));
+            }
         }
     }
 
     /**
      * Use this method to add player to the game.
+     *
      * @param player
      */
     public void addPlayerFromDb(Player player) {
@@ -231,6 +266,9 @@ public class Game implements Runnable {
             return;
         }
         players.put(player.getPlayerID(), player);
+        if (!playerColor.containsKey(player.getPlayerID())) {
+            playerColor.put(player.getPlayerID(), colorSet.remove(0));
+        }
     }
 
     public HashMap<Integer, Player> getAllPlayers() {
@@ -490,6 +528,7 @@ public class Game implements Runnable {
     public JSONObject generateClientNeededInformation(int playerId, String sub, String prompt, String reason,
                                                       JSONObject fixedJSON, JSONObject variableJSON) {
         JSONObject object = new JSONObject();
+        object.put("colorStrategy", generateColorJson());
         object.put("type", "Game").put("sub", sub).put("playerId", playerId).put("prompt", prompt).put("reason", reason);
         // Append the playerStatus
         boolean isLost = players.get(playerId).getIsLost();

@@ -315,7 +315,6 @@ public class Server {
         setServerSocket(port);
         games = new HashMap<>();
         gameFactory = new V2GameFactory(this);
-        this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
@@ -325,6 +324,51 @@ public class Server {
         for (int i = 0; i < 5; i++) {
             games.put(i, gameFactory.createFixedGame(2));
         }
+    }
+
+    /**
+     * Construct the server back from the database.
+     *
+     * @param port                    The port the server is listening for.
+     * @param serverPasswordGenerator The server password generator, this should also be resumed from the server.
+     * @param gameList                A list of games the server previously owned.
+     * @param clientInfoList          The client info list.
+     *                                The key is the password, the value is a list of player id that the client use.
+     * @param playerList              A list of players that are previously in the server.
+     *                                The key is the player id, the value is the player.
+     * @param clientGamesInfo         The client games list.
+     *                                The key is the password, the value is a list of game id that the client in.
+     */
+    public Server(int port, PasswordGenerator serverPasswordGenerator, ArrayList<Game> gameList, HashMap<String, List<Integer>> clientInfoList, HashMap<Integer, Player> playerList,
+                  HashMap<String, List<Integer>> clientGamesInfo) throws IOException {
+        setServerSocket(port);
+        games = new HashMap<>();
+        for (Game game : gameList) {
+            games.put(game.getGameId(), game);
+        }
+        gameFactory = new V2GameFactory(this);
+        clientInfo = new HashMap<>();
+        // We need to iterate through the clientInfoList to fit the values back into clientInfo.
+        for (Map.Entry<String, List<Integer>> entry : clientInfoList.entrySet()) {
+            List<Player> players = new LinkedList<>();
+            for (Integer i : entry.getValue()) {
+                players.add(playerList.get(i));
+            }
+            clientInfo.put(entry.getKey(), players);
+        }
+        clientSocket = new HashMap<>();
+        clientGames = new HashMap<>();
+        // We need to iterate through the clientGamesInfo to set it up.
+        for (Map.Entry<String, List<Integer>> entry : clientGamesInfo.entrySet()) {
+            List<Game> tempGameList = new LinkedList<>();
+            for (Integer i : entry.getValue()) {
+                tempGameList.add(this.games.get(i));
+            }
+            clientGames.put(entry.getKey(), tempGameList);
+        }
+        this.serverPasswordGenerator = serverPasswordGenerator;
+        this.threadPool = Executors.newCachedThreadPool();
+        waitClients = new HashMap<>();
     }
 
 
@@ -383,6 +427,7 @@ public class Server {
 
     /**
      * Add the client to the game.
+     *
      * @param providedPassword
      * @param gameId
      */
@@ -407,7 +452,7 @@ public class Server {
                 if (joinedGame.getCurrentWaitGroup().getState()) {
                     synchronized (Server.class) {
                         task.running = false;
-                        for (RequestHandleTask t: waitClients.get(joinedGame)) {
+                        for (RequestHandleTask t : waitClients.get(joinedGame)) {
                             t.currentGame = null;
                             t.running = false;
                         }
