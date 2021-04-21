@@ -130,7 +130,7 @@ public class Game implements Runnable {
     /**
      * Constructor which is used to reconstruct the game from the database.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
                 boolean gameEnds, boolean gameBegins) {
         this.players = new HashMap<>();
         this.gameId = gameId;
@@ -140,7 +140,7 @@ public class Game implements Runnable {
         this.attackRuleChecker = attackRuleChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         this.upgradeUnitChecker = upgradeUnitChecker;
-        this.orderProcessor = orderProcessor;
+        this.orderProcessor = new V1OrderProcessor();
         this.currentWaitGroup = null;
         this.gameEnds = gameEnds;
         this.gameBegins = gameBegins;

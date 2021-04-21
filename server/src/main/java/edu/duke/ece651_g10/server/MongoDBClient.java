@@ -130,7 +130,7 @@ public class MongoDBClient {
   /**
    * Generate one territory old views documentation
    *
-   * @param the hash map for the old views for different player
+   * @param oldViews the hash map for the old views for different player
    * @return the list of document for the old views
    */
   private List<Document> generateOldViewDoc(HashMap<Player, JSONObject> oldViews) {
