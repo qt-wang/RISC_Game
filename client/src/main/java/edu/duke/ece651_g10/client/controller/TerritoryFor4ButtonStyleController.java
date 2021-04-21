@@ -5,7 +5,7 @@ import javafx.scene.control.Button;
 
 import java.util.HashMap;
 
-public class TerritoryFor3ButtonStyleController extends TerritoryButtonStyleController{
+public class TerritoryFor4ButtonStyleController extends TerritoryButtonStyleController{
     @FXML
     Button buttonA;
     @FXML
@@ -24,8 +24,14 @@ public class TerritoryFor3ButtonStyleController extends TerritoryButtonStyleCont
     Button buttonH;
     @FXML
     Button buttonI;
+    @FXML
+    Button buttonJ;
+    @FXML
+    Button buttonK;
+    @FXML
+    Button buttonL;
 
-    public TerritoryFor3ButtonStyleController() {
+    public TerritoryFor4ButtonStyleController() {
         buttonMap = new HashMap<>();
     }
 
@@ -40,5 +46,8 @@ public class TerritoryFor3ButtonStyleController extends TerritoryButtonStyleCont
         buttonMap.put("G", buttonG);
         buttonMap.put("H", buttonH);
         buttonMap.put("I", buttonI);
+        buttonMap.put("J", buttonJ);
+        buttonMap.put("K", buttonK);
+        buttonMap.put("L", buttonL);
     }
 }

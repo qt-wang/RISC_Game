@@ -66,7 +66,7 @@ public class SceneFactory {
         FXMLLoader loader = new FXMLLoader(fxmlResource);
         HashMap<Class<?>,Object> controllers = new HashMap<>();
         GameInfo gameInfo = new GameInfo(object);
-        TerritoryButtonStyleController tbsc = new TerritoryFor2ButtonStyleController();
+        TerritoryButtonStyleController tbsc = createTerritoryStyleController(object);
         controllers.put(tbsc.getClass(), tbsc);
         InGameController igc = new InGameController(gameInfo, primaryStage, client, this,tbsc);
         controllers.put(InGameController.class, igc);
@@ -80,7 +80,22 @@ public class SceneFactory {
         tbsc.addButtons();
         return scene;
     }
-
+    public TerritoryButtonStyleController createTerritoryStyleController(JSONObject object){
+        int players = object.getInt("playerNumber");
+        switch (players) {
+            case 2:
+                return new TerritoryFor2ButtonStyleController();
+            case 3:
+                return new TerritoryFor3ButtonStyleController();
+            case 4:
+                return new TerritoryFor4ButtonStyleController();
+            case 5:
+                return new TerritoryFor5ButtonStyleController();
+            default:
+                System.out.println("Invalid, bad!");
+                return null;
+        }
+    }
     public Scene createMap(JSONObject object) throws IOException {
         int players = object.getInt("playerNumber");
         String url;

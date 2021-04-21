@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class GameInfo {
+    private final static String INVISIBLE_COLOR = "grey";
     List<String> playerInfo;
     String sub;
     boolean canUpgrade;
@@ -19,6 +20,8 @@ public class GameInfo {
     // Have 3 player status A L E
     String playerStatus;
     private HashMap<Integer,String> playerColor;
+    public HashMap<String,String> territoryColor;
+
 
     public String getPlayerStatus() {
         return playerStatus;
@@ -44,7 +47,6 @@ public class GameInfo {
         canUpgrade = received.getBoolean("canUpgrade");
         playerStatus = received.getString("playerStatus");
         int playerNumber = received.getInt("playerNumber");
-        setPlayerColor();
         setTerritoryInfos(received);
         if (playerStatus.equals("L")) {
             setPlayerInfoLose(received);
@@ -53,13 +55,13 @@ public class GameInfo {
         }
     }
 
-    private void setPlayerColor() {
+    private void setPlayerColor(JSONObject colors) {
         playerColor = new HashMap<>();
-        playerColor.put(1,"red");
-        playerColor.put(2,"yellow");
-        playerColor.put(3,"green");
-        playerColor.put(4,"blue");
-        playerColor.put(5,"purple");
+        for(String key:colors.keySet()){
+            int playerId = Integer.parseInt(key);
+            String color = colors.getString(key);
+            playerColor.put(playerId,color);
+        }
     }
 
     public String getPlayerColor(int playerId){
@@ -108,33 +110,43 @@ public class GameInfo {
         try{
             HashMap<String,List<String>> infos = new HashMap<>();
             HashMap<Integer, List<String>> ownerShip = new HashMap<>();
+            HashMap<String,String> terrColors = new HashMap<>();
+            JSONObject colors = obj.getJSONObject("colorStrategy");
+            setPlayerColor(colors);
             JSONObject tInfos = obj.getJSONObject("TerritoriesInformation");
             for(String key:tInfos.keySet()){
                 JSONObject singleT = tInfos.getJSONObject(key);
                 JSONObject armies = singleT.getJSONObject("armies");
+                boolean visible = singleT.getBoolean("visible"),isNew = singleT.getBoolean("isNew");
                 int ownerId = singleT.getInt("owner");
                 List<String> currOwners = ownerShip.getOrDefault(ownerId,new LinkedList<String>());
                 currOwners.add(key);
                 ownerShip.put(ownerId, currOwners);
                 List<String> terrInfo = new LinkedList<>();
                 terrInfo.add("Territory name: "+key);
-                terrInfo.add("Owner: " + ownerId);
-                int foodRate = singleT.getInt("foodResourceGenerationRate");
-                int techRate = singleT.getInt("technologyResourceGenerationRate");
-                int size = singleT.getInt("territorySize");
-                terrInfo.add("Food increase rate: "+foodRate);
-                terrInfo.add("Size: " + size);
-                terrInfo.add("Tech resource increase rate: "+techRate);
-                terrInfo.add("Number of units:");
-                for(int i=0;i<7;i++){
-                    String level = ""+(char)('0'+i);
-                    int num = armies.getInt(level);
-                    terrInfo.add("  Lv"+level+": "+num);
+                if(visible){
+                    terrColors.put(key,getPlayerColor(ownerId));
+                    terrInfo.add("Owner: " + ownerId);
+                    int foodRate = singleT.getInt("foodResourceGenerationRate");
+                    int techRate = singleT.getInt("technologyResourceGenerationRate");
+                    int size = singleT.getInt("territorySize");
+                    terrInfo.add("Food increase rate: "+foodRate);
+                    terrInfo.add("Size: " + size);
+                    terrInfo.add("Tech resource increase rate: "+techRate);
+                    terrInfo.add("Number of units:");
+                    for(int i=0;i<7;i++){
+                        String level = ""+(char)('0'+i);
+                        int num = armies.getInt(level);
+                        terrInfo.add("  Lv"+level+": "+num);
+                    }
+                }else{
+                    terrColors.put(key,INVISIBLE_COLOR);
                 }
                 infos.put(key,terrInfo);
             }
             territoryInfos = infos;
             territoryOwnerShip = ownerShip;
+            territoryColor = terrColors;
             showOwnerShip();
         }catch(JSONException e){
             e.printStackTrace();

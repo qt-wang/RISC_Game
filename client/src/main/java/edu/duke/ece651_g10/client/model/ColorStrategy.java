@@ -51,6 +51,10 @@ public class ColorStrategy {
                 "-fx-text-fill: black; " +
                 "-fx-background-radius: 5, 5; " +
                 "-fx-background-insets: 2, 4;");
+        buttonStyle.put("grey","-fx-background-color: black, #b5b5b5; " +
+                "-fx-text-fill: black; " +
+                "-fx-background-radius: 5, 5; " +
+                "-fx-background-insets: 2, 4;");
     }
 
     /**
@@ -77,6 +81,10 @@ public class ColorStrategy {
                 "-fx-text-fill: black; " +
                 "-fx-background-radius: 5, 5; " +
                 "-fx-background-insets: 2, 4;");
+        buttonHoverStyle.put("grey","-fx-background-color: #ffffff, #b5b5b5; " +
+                "-fx-text-fill: black; " +
+                "-fx-background-radius: 5, 5; " +
+                "-fx-background-insets: 2, 4;");
     }
 
     /**
@@ -100,6 +108,10 @@ public class ColorStrategy {
                 "-fx-background-radius: 5, 5; " +
                 "-fx-background-insets: 2, 4;");
         buttonPressedStyle.put("purple","-fx-background-color: #450045,#450045; " +
+                "-fx-text-fill: black; " +
+                "-fx-background-radius: 5, 5; " +
+                "-fx-background-insets: 2, 4;");
+        buttonPressedStyle.put("grey","-fx-background-color: #414141,#414141; " +
                 "-fx-text-fill: black; " +
                 "-fx-background-radius: 5, 5; " +
                 "-fx-background-insets: 2, 4;");

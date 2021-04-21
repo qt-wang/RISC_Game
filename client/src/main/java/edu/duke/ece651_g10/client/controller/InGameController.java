@@ -100,14 +100,9 @@ public class InGameController{
     }
 
     public void setTerritoryColor(){
-        HashMap<Integer,List<String>> territoryOwnerShip = gameInfo.territoryOwnerShip;
-        for(Integer i : territoryOwnerShip.keySet()){
-            for(String terrName : territoryOwnerShip.get(i)){
-                String color = gameInfo.getPlayerColor(i);
-                buttonStyleController.setButtonStyle(terrName,color);
-                //String cssStyle = cs.getRegularStyle(color);
-                //buttonStyleController.setButtonStyle(terrName,cssStyle);
-            }
+        HashMap<String, String> terrColors = gameInfo.territoryColor;
+        for(String terrName: terrColors.keySet()){
+            buttonStyleController.setButtonStyle(terrName,terrColors.get(terrName));
         }
     }
 
