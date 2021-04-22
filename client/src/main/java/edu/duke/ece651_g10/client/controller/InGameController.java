@@ -351,11 +351,13 @@ public class InGameController{
         initOrder("move", "Please select the source territory!");
     }
 
-    public void initInGameOrder(String orderType, String prompt){
+    public boolean initInGameOrder(String orderType, String prompt){
         if (gameInfo.getSub().equals("Placement")) {
-            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
+            invalidPrompt("You can only do move order in the first round!\n");
+            return false;
         } else {
             initOrder(orderType, prompt);
+            return true;
         }
     }
     /**
@@ -411,8 +413,9 @@ public class InGameController{
 
     @FXML
     public void onResearchCloak(ActionEvent ae) throws IOException {
-        initInGameOrder("researchClockOrder","");
-        sendJSON();
+        if(initInGameOrder("researchClockOrder","")){
+            sendJSON();
+        }
     }
 
     @FXML
@@ -427,22 +430,25 @@ public class InGameController{
 
     @FXML
     public void onVaccine(ActionEvent ae){
-        initInGameOrder("vaccineOrder","");
-        String[] infos = {"Please input the level of vaccine you want to use!"};
-        String[] fields = {"unitLevel"};
-        setNumbersPrompt(infos,fields,true);
+        if(initInGameOrder("vaccineOrder","")){
+            String[] infos = {"Please input the level of vaccine you want to use!"};
+            String[] fields = {"unitLevel"};
+            setNumbersPrompt(infos,fields,true);
+        }
     }
 
     @FXML
     public void onUpgradeVirus(ActionEvent ae) throws IOException {
-        initInGameOrder("upgradeVirusMaxLevelOrder","");
-        sendJSON();
+        if(initInGameOrder("upgradeVirusMaxLevelOrder","")){
+            sendJSON();
+        }
     }
 
     @FXML
     public void onUpgradeVaccine(ActionEvent ae) throws IOException {
-        initInGameOrder("upgradeVaccineMaxLevelOrder","");
-        sendJSON();
+        if(initInGameOrder("upgradeVaccineMaxLevelOrder","")){
+            sendJSON();
+        }
     }
 
     /**
