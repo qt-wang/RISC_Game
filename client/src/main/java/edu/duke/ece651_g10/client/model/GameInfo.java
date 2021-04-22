@@ -13,6 +13,7 @@ import java.util.List;
 public class GameInfo {
     private final static String INVISIBLE_COLOR = "grey";
     List<String> playerInfo;
+    int currPlayerID;
     String sub;
     boolean canUpgrade;
     HashMap<String,List<String>> territoryInfos;
@@ -46,7 +47,7 @@ public class GameInfo {
         sub = received.getString("sub");
         canUpgrade = received.getBoolean("canUpgrade");
         playerStatus = received.getString("playerStatus");
-        int playerNumber = received.getInt("playerNumber");
+        currPlayerID = received.getInt("playerId");
         setTerritoryInfos(received);
         if (playerStatus.equals("L")) {
             setPlayerInfoLose(received);
@@ -72,6 +73,7 @@ public class GameInfo {
         try{
             List<String> info = new LinkedList<>();
             int playerId = obj.getInt("playerId");
+
             info.add("Player "+playerId+":");
 
             StringBuilder sb = new StringBuilder("Owns territory: ");
@@ -80,19 +82,22 @@ public class GameInfo {
                 sb.append(toAppend);
             }
             info.add(sb.toString());
-            //info.add("Territory color: "+colorStrategy.get(playerId));
             int technologyLevel = obj.getInt("technologyLevel");
             int foodResource = obj.getInt("foodResource");
             int technologyResource = obj.getInt("technologyResource");
-            //boolean canUpgrade = obj.getBoolean("canUpgrade");
-            if (canUpgrade) {
-                info.add("Can upgrade tech: yes");
-            } else {
-                info.add("Can upgrade tech: no");
-            }
-            info.add("Tech lvl: "+technologyLevel);
+            int vaccineLvl = obj.getInt("vaccineLevel");
+            int vaccineMaxLvl = obj.getInt("vaccineMaxLevel");
+            int virusMaxLvl = obj.getInt("virusMaxLevel");
+            String upgradable = canUpgrade ? "yes" : "no";
+            info.add("Tech Lv: "+technologyLevel);
             info.add("Tech resource: "+technologyResource);
             info.add("Food resource: "+foodResource);
+            String researchedCloak = obj.getBoolean("researchedClock") ? "yes" : "no";
+            info.add("Can upgrade tech: "+upgradable);
+            info.add("Cloak ability: "+researchedCloak);
+            info.add("Current vaccine Lv: "+vaccineLvl);
+            info.add("Max available vaccine Lv: "+vaccineMaxLvl);
+            info.add("Max usable virus Lv: "+virusMaxLvl);
             playerInfo = info;
         }catch(JSONException e){
             e.printStackTrace();
@@ -117,12 +122,19 @@ public class GameInfo {
             for(String key:tInfos.keySet()){
                 JSONObject singleT = tInfos.getJSONObject(key);
                 JSONObject armies = singleT.getJSONObject("armies");
+                JSONObject spyInfo = singleT.getJSONObject("spyInfo");
+                int spyNum = spyInfo.getInt(Integer.toString(currPlayerID));
                 boolean visible = singleT.getBoolean("visible"),isNew = singleT.getBoolean("isNew");
                 int ownerId = singleT.getInt("owner");
                 List<String> currOwners = ownerShip.getOrDefault(ownerId,new LinkedList<String>());
                 currOwners.add(key);
                 ownerShip.put(ownerId, currOwners);
                 List<String> terrInfo = new LinkedList<>();
+                if(spyNum==1){
+                    terrInfo.add("You have a spy on this territory\n");
+                }else if(spyNum>1){
+                    terrInfo.add("You have "+spyNum+" spies on this territory\n");
+                }
                 terrInfo.add("Territory name: "+key);
                 if(visible){
                     terrColors.put(key,getPlayerColor(ownerId));
@@ -130,8 +142,8 @@ public class GameInfo {
                     int foodRate = singleT.getInt("foodResourceGenerationRate");
                     int techRate = singleT.getInt("technologyResourceGenerationRate");
                     int size = singleT.getInt("territorySize");
-                    terrInfo.add("Food increase rate: "+foodRate);
                     terrInfo.add("Size: " + size);
+                    terrInfo.add("Food increase rate: "+foodRate);
                     terrInfo.add("Tech resource increase rate: "+techRate);
                     terrInfo.add("Number of units:");
                     for(int i=0;i<7;i++){
