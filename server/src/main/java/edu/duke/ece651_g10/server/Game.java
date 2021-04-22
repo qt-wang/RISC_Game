@@ -131,6 +131,7 @@ public class Game implements Runnable {
         initialColorSet();
     }
 
+
     /**
      * Constructor which is used to reconstruct the game from the database.
      */
@@ -215,6 +216,7 @@ public class Game implements Runnable {
         this.gameBegins = false;
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
+        initialColorSet();
     }
 
     public int getGameId() {
