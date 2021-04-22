@@ -20,6 +20,6 @@ public class MongoDBClientTest {
     MongoDBClient mongoClient = new MongoDBClient(
         "mongodb+srv://g10:ece651@cluster0.jjos5.mongodb.net/ece651_risk?retryWrites=true&w=majority");
     MongoDBClient.addGame2DB(game);
-    mongoClient.reconstructGameFromDatabase(server);
+    mongoClient.reconstructGameFromDatabase();
   }
 }

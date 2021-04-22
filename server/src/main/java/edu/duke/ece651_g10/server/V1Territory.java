@@ -29,21 +29,21 @@ public class V1Territory implements Territory {
     }
 
 
-    private final String name;
-    private Player owner;
+    private final String name;  // done
+    private Player owner;    // done
 
     // neighbours not stored.
-    private HashSet<Territory> neighbours;
+    private HashSet<Territory> neighbours;  // done
 
     // This units are all owned by the owner of the territory.
 //    private List<Unit> ownedUnits;
 
 
     // Version 2 variables.
-    private int size;
-    private int foodResourceGenerationRate;
-    private int technologyResourceGenerationRate;
-    LinkedList<Army> armies;
+    private int size;  // done
+    private int foodResourceGenerationRate;    // done
+    private int technologyResourceGenerationRate; // done
+    LinkedList<Army> armies;   // done
 
     // Version 3 variables.
     Set<Spy> ownedSpies;

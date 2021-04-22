@@ -180,7 +180,7 @@ public class MongoDBClient {
      *
      * @return the arraylist of the game objects
      */
-    public ArrayList<Game> reconstructGameFromDatabase(Server runServer) {
+    public ArrayList<Game> reconstructGameFromDatabase() {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> gameCollection = riskDB.getCollection("games");
@@ -202,11 +202,17 @@ public class MongoDBClient {
 //                game = reconstructPlayers(game, d);
 //                game = reconstructTerritories(game, d);
 //                game.setGameBegins(d.getBoolean("begin_game"));
-
-                gameList.add(game);
+                HashMap<Integer, Player> playerInfo = reconstructPlayers(d);
+                int number_of_players = d.getInteger("num_players");
+                GameMap map = reconstructTerritories(number_of_players, d, playerInfo);
+                int numUPP = d.getInteger("num_unit_per_player");
+                int gameId = d.getInteger("game_id");
+                boolean gameEnds = d.getBoolean("end_game");
+                boolean gameBegins = d.getBoolean("begin_game");
+                boolean unitsDD = d.getBoolean("units_distribution_done");
+                Game newGame = new Game(map, GameFactory.getMoveRuleChecker(), GameFactory.getAttackRuleChecker(), numUPP, number_of_players, GameFactory.getUpgradeTechChecker(), GameFactory.getUpgradeUnitChecker(), gameId, gameEnds, gameBegins, unitsDD, playerInfo);
+                gameList.add(newGame);
             }
-
-
             return gameList;
         }
     }
@@ -223,16 +229,6 @@ public class MongoDBClient {
         List<Document> playerList = (List<Document>) doc.get("players");
         for (Document p : playerList) {
             // TODO: Set up socket and jCommunicater
-//            Player player = new Player(null, null);
-//            //player.setCanUpgradeInThisTurn(p.getBoolean("can_upgrade"));
-//            player.setFoodResourceTotal(p.getInteger("food"));
-//            player.setTechnologyResourceTotal(p.getInteger("tech"));
-//            player.setTechnologyLevel(p.getInteger("tech_level"));
-//            if (p.getBoolean("lost") == true) {
-//                player.setIsLost();
-//            }
-            // player.setPlayerId(p.getplayerId);
-            //game.addPlayerFromDb(player);
             int playerId = p.getInteger("id");
             int foodRT = p.getInteger("food");
             int techRT = p.getInteger("tech");
@@ -247,6 +243,7 @@ public class MongoDBClient {
             Player player = new Player(playerId, foodRT, techRT, techLevel, isLost, virusML, vaccineL, vaccineML, can_bomb_in_this_game, canVaccine, canRC);
             playerInfo.put(player.getPlayerID(), player);
         }
+        return playerInfo;
     }
 
     /**
@@ -257,7 +254,7 @@ public class MongoDBClient {
      *                     collection
      * @return the territories reconstructed game
      */
-    private GameMap reconstructTerritories(int numOfPlayers, Document doc,) {
+    private GameMap reconstructTerritories(int numOfPlayers, Document doc, HashMap<Integer, Player> playerInfo) {
         List<Document> territoryList = (List<Document>) doc.get("territories");
         GameMap gameMap = new FixedGameMapFactory().createGameMap(numOfPlayers);
         for (Document t : territoryList) {
@@ -265,7 +262,8 @@ public class MongoDBClient {
             territory.setFoodResourceGenerationRate(t.getInteger("food_rate"));
             territory.setTechnologyResourceGenerationRate(t.getInteger("tech_rate"));
             territory.setSize(t.getInteger("size"));
-            //territory.setOwner(game.getAllPlayers().get(t.getInteger("owner")));
+            int ownerId = t.getInteger("owner");
+            territory.setOwner(playerInfo.get(ownerId));
             Document army = (Document) t.get("army");
             territory.setUnitNumber(0);
             for (int i = 0; i <= 6; i++) {
@@ -273,20 +271,20 @@ public class MongoDBClient {
             }
             List<Document> ownSpiesList = (List<Document>) t.get("owned_spies");
             for (Document s : ownSpiesList) {
-                territory.addOwnedSpy(new SpyUnit(game.getAllPlayers().get(s.get("owner_id")), territory));
+                territory.addOwnedSpy(new SpyUnit(playerInfo.get(s.get("owner_id")), territory));
             }
             List<Document> enemySpiesList = (List<Document>) t.get("enemy_spies");
             for (Document s : enemySpiesList) {
-                territory.addEnemySpy(new SpyUnit(game.getAllPlayers().get(s.get("owner_id")), territory));
+                territory.addEnemySpy(new SpyUnit(playerInfo.get(s.get("owner_id")), territory));
             }
             List<Document> oldViewList = (List<Document>) t.get("old_views");
             for (Document o : oldViewList) {
                 JSONObject json = new JSONObject();
                 o.get("view", Document.class).forEach((prop, value) -> json.put(prop, value));
-                territory.setPlayerView(game.getAllPlayers().get(o.get("player_id")), json);
+                territory.setPlayerView(playerInfo.get(o.get("player_id")), json);
             }
         }
-        return game;
+        return gameMap;
     }
 
     /**

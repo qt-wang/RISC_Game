@@ -133,10 +133,11 @@ public class Game implements Runnable {
 
 
     /**
+     * TODO: Add new rule checkers for new features.
      * Constructor which is used to reconstruct the game from the database.
      */
     public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
-                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone) {
+                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone, HashMap<Integer, Player> playerInfo) {
         this.players = new HashMap<>();
         this.gameId = gameId;
         this.numPlayers = numPlayers;

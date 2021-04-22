@@ -10,6 +10,7 @@ public class V2GameFactory implements GameFactory {
     final RuleChecker<OneTerritoryOrder> upgradeUnitChecker = new SelfUpgradeOrderChecker(new UnitUpgradeTechChecker(new UnitUpgradeRangeChecker(new UpgradeSufficientUnitChecker(new TechResourceUnitChecker(null)))));
     final RuleChecker<ZeroTerritoryOrder> upgradeTechChecker = new CanUpgradeTechChecker(new TechUpgradeRangeChecker(new SufficientTechResourceChecker(null)));
 
+
     @Override
     public Game createFixedGame(int people) {
         GameMapFactory fixedGameMapFactory = new FixedGameMapFactory();
