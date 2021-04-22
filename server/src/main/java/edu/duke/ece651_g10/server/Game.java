@@ -4,10 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -68,6 +65,40 @@ public class Game implements Runnable {
 
     Server refServer;
 
+    // Do not need to be stored.
+    private HashMap<Integer, String> playerColor;
+
+    private List<String> colorSet;
+
+    private boolean unitsDistributionDone;
+
+    /**
+     * Set up the initial colors used in this game.
+     */
+    private void initialColorSet() {
+        playerColor = new HashMap<>();
+        colorSet = new LinkedList<>();
+        colorSet.add("red");
+        colorSet.add("yellow");
+        colorSet.add("green");
+        colorSet.add("blue");
+        colorSet.add("purple");
+    }
+
+    /**
+     * Generate the color json used by the client to setup the color.
+     *
+     * @return A json object, which contains the key value pair such that:
+     * player_id (int) : color (string)
+     */
+    JSONObject generateColorJson() {
+        JSONObject object = new JSONObject();
+        for (Map.Entry<Integer, String> entry : playerColor.entrySet()) {
+            object.put(Integer.toString(entry.getKey()), entry.getValue());
+        }
+        return object;
+    }
+
     /**
      * Construct a game based on the arguments given in the argument list.
      *
@@ -96,13 +127,16 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
+        unitsDistributionDone = false;
+        initialColorSet();
     }
+
 
     /**
      * Constructor which is used to reconstruct the game from the database.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
-                boolean gameEnds, boolean gameBegins) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
+                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone) {
         this.players = new HashMap<>();
         this.gameId = gameId;
         this.numPlayers = numPlayers;
@@ -111,13 +145,16 @@ public class Game implements Runnable {
         this.attackRuleChecker = attackRuleChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         this.upgradeUnitChecker = upgradeUnitChecker;
-        this.orderProcessor = orderProcessor;
+        this.orderProcessor = new V1OrderProcessor();
         this.currentWaitGroup = null;
         this.gameEnds = gameEnds;
         this.gameBegins = gameBegins;
         this.numUnitPerPlayer = numUnitPerPlayer;
         this.serverTaskPool = null;
         this.refServer = null;
+        playerColor = new HashMap<>();
+        this.unitsDistributionDone = unitsDistributionDone;
+        initialColorSet();
     }
 
     /**
@@ -179,6 +216,7 @@ public class Game implements Runnable {
         this.gameBegins = false;
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
+        initialColorSet();
     }
 
     public int getGameId() {
@@ -213,12 +251,16 @@ public class Game implements Runnable {
         if (!players.containsValue(p) && playerNums < numPlayers) {
             System.out.println("Player added successfully");
             players.put(p.getPlayerID(), p);
+            if (!playerColor.containsKey(p.getPlayerID())) {
+                playerColor.put(p.getPlayerID(), colorSet.remove(0));
+            }
         }
     }
 
     /**
      * Use this method to add player to the game.
-     * @param player
+     *
+     * @param player The player to be added.
      */
     public void addPlayerFromDb(Player player) {
         int playerNums = players.size();
@@ -231,6 +273,9 @@ public class Game implements Runnable {
             return;
         }
         players.put(player.getPlayerID(), player);
+        if (!playerColor.containsKey(player.getPlayerID())) {
+            playerColor.put(player.getPlayerID(), colorSet.remove(0));
+        }
     }
 
     public HashMap<Integer, Player> getAllPlayers() {
@@ -344,6 +389,33 @@ public class Game implements Runnable {
                 return order;
             } else if (orderType.equals("upgradeTech")) {
                 Order order = new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("bombOrder")) {
+                Order order = new BombOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("cloakOrder")) {
+                Order order = new CloakOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("upgradeSpyOrder")) {
+                Order order = new UpgradeSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("researchClockOrder")) {
+                Order order = new ResearchCloakOrder(playerId, playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("moveSpyOrder")) {
+                Order order = new MoveSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getString("destTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("virusOrder")){
+                Order order = new VirusOrder(playerId, playMap, players.get(playerId), obj.getString("sourceTerritory"), obj.getInt("unitLevel"));
+                return order;
+            } else if (orderType.equals("vaccineOrder")) {
+                Order order = new VaccineOrder(playerId, playMap, players.get(playerId), obj.getInt("unitLevel"));
+                return order;
+            } else if (orderType.equals("upgradeVirusMaxLevelOrder")) {
+                Order order = new UpgradeVirusMaxLevelOrder(playerId, playMap, players.get(playerId));
+                return order;
+            } else if (orderType.equals("upgradeVaccineMaxLevelOrder")) {
+                Order order = new UpgradeVaccineMaxLevelOrder(playerId, playMap, players.get(playerId));
                 return order;
             } else {
                 return null;
@@ -490,6 +562,7 @@ public class Game implements Runnable {
     public JSONObject generateClientNeededInformation(int playerId, String sub, String prompt, String reason,
                                                       JSONObject fixedJSON, JSONObject variableJSON) {
         JSONObject object = new JSONObject();
+        object.put("colorStrategy", generateColorJson());
         object.put("type", "Game").put("sub", sub).put("playerId", playerId).put("prompt", prompt).put("reason", reason);
         // Append the playerStatus
         boolean isLost = players.get(playerId).getIsLost();
@@ -732,6 +805,7 @@ public class Game implements Runnable {
                          */
                         logOutPhase(currentPlayerId, waitGroup);
                         barrier.await();
+                        unitsDistributionDone = true;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (BrokenBarrierException e) {
@@ -798,21 +872,24 @@ public class Game implements Runnable {
         return currentWaitGroup;
     }
 
-    /**
-     * Run this game, this should be the only method posted to the outer world.
-     * ie. Server newServer(port)
-     * newServer.run() will automatically start the game until the game is over.
-     */
-    @Override
-    public void run() {
-        // Create the map used in this game.
+    void runFromStart() {
         gameBegins = true;
         assignInitialTerritories();
+        MongoDBClient.addGame2DB(this);
+        runFromUnitsDistributionPhase();
+    }
+
+    void runFromUnitsDistributionPhase() {
         runTasksForAllPlayer(getUnitsDistributionTask());
         System.out.println("Initial units distribution done.");
         updatePlayerView();
+        MongoDBClient.addGame2DB(this);
+        // Game has record that some fields has changed.
+        runFromAttackPhase();
+    }
+
+    void runFromAttackPhase() {
         Player winner = null;
-        // All threads has finished the execution of the units distribution.
         while ((winner = checkGameEnds()) == null) {
             // We create multiple threads to tell the user what to do.
             //System.out.println("Ready to play the turn");
@@ -828,6 +905,7 @@ public class Game implements Runnable {
                 p.setCanUpgradeInThisTurn(true);
             }
             updatePlayerView();
+            MongoDBClient.addGame2DB(this);
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -843,7 +921,73 @@ public class Game implements Runnable {
                 exception.printStackTrace();
             }
         }
+        MongoDBClient.addGame2DB(this);
     }
+
+    /**
+     * Run this game, this should be the only method posted to the outer world.
+     * ie. Server newServer(port)
+     * newServer.run() will automatically start the game until the game is over.
+     */
+    @Override
+    public void run() {
+        if (gameEnds) {
+            return;
+        }
+        if (unitsDistributionDone) {
+            runFromAttackPhase();
+            return;
+        }
+        runFromStart();
+
+    }
+
+//    /**
+//     * Run this game, this should be the only method posted to the outer world.
+//     * ie. Server newServer(port)
+//     * newServer.run() will automatically start the game until the game is over.
+//     */
+//    @Override
+//    public void run() {
+//        // Create the map used in this game.
+//        gameBegins = true;
+//        assignInitialTerritories();
+//        runTasksForAllPlayer(getUnitsDistributionTask());
+//        System.out.println("Initial units distribution done.");
+//        updatePlayerView();
+//        Player winner = null;
+//        // All threads has finished the execution of the units distribution.
+//        while ((winner = checkGameEnds()) == null) {
+//            // We create multiple threads to tell the user what to do.
+//            //System.out.println("Ready to play the turn");
+//            runTasksForAllPlayer(getPlayOneTurnTask());
+//            //When this is done.
+//            orderProcessor.executeEndTurnOrders();
+//            playMap.addUnitToEachTerritory();
+//            updatePlayerInfo();
+//            //Update player's food resource and technology resource.
+//            playMap.decreaseCloakLastTime();
+//            playMap.updatePlayerResource();
+//            for (Player p : players.values()) {
+//                p.setCanUpgradeInThisTurn(true);
+//            }
+//            updatePlayerView();
+//        }
+//        gameEnds = true;
+//        String message = "Game ends, the winner is player " + winner.getPlayerID();
+//        logOutForAllPlayers();
+//        for (Player p : players.values()) {
+//            Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
+//            Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
+//            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, p);
+//            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories, p));
+//            try {
+//                p.getJCommunicator().send(object);
+//            } catch (IOException exception) {
+//                exception.printStackTrace();
+//            }
+//        }
+//    }
 
 
     /**

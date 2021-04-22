@@ -1,8 +1,8 @@
 package edu.duke.ece651_g10.server;
 
 public class MoveSpyOrder extends TerritoryToTerritoryOrder{
-    public MoveSpyOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p, int level) {
-        super(playerID, source, dest, unitNum, gMap, p, level);
+    public MoveSpyOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p) {
+        super(playerID, source, dest, unitNum, gMap, p, 0);
     }
 
     public void execute(){
