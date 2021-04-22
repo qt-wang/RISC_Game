@@ -197,11 +197,6 @@ public class MongoDBClient {
                 if ((boolean) (d.get("end_game")) == true) {
                     continue;
                 }
-//                V2GameFactory gameFactory = new V2GameFactory(runServer);
-//                Game game = gameFactory.createTestGame((int) d.get("num_players"));
-//                game = reconstructPlayers(game, d);
-//                game = reconstructTerritories(game, d);
-//                game.setGameBegins(d.getBoolean("begin_game"));
                 HashMap<Integer, Player> playerInfo = reconstructPlayers(d);
                 int number_of_players = d.getInteger("num_players");
                 GameMap map = reconstructTerritories(number_of_players, d, playerInfo);
@@ -348,10 +343,9 @@ public class MongoDBClient {
     /**
      * Reconstruct the server
      *
-     * @param server The server needs to be reconstructed
      * @return The reconstructed server
      */
-    public static Server reconstructServerFromDatabase(Server server) {
+    public static Server reconstructServerFromDatabase() {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> serverCollection = riskDB.getCollection("server");
@@ -362,7 +356,8 @@ public class MongoDBClient {
             HashMap<String, List<Integer>> clientGames = new HashMap<String, List<Integer>>();
             serverDoc.get("client_games", Document.class)
                     .forEach((key, value) -> clientGames.put(key, (List<Integer>) value));
-            return server;
+            //return server;
+            return null;
         }
     }
 }

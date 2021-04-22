@@ -8,7 +8,6 @@ public class ResearchCloakOrder extends ZeroTerritoryOrder{
     public void execute(){
         player.setTechnologyResourceTotal(player.getTechnologyResourceTotal() - 100);
         player.setCanResearchCloak(false);
-        player.setCanCloak(true);
     }
 
 }
