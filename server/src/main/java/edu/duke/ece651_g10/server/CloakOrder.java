@@ -1,7 +1,7 @@
 package edu.duke.ece651_g10.server;
 
 public class CloakOrder extends OneTerritoryOrder{
-    public CloakOrder(int playerID, String source, GameMap gMap, Player player){
+    public CloakOrder(int playerID, String source,  GameMap gMap, Player player){
         super(playerID, source, 0, gMap, 0, player);
     }
 

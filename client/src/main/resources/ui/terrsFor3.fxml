@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<AnchorPane pickOnBounds="false" prefHeight="404.0" prefWidth="617.0" styleClass="panel" stylesheets="@buttonStyles.css"
+            xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.duke.ece651_g10.client.controller.TerritoryFor3ButtonStyleController">
+    <Button fx:id="buttonA" layoutX="79.0" layoutY="49.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false"
+            prefHeight="60.0" prefWidth="60.0" text="A">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="btnA"/>
+            <String fx:value="expandable"/>
+            <String fx:value="greyButton"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonB" layoutX="134.0" layoutY="50.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="150.0" prefWidth="60.0" text="B">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="btnB"/>
+            <String fx:value="greyButton"/>
+            <String fx:value="expandable"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonC" layoutX="189.0" layoutY="50.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="122.0" prefWidth="122.0" text="C">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="btnC"/>
+            <String fx:value="expandable"/>
+            <String fx:value="greyButton"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonD" layoutX="306.0" layoutY="50.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="95.0" prefWidth="64.0" text="D">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="expandable"/>
+            <String fx:value="greyButton"/>
+            <String fx:value="btnD"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonE" layoutX="218.0" layoutY="140.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="88.0" prefWidth="152.0" text="E">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="btnE"/>
+            <String fx:value="greyButton"/>
+            <String fx:value="expandable"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonF" layoutX="245.0" layoutY="222.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="89.0" prefWidth="125.0" text="F">
+        <stylesheets>
+            <URL value="@mapShapeFor3.css"/>
+            <URL value="@buttonStyles.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="btnF"/>
+            <String fx:value="greyButton"/>
+            <String fx:value="expandable"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonG" layoutX="79.0" layoutY="251.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="60.0" prefWidth="172.0" text="G">
+        <stylesheets>
+            <URL value="@mapShapeFor3.css"/>
+            <URL value="@buttonStyles.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="expandable"/>
+            <String fx:value="greyButton"/>
+            <String fx:value="btnG"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonH" layoutX="134.0" layoutY="167.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="90.0" prefWidth="117.0" text="H">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="greyButton"/>
+            <String fx:value="btnH"/>
+            <String fx:value="expandable"/>
+        </styleClass>
+    </Button>
+    <Button fx:id="buttonI" layoutX="79.0" layoutY="103.0" mnemonicParsing="false" onAction="#onClickTerritory"
+            pickOnBounds="false" prefHeight="180.0" prefWidth="60.0" text="I">
+        <stylesheets>
+            <URL value="@buttonStyles.css"/>
+            <URL value="@mapShapeFor3.css"/>
+        </stylesheets>
+        <styleClass>
+            <String fx:value="greyButton"/>
+            <String fx:value="btnI"/>
+            <String fx:value="expandable"/>
+        </styleClass>
+    </Button>
+</AnchorPane>

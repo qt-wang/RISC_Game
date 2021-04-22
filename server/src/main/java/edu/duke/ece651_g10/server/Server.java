@@ -35,7 +35,7 @@ public class Server {
 
     // Add a map from client to multiple players.
     // Add a map from client to multiple games.
-    HashMap<String, List<Player>> clientInfo;
+    HashMap<String, List<Player>> clientPlayerInfo;
 
     // Do not store.
     HashMap<String, Socket> clientSocket;
@@ -58,7 +58,7 @@ public class Server {
      * @return hash map of the client information
      */
     public HashMap<String, List<Player>> getClientInfo() {
-        return clientInfo;
+        return clientPlayerInfo;
     }
 
     /**
@@ -171,7 +171,9 @@ public class Server {
                     String password = serverPasswordGenerator.generate();
                     synchronized (Server.class) {
                         clientGames.put(password, new LinkedList<>());
-                        clientInfo.put(password, new LinkedList<>());
+                        clientPlayerInfo.put(password, new LinkedList<>());
+                        // Store the server information.
+                        MongoDBClient.addServer2DB(Server.this);
                     }
                     JSONObject response = JSONCommunicator.generateServerResponse("valid", "", "connection");
                     response.put("password", password);
@@ -215,6 +217,7 @@ public class Server {
                     String providedPassword = obj.getString("password");
                     int gameId = obj.getInt("gameId");
                     String reason = null;
+                    // Check whether the game is a valid game for the client.
                     String success = checkValidOpenGame(providedPassword, gameId);
                     if (success != null) {
                         reason = success;
@@ -238,13 +241,16 @@ public class Server {
                     Player newPlayer = new Player(socket, jc);
                     newPlayer.setTechnologyResourceTotal(20);
                     newPlayer.setFoodResourceTotal(500);
-                    clientInfo.get(providedPassword).add(newPlayer);
+                    clientPlayerInfo.get(providedPassword).add(newPlayer);
                     newGame.addPlayer(newPlayer);
+                    MongoDBClient.addGame2DB(newGame);
                     clientGames.get(providedPassword).add(newGame);
                     newPlayer.leaveGame();
                     JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
                     jc.send(response);
                     games.put(newGame.getGameId(), newGame);
+                    MongoDBClient.addServer2DB(Server.this);
+                    MongoDBClient.addGame2DB(newGame);
                     break;
                 }
             }
@@ -315,16 +321,66 @@ public class Server {
         setServerSocket(port);
         games = new HashMap<>();
         gameFactory = new V2GameFactory(this);
-        this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
-        clientInfo = new HashMap<>();
+        clientPlayerInfo = new HashMap<>();
         clientGames = new HashMap<>();
         waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
             games.put(i, gameFactory.createFixedGame(2));
         }
+    }
+
+    /**
+     * Construct the server back from the database.
+     *
+     * @param port                    The port the server is listening for.
+     * @param serverPasswordGenerator The server password generator, this should also be resumed from the server.
+     * @param gameList                A list of games the server previously owned.
+     * @param clientInfoList          The client info list.
+     *                                The key is the password, the value is a list of player id that the client use.
+     * @param playerList              A list of players that are previously in the server.
+     *                                The key is the player id, the value is the player.
+     * @param clientGamesInfo         The client games list.
+     *                                The key is the password, the value is a list of game id that the client in.
+     * @param gameIdentifier          The previous stored game identifier (static variable)
+     * @param playerIdentifier        The previous stored player identifier (static variable)
+     */
+    public Server(int port, PasswordGenerator serverPasswordGenerator, ArrayList<Game> gameList, HashMap<String, List<Integer>> clientInfoList, HashMap<Integer, Player> playerList,
+                  HashMap<String, List<Integer>> clientGamesInfo, int gameIdentifier, int playerIdentifier) throws IOException {
+        setServerSocket(port);
+        Game.setGameIdentifier(gameIdentifier);
+        Player.setAvailableId(playerIdentifier);
+        games = new HashMap<>();
+        for (Game game : gameList) {
+            game.setRefServer(this);
+            game.setServerTaskPool(this.threadPool);
+            games.put(game.getGameId(), game);
+        }
+        gameFactory = new V2GameFactory(this);
+        clientPlayerInfo = new HashMap<>();
+        // We need to iterate through the clientInfoList to fit the values back into clientInfo.
+        for (Map.Entry<String, List<Integer>> entry : clientInfoList.entrySet()) {
+            List<Player> players = new LinkedList<>();
+            for (Integer i : entry.getValue()) {
+                players.add(playerList.get(i));
+            }
+            clientPlayerInfo.put(entry.getKey(), players);
+        }
+        clientSocket = new HashMap<>();
+        clientGames = new HashMap<>();
+        // We need to iterate through the clientGamesInfo to set it up.
+        for (Map.Entry<String, List<Integer>> entry : clientGamesInfo.entrySet()) {
+            List<Game> tempGameList = new LinkedList<>();
+            for (Integer i : entry.getValue()) {
+                tempGameList.add(this.games.get(i));
+            }
+            clientGames.put(entry.getKey(), tempGameList);
+        }
+        this.serverPasswordGenerator = serverPasswordGenerator;
+        this.threadPool = Executors.newCachedThreadPool();
+        waitClients = new HashMap<>();
     }
 
 
@@ -367,7 +423,7 @@ public class Server {
     private Player getPlayerWithPassword(String password, int GameId) {
         Game game = games.get(GameId);
         synchronized (Server.class) {
-            for (Player p : clientInfo.get(password)) {
+            for (Player p : clientPlayerInfo.get(password)) {
                 if (game.containsPlayer(p)) {
                     return p;
                 }
@@ -383,23 +439,32 @@ public class Server {
 
     /**
      * Add the client to the game.
-     * @param providedPassword
-     * @param gameId
+     *
+     * @param providedPassword Client provide this password to the server.
+     * @param gameId           The game id.
+     * @param task             The request handle task.
+     * @param socket           The socket of the related client.
      */
     public void joinClientToGame(String providedPassword, int gameId, Socket socket, JSONCommunicator jc, RequestHandleTask task) throws IOException {
         Game joinedGame = games.get(gameId);
+        // Player already in the game, do not need to generate the new player.
         if (isPlayerInGame(providedPassword, gameId)) {
             Player p = getPlayerWithPassword(providedPassword, gameId);
+            p.setJCommunicate(jc);
             p.joinGame();
         } else {
             Player newPlayer = new Player(socket, jc);
             newPlayer.setTechnologyResourceTotal(20);
             newPlayer.setFoodResourceTotal(500);
             synchronized (Server.class) {
-                clientInfo.get(providedPassword).add(newPlayer);
+                clientPlayerInfo.get(providedPassword).add(newPlayer);
                 clientGames.get(providedPassword).add(joinedGame);
+                MongoDBClient.addServer2DB(this);
             }
             joinedGame.addPlayer(newPlayer);
+            synchronized (joinedGame) {
+                MongoDBClient.addGame2DB(joinedGame);
+            }
         }
         synchronized (RequestHandleTask.class) {
             synchronized (joinedGame) {
@@ -407,7 +472,7 @@ public class Server {
                 if (joinedGame.getCurrentWaitGroup().getState()) {
                     synchronized (Server.class) {
                         task.running = false;
-                        for (RequestHandleTask t: waitClients.get(joinedGame)) {
+                        for (RequestHandleTask t : waitClients.get(joinedGame)) {
                             t.currentGame = null;
                             t.running = false;
                         }
