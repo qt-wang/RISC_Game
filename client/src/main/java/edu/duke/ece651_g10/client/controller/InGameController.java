@@ -272,25 +272,52 @@ public class InGameController{
             Button btn = (Button) source;
             setTerritoryInfo(btn.getText());
             if (toSend == null) return;
-            if (toSend.getString("orderType").equals("move") || toSend.getString("orderType").equals("attack")) {
+            String orderType = toSend.getString("orderType");
+            if (orderType.equals("move") || orderType.equals("attack") || orderType.equals("moveSpyOrder")) {
                 if (!toSend.has("sourceTerritory")) {
                     toSend.put("sourceTerritory", btn.getText());
                     setPrompt("Please select the destination territory!");
                 } else if (!toSend.has("destTerritory")) {
                     toSend.put("destTerritory", btn.getText());
                     //for specific level of unit and unit number
-                    String[] infos = {"Please input the level of the unit you want to send!", "Please input the number of unit!"};
-                    String[] fields = {"unitLevel", "unitNumber"};
-                    setNumbersPrompt(infos, fields, true);
-//                    String[] infos = {"Please input the number of unit!"};
-//                    String[] fields = {"unitNumber"};
-//                    setNumbersPrompt(infos, fields, true);
+                    if(orderType.equals("moveSpyOrder")){
+                        String[] infos = {"Please input the number of unit!"};
+                        String[] fields = {"unitNumber"};
+                        setNumbersPrompt(infos, fields, true);
+                    }else{
+                        String[] infos = {"Please input the level of the unit you want to send!", "Please input the number of unit!"};
+                        String[] fields = {"unitLevel", "unitNumber"};
+                        setNumbersPrompt(infos, fields, true);
+                    }
                 }
-            } else if (toSend.getString("orderType").equals("upgradeUnit")) {
+            } else if (orderType.equals("upgradeUnit")) {
                 if (!toSend.has("sourceTerritory")) {
                     toSend.put("sourceTerritory", btn.getText());
                     String[] infos = {"Please input the level of the unit you want to upgrade!", "Please input the number of unit!"};
                     String[] fields = {"unitLevel", "unitNumber"};
+                    setNumbersPrompt(infos, fields, true);
+                }
+            } else if(orderType.equals("bombOrder")||orderType.equals("cloakOrder")){
+                if (!toSend.has("sourceTerritory")) {
+                    toSend.put("sourceTerritory", btn.getText());
+                    try {
+                        sendJSON();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if(orderType.equals("virusOrder")){
+                if (!toSend.has("sourceTerritory")) {
+                    toSend.put("sourceTerritory", btn.getText());
+                    String[] infos = {"Please input the level of the virus you want to use!"};
+                    String[] fields = {"unitLevel",};
+                    setNumbersPrompt(infos, fields, true);
+                }
+            } else if(orderType.equals("upgradeSpyOrder")){
+                if (!toSend.has("sourceTerritory")) {
+                    toSend.put("sourceTerritory", btn.getText());
+                    String[] infos = {"Please input the number of units you want to upgrade to spy!"};
+                    String[] fields = {"unitNumber"};
                     setNumbersPrompt(infos, fields, true);
                 }
             }
@@ -324,17 +351,20 @@ public class InGameController{
         initOrder("move", "Please select the source territory!");
     }
 
+    public void initInGameOrder(String orderType, String prompt){
+        if (gameInfo.getSub().equals("Placement")) {
+            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
+        } else {
+            initOrder(orderType, prompt);
+        }
+    }
     /**
      * for attack button
      * @param ae mouse click the button
      */
     @FXML
     public void onAttack(ActionEvent ae) {
-        if (gameInfo.getSub().equals("Placement")) {
-            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
-        } else {
-            initOrder("attack", "Please select the source territory!");
-        }
+        initInGameOrder("attack","Please select the source territory!");
     }
 
     /**
@@ -343,11 +373,7 @@ public class InGameController{
      */
     @FXML
     public void onUpgradeUnit(ActionEvent ae) {
-        if (gameInfo.getSub().equals("Placement")) {
-            invalidPrompt("You can only do move order\nEither continue or cancel the prev one!");
-        } else {
-            initOrder("upgradeUnit", "Please select the territory which the units are on!");
-        }
+        initInGameOrder("upgradeUnit", "Please select the territory which the units are on!");
     }
 
     /**
@@ -362,13 +388,61 @@ public class InGameController{
         } else if (!gameInfo.getCanUpgrade()) {
             invalidPrompt("You cannot upgrade multiple\n times in one turn!");
         }
-        else if (toSend == null) {
+        else {
             initOrder("upgradeTech", "");
             sendJSON();
-        } else {
-            invalidPrompt("You are in the process of issuing an order!\nCancel the one to commit!");
         }
+    }
 
+    @FXML
+    public void onBomb(ActionEvent ae){
+        initInGameOrder("bombOrder", "Please select the territory to bomb!");
+    }
+
+    @FXML
+    public void onCloak(ActionEvent ae){
+        initInGameOrder("cloakOrder","Please select the territory to cloak!");
+    }
+
+    @FXML
+    public void onUpgradeSpy(ActionEvent ae){
+        initInGameOrder("upgradeSpyOrder","Please select the territory which the units are on!");
+    }
+
+    @FXML
+    public void onResearchCloak(ActionEvent ae) throws IOException {
+        initInGameOrder("researchClockOrder","");
+        sendJSON();
+    }
+
+    @FXML
+    public void onMoveSpy(ActionEvent ae){
+        initInGameOrder("moveSpyOrder","Please select the territory where the spies are!");
+    }
+
+    @FXML
+    public void onVirus(ActionEvent ae){
+        initInGameOrder("virusOrder","Please select a territory to attack its owner!");
+    }
+
+    @FXML
+    public void onVaccine(ActionEvent ae){
+        initInGameOrder("vaccineOrder","");
+        String[] infos = {"Please input the level of vaccine you want to use!"};
+        String[] fields = {"unitLevel"};
+        setNumbersPrompt(infos,fields,true);
+    }
+
+    @FXML
+    public void onUpgradeVirus(ActionEvent ae) throws IOException {
+        initInGameOrder("upgradeVirusMaxLevelOrder","");
+        sendJSON();
+    }
+
+    @FXML
+    public void onUpgradeVaccine(ActionEvent ae) throws IOException {
+        initInGameOrder("upgradeVaccineMaxLevelOrder","");
+        sendJSON();
     }
 
     /**

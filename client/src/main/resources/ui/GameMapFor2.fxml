@@ -9,65 +9,101 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<GridPane onMouseEntered="#onEnterStage" prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.InGameController">
+<GridPane onMouseEntered="#onEnterStage" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.duke.ece651_g10.client.controller.InGameController">
    <columnConstraints>
-      <ColumnConstraints percentWidth="25"/>
-      <ColumnConstraints percentWidth="65"/>
-      <ColumnConstraints percentWidth="10"/>
+      <ColumnConstraints percentWidth="25" />
+      <ColumnConstraints percentWidth="60" />
+      <ColumnConstraints percentWidth="15" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints percentHeight="20"/>
-      <RowConstraints percentHeight="60"/>
-      <RowConstraints percentHeight="10"/>
-      <RowConstraints percentHeight="10"/>
+      <RowConstraints percentHeight="15" />
+      <RowConstraints percentHeight="55" />
+      <RowConstraints percentHeight="10" />
+      <RowConstraints percentHeight="10" />
+      <RowConstraints percentHeight="10" />
    </rowConstraints>
-   <fx:include source="terrsFor2.fxml" onMouseClicked="#onClickPane" GridPane.columnIndex="1" GridPane.columnSpan="2"
-               GridPane.rowIndex="0" GridPane.rowSpan="2"/>
-   <ListView fx:id="playerInfo" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="0"
-             GridPane.rowSpan="1"/>
-   <ListView fx:id="territoryInfo" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="1"
-             GridPane.rowSpan="1"/>
-   <Text fx:id="prompt" text="What would you like to do? Hover on a territory to see its information!"
-         wrappingWidth="669.3359375" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2"
-         GridPane.rowSpan="1"/>
-   <Button mnemonicParsing="false" onAction="#onCommit" styleClass="expandable" stylesheets="@buttonStyles.css"
-           text="Commit" GridPane.columnIndex="2" GridPane.rowIndex="2">
+   <fx:include onMouseClicked="#onClickPane" source="terrsFor2.fxml" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="0" GridPane.rowSpan="2" />
+   <ListView fx:id="playerInfo" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="0" GridPane.rowSpan="1" />
+   <ListView fx:id="territoryInfo" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="1" GridPane.rowSpan="1" />
+   <Text fx:id="prompt" text="What would you like to do? Hover on a territory to see its information!" wrappingWidth="669.3359375" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="1" />
+   <Button mnemonicParsing="false" onAction="#onCommit" styleClass="expandable" stylesheets="@buttonStyles.css" text="Commit" GridPane.columnIndex="2" GridPane.rowIndex="3">
       <font>
-         <Font size="12.0"/>
+         <Font size="12.0" />
       </font>
    </Button>
-   <Button fx:id="logOutButton" mnemonicParsing="false" styleClass="expandable" stylesheets="@buttonStyles.css"
-           text="Log out" GridPane.columnIndex="2" GridPane.rowIndex="3">
+   <Button fx:id="logOutButton" mnemonicParsing="false" styleClass="expandable" stylesheets="@buttonStyles.css" text="Log out" GridPane.columnIndex="2" GridPane.rowIndex="4">
       <font>
-         <Font size="12.0"/>
+         <Font size="12.0" />
       </font>
    </Button>
    <Button mnemonicParsing="false" onAction="#onMove" text="Move" GridPane.rowIndex="3">
       <GridPane.margin>
-         <Insets left="50.0"/>
+         <Insets left="25.0" />
       </GridPane.margin>
    </Button>
-   <Button mnemonicParsing="false" onAction="#onAttack" text="Attack" GridPane.rowIndex="3">
+   <Button mnemonicParsing="false" onAction="#onAttack" prefHeight="25.0" prefWidth="57.0" text="Attack" GridPane.columnIndex="1" GridPane.rowIndex="3">
       <GridPane.margin>
-         <Insets left="130.0"/>
+         <Insets left="20.0" />
       </GridPane.margin>
    </Button>
-   <Button mnemonicParsing="false" onAction="#onUpgradeUnit" text="UpgradeUnit" GridPane.columnIndex="1"
-           GridPane.rowIndex="3">
+   <Button mnemonicParsing="false" onAction="#onUpgradeUnit" text="UpgradeUnit" GridPane.columnIndex="1" GridPane.rowIndex="3">
       <GridPane.margin>
-         <Insets left="30.0"/>
+         <Insets left="120.0" />
       </GridPane.margin>
    </Button>
-   <Button mnemonicParsing="false" onAction="#onCancel" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="3">
+   <Button mnemonicParsing="false" onAction="#onCancel" styleClass="expandable" stylesheets="@buttonStyles.css" text="Cancel" GridPane.columnIndex="2" GridPane.rowIndex="2">
+      <font>
+         <Font size="12.0" />
+      </font>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onUpgradeTech" text="UpgradeTech" GridPane.columnIndex="1" GridPane.rowIndex="3">
       <GridPane.margin>
-         <Insets left="280.0"/>
+         <Insets left="240.0" />
       </GridPane.margin>
    </Button>
-   <Button mnemonicParsing="false" onAction="#onUpgradeTech" text="UpgradeTech" GridPane.columnIndex="1"
-           GridPane.rowIndex="3">
+   <Button mnemonicParsing="false" onAction="#onUpgradeSpy" text="Produce Spy" GridPane.columnIndex="1" GridPane.rowIndex="3">
       <GridPane.margin>
-         <Insets left="150.0"/>
+         <Insets left="360.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onMoveSpy" text="Move Spy" GridPane.rowIndex="3">
+      <GridPane.margin>
+         <Insets left="100.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onResearchCloak" prefHeight="25.0" prefWidth="105.0" text="Research Cloak" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="10.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onCloak" text="Cloak" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="130.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onVirus" text="Virus" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="20.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onVaccine" prefHeight="25.0" prefWidth="67.0" text="Vaccine" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="80.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onUpgradeVirus" text="Upgrade Virus" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="155.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onUpgradeVaccine" prefHeight="25.0" prefWidth="115.0" text="Upgrade Vaccine" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="260.0" />
+      </GridPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#onBomb" prefHeight="25.0" prefWidth="56.0" text="Bomb" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <GridPane.margin>
+         <Insets left="390.0" />
       </GridPane.margin>
    </Button>
 </GridPane>
