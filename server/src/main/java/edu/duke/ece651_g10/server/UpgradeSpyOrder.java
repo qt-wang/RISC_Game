@@ -7,8 +7,16 @@ public class UpgradeSpyOrder extends OneTerritoryOrder{
     }
 
     public void execute(){
-        Army fromArmy = source.getArmyWithLevel(level);
-        fromArmy.decreaseUnits(unitNum);
+        for(int i = 0; i < 7; i++) {
+            if(source.getArmyWithLevel(i).getArmyUnits() >= unitNum) {
+                Army fromArmy = source.getArmyWithLevel(level);
+                fromArmy.decreaseUnits(unitNum);
+            } else{
+                Army fromArmy = source.getArmyWithLevel(level);
+                fromArmy.decreaseUnits(fromArmy.getArmyUnits());
+                unitNum -= fromArmy.getArmyUnits();
+            }
+        }
         for(int i = 0; i < unitNum; i++){
             SpyUnit spy = new SpyUnit(player, source);
             source.addOwnedSpy(spy);
