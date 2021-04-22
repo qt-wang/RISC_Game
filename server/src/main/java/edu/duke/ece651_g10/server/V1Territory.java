@@ -31,6 +31,8 @@ public class V1Territory implements Territory {
 
     private final String name;
     private Player owner;
+
+    // neighbours not stored.
     private HashSet<Territory> neighbours;
 
     // This units are all owned by the owner of the territory.
@@ -51,6 +53,9 @@ public class V1Territory implements Territory {
     //TODO: If user use the command, then set this number to 4 (it will be automatically decreased at the end of turn.)
     //If this number is 0, then this territory is not hidden.
     private int hiddenFromOthers;
+
+
+
 
 
     @Override
@@ -246,6 +251,11 @@ public class V1Territory implements Territory {
         if (!neighbours.contains(neighbour)) {
             neighbours.add(neighbour);
         }
+    }
+
+    @Override
+    public int getHiddenFromOthers() {
+        return this.hiddenFromOthers;
     }
 
     @Override

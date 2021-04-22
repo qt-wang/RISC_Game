@@ -531,6 +531,11 @@ public class Game implements Runnable {
         }
     }
 
+    public int getNumUnitPerPlayer() {
+        return this.numUnitPerPlayer;
+    }
+
+
     //TODO: test new views.
 
     /**
@@ -619,6 +624,10 @@ public class Game implements Runnable {
             }
             return merged;
         }
+    }
+
+    public boolean getDistributionDone() {
+        return this.unitsDistributionDone;
     }
 
     /**

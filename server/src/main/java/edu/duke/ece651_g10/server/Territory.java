@@ -27,6 +27,12 @@ public interface Territory {
 
 
     /**
+     * Get the variable hidden from others.
+     * @return
+     */
+    public int getHiddenFromOthers();
+
+    /**
      * Set the territory's unit number to unit.
      *
      * @param unit

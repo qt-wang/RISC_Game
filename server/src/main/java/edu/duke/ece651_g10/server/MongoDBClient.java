@@ -48,7 +48,8 @@ public class MongoDBClient {
             gameDoc.append("game_id", game.getGameId()).append("end_game", game.getGameEnd())
                     .append("begin_game", game.getGameBegins()).append("num_players", game.getNumPlayers())
                     .append("territories", generateTerritoryList(game.getGameMap()))
-                    .append("players", generatePlayerList(game.getAllPlayers()));
+                    .append("players", generatePlayerList(game.getAllPlayers())).append("num_unit_per_player", game.getNumUnitPerPlayer())
+                    .append("units_distribution_done", game.getDistributionDone());
 
             gameCollection.insertOne(gameDoc);
 
@@ -94,7 +95,8 @@ public class MongoDBClient {
                 .append("owner", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory))
                 .append("owned_spies", generateSpyDocList(territory.getOwnedSpy()))
                 .append("enemy_spies", generateSpyDocList(territory.getEnemySpy()))
-                .append("old_views", generateOldViewDoc(territory.getAllOldView()));
+                .append("old_views", generateOldViewDoc(territory.getAllOldView()))
+                .append("hidden_from_others", territory.getHiddenFromOthers());
         return territoryDoc;
     }
 
@@ -166,8 +168,10 @@ public class MongoDBClient {
     private static Document generatePlayerDoc(Player player) {
         Document playerDoc = new Document("id", player.getPlayerID());
         playerDoc.append("food", player.getFoodResourceTotal()).append("tech", player.getTechnologyResourceTotal())
-                .append("tech_level", player.getTechnologyLevel()).append("can_upgrade", player.getCanUpgradeInThisTurn())
-                .append("lost", player.getIsLost());
+                .append("tech_level", player.getTechnologyLevel()).append("lost", player.getIsLost())
+                .append("virus_max_level", player.getVirusMaxLevel()).append("vaccine_level", player.getVaccineLevel())
+                .append("vaccine_max_level", player.getVaccineMaxLevel()).append("can_bomb_in_this_game", player.getCanBombInThisGame())
+                .append("can_vaccine", player.getCanVaccine()).append("can_research_cloak", player.getCanResearchCloak());
         return playerDoc;
     }
 
@@ -182,23 +186,26 @@ public class MongoDBClient {
             MongoCollection<Document> gameCollection = riskDB.getCollection("games");
             ArrayList<Game> gameList = new ArrayList<Game>();
             List<Document> gameListDoc = gameCollection.find(gte("game_id", -1)).into(new ArrayList<>());
+
+            //Set up the static variables for Game and Player.
+            Document gameIdDoc = gameCollection.find(gte("static_game_id", -1)).first();
+            Game.gameIdentifier = gameIdDoc.getInteger("static_game_id");
+            Document playerIdDoc = gameCollection.find(gte("static_player_id", -1)).first();
+            Player.availableId = playerIdDoc.getInteger("static_player_id");
+
             for (Document d : gameListDoc) {
                 if ((boolean) (d.get("end_game")) == true) {
                     continue;
                 }
-                V2GameFactory gameFactory = new V2GameFactory(runServer);
-                Game game = gameFactory.createTestGame((int) d.get("num_players"));
-                game = reconstructPlayers(game, d);
-                game = reconstructTerritories(game, d);
-                game.setGameBegins(d.getBoolean("begin_game"));
+//                V2GameFactory gameFactory = new V2GameFactory(runServer);
+//                Game game = gameFactory.createTestGame((int) d.get("num_players"));
+//                game = reconstructPlayers(game, d);
+//                game = reconstructTerritories(game, d);
+//                game.setGameBegins(d.getBoolean("begin_game"));
+
                 gameList.add(game);
             }
 
-            Document gameIdDoc = gameCollection.find(gte("static_game_id", -1)).first();
-            Game.gameIdentifier = gameIdDoc.getInteger("static_game_id");
-
-            Document playerIdDoc = gameCollection.find(gte("static_player_id", -1)).first();
-            Player.availableId = playerIdDoc.getInteger("static_player_id");
 
             return gameList;
         }
@@ -207,46 +214,58 @@ public class MongoDBClient {
     /**
      * Reconstruct the players
      *
-     * @param game The game needs to reconstruct the players
-     * @param doc  the document that store the whole game info in the database
-     *             collection
+     * @param doc the document that store the whole game info in the database
+     *            collection
      * @return the players reconstructed game
      */
-    private Game reconstructPlayers(Game game, Document doc) {
+    private HashMap<Integer, Player> reconstructPlayers(Document doc) {
+        HashMap<Integer, Player> playerInfo = new HashMap<>();
         List<Document> playerList = (List<Document>) doc.get("players");
         for (Document p : playerList) {
             // TODO: Set up socket and jCommunicater
-            Player player = new Player(null, null);
-            player.setCanUpgradeInThisTurn(p.getBoolean("can_upgrade"));
-            player.setFoodResourceTotal(p.getInteger("food"));
-            player.setTechnologyResourceTotal(p.getInteger("tech"));
-            player.setTechnologyLevel(p.getInteger("tech_level"));
-            if (p.getBoolean("lost") == true) {
-                player.setIsLost();
-            }
+//            Player player = new Player(null, null);
+//            //player.setCanUpgradeInThisTurn(p.getBoolean("can_upgrade"));
+//            player.setFoodResourceTotal(p.getInteger("food"));
+//            player.setTechnologyResourceTotal(p.getInteger("tech"));
+//            player.setTechnologyLevel(p.getInteger("tech_level"));
+//            if (p.getBoolean("lost") == true) {
+//                player.setIsLost();
+//            }
             // player.setPlayerId(p.getplayerId);
-            game.addPlayerFromDb(player);
+            //game.addPlayerFromDb(player);
+            int playerId = p.getInteger("id");
+            int foodRT = p.getInteger("food");
+            int techRT = p.getInteger("tech");
+            int techLevel = p.getInteger("tech_level");
+            boolean isLost = p.getBoolean("lost");
+            int virusML = p.getInteger("virus_max_level");
+            int vaccineL = p.getInteger("vaccine_level");
+            int vaccineML = p.getInteger("vaccine_max_level");
+            boolean can_bomb_in_this_game = p.getBoolean("can_bomb_in_this_game");
+            boolean canVaccine = p.getBoolean("can_vaccine");
+            boolean canRC = p.getBoolean("can_research_cloak");
+            Player player = new Player(playerId, foodRT, techRT, techLevel, isLost, virusML, vaccineL, vaccineML, can_bomb_in_this_game, canVaccine, canRC);
+            playerInfo.put(player.getPlayerID(), player);
         }
-        return game;
     }
 
     /**
      * Reconstruct the territories
      *
-     * @param game The game needs to reconstruct the territories
-     * @param doc  the document that store the whole game info in the database
-     *             collection
+     * @param numOfPlayers The number of players involved in the game to be reconstructed.
+     * @param doc          the document that store the whole game info in the database
+     *                     collection
      * @return the territories reconstructed game
      */
-    private Game reconstructTerritories(Game game, Document doc) {
+    private GameMap reconstructTerritories(int numOfPlayers, Document doc,) {
         List<Document> territoryList = (List<Document>) doc.get("territories");
-        GameMap gameMap = game.getGameMap();
+        GameMap gameMap = new FixedGameMapFactory().createGameMap(numOfPlayers);
         for (Document t : territoryList) {
             Territory territory = gameMap.getTerritory(t.getString("name"));
             territory.setFoodResourceGenerationRate(t.getInteger("food_rate"));
             territory.setTechnologyResourceGenerationRate(t.getInteger("tech_rate"));
             territory.setSize(t.getInteger("size"));
-            territory.setOwner(game.getAllPlayers().get(t.getInteger("owner")));
+            //territory.setOwner(game.getAllPlayers().get(t.getInteger("owner")));
             Document army = (Document) t.get("army");
             territory.setUnitNumber(0);
             for (int i = 0; i <= 6; i++) {
