@@ -233,7 +233,11 @@ public class V1Territory implements Territory {
 
     @Override
     public void getCloaked() {
-        this.hiddenFromOthers += 4;
+        if (this.isHidden()) {
+            this.hiddenFromOthers += 3;
+        } else {
+            this.hiddenFromOthers += 4;
+        }
     }
 
 
@@ -293,5 +297,23 @@ public class V1Territory implements Territory {
     @Override
     public Set<Spy> getEnemySpies(){
         return enemySpies;
+    }
+
+    @Override
+    public JSONObject presentSpyInfo() {
+        JSONObject object = new JSONObject();
+        HashMap<Integer, Integer> spyInfo = new HashMap<>();
+        for (Spy spy: ownedSpies) {
+            Player owner = spy.getOwner();
+            if (!spyInfo.containsKey(owner.getPlayerID())) {
+                spyInfo.put(owner.getPlayerID(), 1);
+            } else {
+                spyInfo.put(owner.getPlayerID(), spyInfo.get(owner.getPlayerID()) + 1);
+            }
+        }
+        for (Map.Entry<Integer, Integer> entry: spyInfo.entrySet()) {
+            object.put(Integer.toString(entry.getKey()), entry.getValue());
+        }
+        return object;
     }
 }

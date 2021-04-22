@@ -225,6 +225,7 @@ public class V1GameMap implements GameMap {
             object.put("visible", false);
             object.put("isNew", false);
         }
+        object.put("spyInfo", territory.presentSpyInfo());
         return object;
     }
 

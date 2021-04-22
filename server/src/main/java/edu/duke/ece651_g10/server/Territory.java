@@ -252,4 +252,10 @@ public interface Territory {
     public Set<Spy> getOwnedSpies();
 
     public Set<Spy> getEnemySpies();
+
+    /**
+     * Present the spy information for this territory.
+     * @return The json object for this information.
+     */
+    public JSONObject presentSpyInfo();
 }
