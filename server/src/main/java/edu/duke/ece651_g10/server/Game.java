@@ -873,7 +873,7 @@ public class Game implements Runnable {
     void runFromStart() {
         gameBegins = true;
         assignInitialTerritories();
-        MongoDBClient.addGame2DB(this);
+        //MongoDBClient.addGame2DB(this);
         runFromUnitsDistributionPhase();
     }
 
@@ -881,7 +881,7 @@ public class Game implements Runnable {
         runTasksForAllPlayer(getUnitsDistributionTask());
         System.out.println("Initial units distribution done.");
         updatePlayerView();
-        MongoDBClient.addGame2DB(this);
+        //MongoDBClient.addGame2DB(this);
         // Game has record that some fields has changed.
         runFromAttackPhase();
     }
@@ -903,7 +903,7 @@ public class Game implements Runnable {
                 p.setCanUpgradeInThisTurn(true);
             }
             updatePlayerView();
-            MongoDBClient.addGame2DB(this);
+            //MongoDBClient.addGame2DB(this);
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -919,7 +919,7 @@ public class Game implements Runnable {
                 exception.printStackTrace();
             }
         }
-        MongoDBClient.addGame2DB(this);
+        //MongoDBClient.addGame2DB(this);
     }
 
     /**
