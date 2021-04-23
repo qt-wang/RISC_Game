@@ -73,4 +73,8 @@ public class MoveOrder extends TerritoryToTerritoryOrder {
   public int getLevel() {
     return level;
   }
+
+  public Player getPlayer(){
+    return player;
+  }
 }

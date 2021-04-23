@@ -51,4 +51,7 @@ public class MoveSpyOrder extends TerritoryToTerritoryOrder{
         unitNum += number;
     }
 
+    public Player getPlayer(){
+        return player;
+    }
 }

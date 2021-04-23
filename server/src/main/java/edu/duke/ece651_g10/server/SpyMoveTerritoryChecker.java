@@ -8,8 +8,10 @@ public class SpyMoveTerritoryChecker extends RuleChecker<TerritoryToTerritoryOrd
 
     @Override
     protected String checkMyRule(TerritoryToTerritoryOrder order, GameMap gameMap) {
-        if (!order.getSourceTerritory().getNeighbours().contains(order.getSourceTerritory())) {
-            return "If the spy is in an enemy territory, the spy can only move to a target territory next to the source territory.";
+        if(order.getSourceTerritory().getOwner().getPlayerID() != order.getPlayerID()) {
+            if (!order.getSourceTerritory().getNeighbours().contains(order.getSourceTerritory())) {
+                return "If the spy is in an enemy territory, the spy can only move to a target territory next to the source territory.";
+            }
         }
         return null;
     }

@@ -264,4 +264,11 @@ public interface Territory {
      * @return The json object for this information.
      */
     public JSONObject presentSpyInfo();
+
+    /**
+     * Get the number of spies that is owned by player p.
+     * @param p The player
+     * @return The number of spies owned by the player within this territory.
+     */
+    public int getSpyNumForPlayer(Player p);
 }
