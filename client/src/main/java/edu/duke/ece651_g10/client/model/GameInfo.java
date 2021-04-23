@@ -28,6 +28,10 @@ public class GameInfo {
         return playerStatus;
     }
 
+    public String getMyOwnColor(){
+        return playerColor.get(currPlayerID);
+    }
+
     public void setPlayerInfoLose(JSONObject obj) {
         try {
             List<String> info = new LinkedList<>();

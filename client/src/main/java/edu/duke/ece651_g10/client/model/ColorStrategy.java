@@ -8,6 +8,8 @@ public class ColorStrategy {
      * avoid to access css file
      */
 
+    public final HashMap<String, String> pureColor;
+
     //a map to store <colorName,regularButtonStyleString>
     public final HashMap<String, String> buttonStyle;
 
@@ -22,11 +24,24 @@ public class ColorStrategy {
         buttonStyle = new HashMap<>();
         buttonHoverStyle = new HashMap<>();
         buttonPressedStyle = new HashMap<>();
+        pureColor = new HashMap<>();
         addRegularStyles();
         addHoverStyles();
         addPressedStyles();
+        addPureColor();
     }
 
+    private void addPureColor(){
+        pureColor.put("red","#F30404");
+        pureColor.put("green","#3CF807");
+        pureColor.put("yellow","#f6f204");
+        pureColor.put("blue","#0398E5");
+        pureColor.put("purple","#800080");
+    }
+
+    public String getPureColor(String colorName){
+        return pureColor.getOrDefault(colorName,null);
+    }
     /**
      * init the regular button style map
      */
