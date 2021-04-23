@@ -30,6 +30,8 @@ public abstract class TerritoryToTerritoryOrder extends Order{
 
   public abstract int getLevel();
 
+    public abstract Player getPlayer();
+
 }
 
 

@@ -49,7 +49,14 @@ public abstract class ZeroTerritoryOrder extends Order {
   public HashMap<Integer, Integer> getMaxTechLevelTable() {
     return maxTechLevelTable;
   }
-  
+
+  public HashMap<Integer, Integer> getMaxVirusLevelTable() {
+        return maxVirusLevelTable;
+    }
+
+    public HashMap<Integer, Integer> getMaxVaccineLevelTable() {
+        return maxVaccineLevelTable;
+    }
 }
 
 

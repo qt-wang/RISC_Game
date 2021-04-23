@@ -57,7 +57,7 @@ public class Player {
     private boolean canBombInThisGame;
     private boolean canVaccine;
     private boolean canResearchCloak;
-    private boolean canCloak;
+    //private boolean canCloak;
 
     /**
      * Constructor to be used when resume the game from the db.
@@ -69,15 +69,13 @@ public class Player {
      * @param isLost                  Whether the player is lost or not.
      */
     Player(int playerId, int foodResourceTotal, int technologyResourceTotal, int technologyLevel, boolean isLost,
-           int virusMaxLevel, int vaccineLevel, int vaccineMaxLevel, boolean canBombInThisGame, boolean canVaccine, boolean canResearchCloak,
-           boolean canCloak) {
+           int virusMaxLevel, int vaccineLevel, int vaccineMaxLevel, boolean canBombInThisGame, boolean canVaccine, boolean canResearchCloak) {
         this.virusMaxLevel = virusMaxLevel;
         this.vaccineLevel = vaccineLevel;
         this.vaccineMaxLevel = vaccineMaxLevel;
         this.canBombInThisGame = canBombInThisGame;
         this.canVaccine = canVaccine;
         this.canResearchCloak = canResearchCloak;
-        this.canCloak = canCloak;
         this.foodResourceTotal = foodResourceTotal;
         this.technologyResourceTotal = technologyResourceTotal;
         this.technologyLevel = technologyLevel;
@@ -241,7 +239,6 @@ public class Player {
         this.canBombInThisGame = true; //added by qw99
         this.canVaccine = true; //added by qw99
         this.canResearchCloak = true;
-        this.canCloak = false;
     }
 
     /**
@@ -313,11 +310,12 @@ public class Player {
         this.canResearchCloak = canResearchCloak;
     }
 
-    public boolean getHasCloak() {
-        return canCloak;
-    }
+//    public boolean getHasCloak() {
+//        return canCloak;
+//    }
 
-    public void setCanCloak(boolean canCloak) {
-        this.canCloak = canCloak;
-    }
+
+//    public void setCanCloak(boolean canCloak) {
+//        this.canCloak = canCloak;
+//    }
 }

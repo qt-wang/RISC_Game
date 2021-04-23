@@ -145,6 +145,7 @@ public class Server {
         }
     }
 
+
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
      * One client connection use one thread to handle it?
@@ -173,7 +174,7 @@ public class Server {
                         clientGames.put(password, new LinkedList<>());
                         clientPlayerInfo.put(password, new LinkedList<>());
                         // Store the server information.
-                        MongoDBClient.addServer2DB(Server.this);
+                        //MongoDBClient.addServer2DB(Server.this);
                     }
                     JSONObject response = JSONCommunicator.generateServerResponse("valid", "", "connection");
                     response.put("password", password);
@@ -243,14 +244,14 @@ public class Server {
                     newPlayer.setFoodResourceTotal(500);
                     clientPlayerInfo.get(providedPassword).add(newPlayer);
                     newGame.addPlayer(newPlayer);
-                    MongoDBClient.addGame2DB(newGame);
+                    //MongoDBClient.addGame2DB(newGame);
                     clientGames.get(providedPassword).add(newGame);
                     newPlayer.leaveGame();
                     JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
                     jc.send(response);
                     games.put(newGame.getGameId(), newGame);
-                    MongoDBClient.addServer2DB(Server.this);
-                    MongoDBClient.addGame2DB(newGame);
+                    //MongoDBClient.addServer2DB(Server.this);
+                    //MongoDBClient.addGame2DB(newGame);
                     break;
                 }
             }
@@ -328,8 +329,11 @@ public class Server {
         clientGames = new HashMap<>();
         waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
-            games.put(i, gameFactory.createFixedGame(2));
+            Game newGame = gameFactory.createFixedGame(2);
+            games.put(i, newGame);
+            //MongoDBClient.addGame2DB(newGame);
         }
+        //MongoDBClient.addServer2DB(this);
     }
 
     /**
@@ -344,15 +348,12 @@ public class Server {
      *                                The key is the player id, the value is the player.
      * @param clientGamesInfo         The client games list.
      *                                The key is the password, the value is a list of game id that the client in.
-     * @param gameIdentifier          The previous stored game identifier (static variable)
-     * @param playerIdentifier        The previous stored player identifier (static variable)
      */
     public Server(int port, PasswordGenerator serverPasswordGenerator, ArrayList<Game> gameList, HashMap<String, List<Integer>> clientInfoList, HashMap<Integer, Player> playerList,
-                  HashMap<String, List<Integer>> clientGamesInfo, int gameIdentifier, int playerIdentifier) throws IOException {
+                  HashMap<String, List<Integer>> clientGamesInfo) throws IOException {
         setServerSocket(port);
-        Game.setGameIdentifier(gameIdentifier);
-        Player.setAvailableId(playerIdentifier);
         games = new HashMap<>();
+        this.threadPool = Executors.newCachedThreadPool();
         for (Game game : gameList) {
             game.setRefServer(this);
             game.setServerTaskPool(this.threadPool);
@@ -379,7 +380,6 @@ public class Server {
             clientGames.put(entry.getKey(), tempGameList);
         }
         this.serverPasswordGenerator = serverPasswordGenerator;
-        this.threadPool = Executors.newCachedThreadPool();
         waitClients = new HashMap<>();
     }
 
@@ -459,11 +459,11 @@ public class Server {
             synchronized (Server.class) {
                 clientPlayerInfo.get(providedPassword).add(newPlayer);
                 clientGames.get(providedPassword).add(joinedGame);
-                MongoDBClient.addServer2DB(this);
+                //MongoDBClient.addServer2DB(this);
             }
             joinedGame.addPlayer(newPlayer);
             synchronized (joinedGame) {
-                MongoDBClient.addGame2DB(joinedGame);
+                //MongoDBClient.addGame2DB(joinedGame);
             }
         }
         synchronized (RequestHandleTask.class) {

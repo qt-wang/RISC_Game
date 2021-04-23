@@ -27,6 +27,12 @@ public interface Territory {
 
 
     /**
+     * Get the variable hidden from others.
+     * @return
+     */
+    public int getHiddenFromOthers();
+
+    /**
      * Set the territory's unit number to unit.
      *
      * @param unit
@@ -252,4 +258,24 @@ public interface Territory {
     public Set<Spy> getOwnedSpies();
 
     public Set<Spy> getEnemySpies();
+
+    /**
+     * Present the spy information for this territory.
+     * @return The json object for this information.
+     */
+    public JSONObject presentSpyInfo();
+
+    /**
+     * Get the number of spies that is owned by player p.
+     * @param p The player
+     * @return The number of spies owned by the player within this territory.
+     */
+    public int getSpyNumForPlayer(Player p);
+
+
+    /**
+     * Set hidden from others from database.
+     * @param hiddenFromOthers The value of the old value.
+     */
+    public void setHiddenFromOthers(int hiddenFromOthers);
 }

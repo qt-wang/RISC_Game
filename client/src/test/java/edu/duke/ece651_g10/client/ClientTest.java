@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -339,7 +340,7 @@ public class ClientTest {
     client.sendJoinGameJSON(1);
     client.sendLogOutCommand();
   }
-
+  @Disabled
   @Test
   public void test_JSONObject_generator_getter() throws IOException {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();

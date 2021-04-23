@@ -70,6 +70,8 @@ public class V1OrderProcessor implements OrderProcessor {
         ((BombOrder) order).getPlayer().setTechnologyResourceTotal(0);
         ((BombOrder) order).getPlayer().setCanBombInThisGame(false);
         bombOrderInOneTurn.add((BombOrder) order);
+    } else if(order instanceof UpgradeSpyOrder){
+        ((UpgradeSpyOrder) order).execute();
     } else if(order instanceof CloakOrder){
         ((CloakOrder) order).getPlayer().setTechnologyResourceTotal(((CloakOrder) order).getPlayer().getTechnologyResourceTotal() - 20);
         cloakOrderInOneTurn.add((CloakOrder) order);
@@ -97,6 +99,9 @@ public class V1OrderProcessor implements OrderProcessor {
         ((UpgradeTechOrder) order).getPlayer().setCanUpgradeInThisTurn(false);
         ((UpgradeTechOrder) order).getPlayer().setTechnologyResourceTotal(newTechResource);
         upgradeTechInOneTurn.addElement((UpgradeTechOrder) order);
+    } else if (order instanceof MoveSpyOrder) {
+        // TODO: Handle moveSpyOrder
+        order.execute();
     }
   }
 

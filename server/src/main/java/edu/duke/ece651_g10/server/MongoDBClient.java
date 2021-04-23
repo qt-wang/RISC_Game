@@ -3,6 +3,7 @@ package edu.duke.ece651_g10.server;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.gte;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ import org.json.JSONObject;
  * The class to update the game and user information into database
  */
 public class MongoDBClient {
-    static String connectionString = "mongodb+srv://g10:ece651@cluster0.jjos5.mongodb.net/ece651_risk?retryWrites=true&w=majority";
+    static String connectionString = "mongodb+srv://g10:ece651@risk.3iprc.mongodb.net/ece651_risk?retryWrites=true&w=majority";
 
     /**
      * The constructor of the MongoDBClient
@@ -48,7 +49,9 @@ public class MongoDBClient {
             gameDoc.append("game_id", game.getGameId()).append("end_game", game.getGameEnd())
                     .append("begin_game", game.getGameBegins()).append("num_players", game.getNumPlayers())
                     .append("territories", generateTerritoryList(game.getGameMap()))
-                    .append("players", generatePlayerList(game.getAllPlayers()));
+                    .append("players", generatePlayerList(game.getAllPlayers()))
+                    .append("num_unit_per_player", game.getNumUnitPerPlayer())
+                    .append("units_distribution_done", game.getDistributionDone());
 
             gameCollection.insertOne(gameDoc);
 
@@ -89,12 +92,20 @@ public class MongoDBClient {
      */
     private static Document generateTerritoryDoc(Territory territory) {
         Document territoryDoc = new Document("name", territory.getName());
+        int storedPlayerId;
+        if (territory.getOwner() == null) {
+            storedPlayerId = -1;
+        } else {
+            storedPlayerId = territory.getOwner().getPlayerID();
+        }
         territoryDoc.append("size", territory.getSize()).append("food_rate", territory.getFoodResourceGenerationRate())
                 .append("tech_rate", territory.getTechnologyResourceGenerationRate())
-                .append("owner", territory.getOwner().getPlayerID()).append("army", generateArmyDoc(territory))
+                .append("owner", storedPlayerId)
+                .append("army", generateArmyDoc(territory))
                 .append("owned_spies", generateSpyDocList(territory.getOwnedSpy()))
                 .append("enemy_spies", generateSpyDocList(territory.getEnemySpy()))
-                .append("old_views", generateOldViewDoc(territory.getAllOldView()));
+                .append("old_views", generateOldViewDoc(territory.getAllOldView()))
+                .append("hidden_from_others", territory.getHiddenFromOthers());
         return territoryDoc;
     }
 
@@ -166,8 +177,11 @@ public class MongoDBClient {
     private static Document generatePlayerDoc(Player player) {
         Document playerDoc = new Document("id", player.getPlayerID());
         playerDoc.append("food", player.getFoodResourceTotal()).append("tech", player.getTechnologyResourceTotal())
-                .append("tech_level", player.getTechnologyLevel()).append("can_upgrade", player.getCanUpgradeInThisTurn())
-                .append("lost", player.getIsLost());
+                .append("tech_level", player.getTechnologyLevel()).append("lost", player.getIsLost())
+                .append("virus_max_level", player.getVirusMaxLevel()).append("vaccine_level", player.getVaccineLevel())
+                .append("vaccine_max_level", player.getVaccineMaxLevel())
+                .append("can_bomb_in_this_game", player.getCanBombInThisGame()).append("can_vaccine", player.getCanVaccine())
+                .append("can_research_cloak", player.getCanResearchCloak());
         return playerDoc;
     }
 
@@ -176,30 +190,37 @@ public class MongoDBClient {
      *
      * @return the arraylist of the game objects
      */
-    public ArrayList<Game> reconstructGameFromDatabase(Server runServer) {
+    public static ArrayList<Game> reconstructGameFromDatabase() {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> gameCollection = riskDB.getCollection("games");
             ArrayList<Game> gameList = new ArrayList<Game>();
             List<Document> gameListDoc = gameCollection.find(gte("game_id", -1)).into(new ArrayList<>());
-            for (Document d : gameListDoc) {
-                if ((boolean) (d.get("end_game")) == true) {
-                    continue;
-                }
-                V2GameFactory gameFactory = new V2GameFactory(runServer);
-                Game game = gameFactory.createTestGame((int) d.get("num_players"));
-                game = reconstructPlayers(game, d);
-                game = reconstructTerritories(game, d);
-                game.setGameBegins(d.getBoolean("begin_game"));
-                gameList.add(game);
-            }
 
+            // Set up the static variables for Game and Player.
             Document gameIdDoc = gameCollection.find(gte("static_game_id", -1)).first();
             Game.gameIdentifier = gameIdDoc.getInteger("static_game_id");
-
             Document playerIdDoc = gameCollection.find(gte("static_player_id", -1)).first();
             Player.availableId = playerIdDoc.getInteger("static_player_id");
 
+            for (Document d : gameListDoc) {
+//                if ((boolean) (d.get("end_game")) == true) {
+//                    continue;
+//                }
+                HashMap<Integer, Player> playerInfo = reconstructPlayers(d);
+                int number_of_players = d.getInteger("num_players");
+                GameMap map = reconstructTerritories(number_of_players, d, playerInfo);
+                int numUPP = d.getInteger("num_unit_per_player");
+                int gameId = d.getInteger("game_id");
+                boolean gameEnds = d.getBoolean("end_game");
+                boolean gameBegins = d.getBoolean("begin_game");
+                boolean unitsDD = d.getBoolean("units_distribution_done");
+                Game newGame = new Game(map, GameFactory.getMoveRuleChecker(), GameFactory.getAttackRuleChecker(), numUPP,
+                        number_of_players, GameFactory.getUpgradeTechChecker(), GameFactory.getUpgradeUnitChecker(), gameId,
+                        gameEnds, gameBegins, unitsDD, playerInfo, GameFactory.getResearchCloakChecker(), GameFactory.getCloakChecker(), GameFactory.getBombChecker(), GameFactory.getVirusChecker(),
+                        GameFactory.getUpgradeVirusMaxChecker(), GameFactory.getVaccineChecker(), GameFactory.getUpgradeVaccineMaxChecker(), GameFactory.getUpgradeSpyChecker(), GameFactory.getMoveSpyChecker());
+                gameList.add(newGame);
+            }
             return gameList;
         }
     }
@@ -207,46 +228,58 @@ public class MongoDBClient {
     /**
      * Reconstruct the players
      *
-     * @param game The game needs to reconstruct the players
-     * @param doc  the document that store the whole game info in the database
-     *             collection
+     * @param doc the document that store the whole game info in the database
+     *            collection
      * @return the players reconstructed game
      */
-    private Game reconstructPlayers(Game game, Document doc) {
+    private static HashMap<Integer, Player> reconstructPlayers(Document doc) {
+        HashMap<Integer, Player> playerInfo = new HashMap<>();
         List<Document> playerList = (List<Document>) doc.get("players");
         for (Document p : playerList) {
             // TODO: Set up socket and jCommunicater
-            Player player = new Player(null, null);
-            player.setCanUpgradeInThisTurn(p.getBoolean("can_upgrade"));
-            player.setFoodResourceTotal(p.getInteger("food"));
-            player.setTechnologyResourceTotal(p.getInteger("tech"));
-            player.setTechnologyLevel(p.getInteger("tech_level"));
-            if (p.getBoolean("lost") == true) {
-                player.setIsLost();
-            }
-            // player.setPlayerId(p.getplayerId);
-            game.addPlayerFromDb(player);
+            int playerId = p.getInteger("id");
+            int foodRT = p.getInteger("food");
+            int techRT = p.getInteger("tech");
+            int techLevel = p.getInteger("tech_level");
+            boolean isLost = p.getBoolean("lost");
+            int virusML = p.getInteger("virus_max_level");
+            int vaccineL = p.getInteger("vaccine_level");
+            int vaccineML = p.getInteger("vaccine_max_level");
+            boolean can_bomb_in_this_game = p.getBoolean("can_bomb_in_this_game");
+            boolean canVaccine = p.getBoolean("can_vaccine");
+            boolean canRC = p.getBoolean("can_research_cloak");
+            Player player = new Player(playerId, foodRT, techRT, techLevel, isLost, virusML, vaccineL, vaccineML,
+                    can_bomb_in_this_game, canVaccine, canRC);
+            playerInfo.put(player.getPlayerID(), player);
         }
-        return game;
+        return playerInfo;
     }
 
     /**
      * Reconstruct the territories
      *
-     * @param game The game needs to reconstruct the territories
-     * @param doc  the document that store the whole game info in the database
-     *             collection
+     * @param numOfPlayers The number of players involved in the game to be
+     *                     reconstructed.
+     * @param doc          the document that store the whole game info in the
+     *                     database collection
      * @return the territories reconstructed game
      */
-    private Game reconstructTerritories(Game game, Document doc) {
+    private static GameMap reconstructTerritories(int numOfPlayers, Document doc, HashMap<Integer, Player> playerInfo) {
         List<Document> territoryList = (List<Document>) doc.get("territories");
-        GameMap gameMap = game.getGameMap();
+        GameMap gameMap = new FixedGameMapFactory().createGameMap(numOfPlayers);
         for (Document t : territoryList) {
             Territory territory = gameMap.getTerritory(t.getString("name"));
             territory.setFoodResourceGenerationRate(t.getInteger("food_rate"));
             territory.setTechnologyResourceGenerationRate(t.getInteger("tech_rate"));
             territory.setSize(t.getInteger("size"));
-            territory.setOwner(game.getAllPlayers().get(t.getInteger("owner")));
+            territory.setHiddenFromOthers(t.getInteger("hidden_from_others"));
+            //territor
+            int ownerId = t.getInteger("owner");
+            if (ownerId == -1) {
+                territory.setOwner(null);
+            } else {
+                territory.setOwner(playerInfo.get(ownerId));
+            }
             Document army = (Document) t.get("army");
             territory.setUnitNumber(0);
             for (int i = 0; i <= 6; i++) {
@@ -254,25 +287,25 @@ public class MongoDBClient {
             }
             List<Document> ownSpiesList = (List<Document>) t.get("owned_spies");
             for (Document s : ownSpiesList) {
-                territory.addOwnedSpy(new SpyUnit(game.getAllPlayers().get(s.get("owner_id")), territory));
+                territory.addOwnedSpy(new SpyUnit(playerInfo.get(s.get("owner_id")), territory));
             }
             List<Document> enemySpiesList = (List<Document>) t.get("enemy_spies");
             for (Document s : enemySpiesList) {
-                territory.addEnemySpy(new SpyUnit(game.getAllPlayers().get(s.get("owner_id")), territory));
+                territory.addEnemySpy(new SpyUnit(playerInfo.get(s.get("owner_id")), territory));
             }
             List<Document> oldViewList = (List<Document>) t.get("old_views");
             for (Document o : oldViewList) {
                 JSONObject json = new JSONObject();
                 o.get("view", Document.class).forEach((prop, value) -> json.put(prop, value));
-                territory.setPlayerView(game.getAllPlayers().get(o.get("player_id")), json);
+                territory.setPlayerView(playerInfo.get(o.get("player_id")), json);
             }
         }
-        return game;
+        return gameMap;
     }
 
     /**
-     * Add server information to database
-     * TODO: Please also save the ServerPasswordGenerator
+     * Add server information to database TODO: Please also save the
+     * ServerPasswordGenerator
      *
      * @param server The Server object contains information that will be uploaded to
      *               database
@@ -281,10 +314,10 @@ public class MongoDBClient {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> serverCollection = riskDB.getCollection("server");
-            Bson filter = gte("static_passowrd", -1);
+            Bson filter = gte("static_password", -1);
             serverCollection.deleteMany(filter);
             Document serverDoc = new Document("_id", new ObjectId());
-            serverDoc.append("static_password", Server.password)
+            serverDoc.append("static_password", V2ServerPasswordGenerator.password)
                     .append("client_info", generateClientInfoDoc(server.getClientInfo()))
                     .append("client_games", generateClientGamesDoc(server.getClientGames()));
 
@@ -331,20 +364,23 @@ public class MongoDBClient {
     /**
      * Reconstruct the server
      *
-     * @param server The server needs to be reconstructed
      * @return The reconstructed server
      */
-    public static Server reconstructServerFromDatabase(Server server) {
+    public static Server reconstructServerFromDatabase() throws IOException {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> serverCollection = riskDB.getCollection("server");
             Document serverDoc = serverCollection.find(gte("static_password", -1)).first();
-            Server.password = serverDoc.getInteger("static_password");
+            PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator(serverDoc.getInteger("static_password"));
             HashMap<String, List<Integer>> clientInfo = new HashMap<String, List<Integer>>();
             serverDoc.get("client_info", Document.class).forEach((key, value) -> clientInfo.put(key, (List<Integer>) value));
             HashMap<String, List<Integer>> clientGames = new HashMap<String, List<Integer>>();
             serverDoc.get("client_games", Document.class)
                     .forEach((key, value) -> clientGames.put(key, (List<Integer>) value));
+            ArrayList<Game> gameList = reconstructGameFromDatabase();
+            HashMap<Integer, Player> playerList = new HashMap<Integer, Player>();
+            gameList.forEach(game -> game.getAllPlayers().forEach((k, v) -> playerList.put(k, v)));
+            Server server = new Server(12345, passwordGenerator, gameList, clientInfo, playerList, clientGames);
             return server;
         }
     }

@@ -100,7 +100,7 @@
     -fx-background-insets: 2, 4;
 }
 .purpleButton{
-    -fx-background-color: black,purple;
+    -fx-background-color: black, #800080;
     -fx-text-fill: black;
     -fx-background-radius: 5, 5;
     -fx-background-insets: 2, 4;

@@ -10,5 +10,7 @@ public class App {
         PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
         Server server = new Server(12345, passwordGenerator);
         server.run();
+//        Server server = MongoDBClient.reconstructServerFromDatabase();
+//        server.run();
     }
 }
