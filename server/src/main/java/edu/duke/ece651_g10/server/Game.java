@@ -159,6 +159,13 @@ public class Game implements Runnable {
         playerColor = new HashMap<>();
         this.unitsDistributionDone = unitsDistributionDone;
         initialColorSet();
+
+        for (Player p: players.values()) {
+            if (!playerColor.containsKey(p.getPlayerID())) {
+                playerColor.put(p.getPlayerID(), colorSet.remove(0));
+            }
+        }
+
         gameRunning = false;
     }
 

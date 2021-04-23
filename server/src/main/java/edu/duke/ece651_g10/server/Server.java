@@ -353,6 +353,7 @@ public class Server {
                   HashMap<String, List<Integer>> clientGamesInfo) throws IOException {
         setServerSocket(port);
         games = new HashMap<>();
+        this.threadPool = Executors.newCachedThreadPool();
         for (Game game : gameList) {
             game.setRefServer(this);
             game.setServerTaskPool(this.threadPool);
@@ -379,7 +380,6 @@ public class Server {
             clientGames.put(entry.getKey(), tempGameList);
         }
         this.serverPasswordGenerator = serverPasswordGenerator;
-        this.threadPool = Executors.newCachedThreadPool();
         waitClients = new HashMap<>();
     }
 
