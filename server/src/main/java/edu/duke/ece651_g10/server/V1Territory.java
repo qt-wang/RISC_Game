@@ -104,8 +104,8 @@ public class V1Territory implements Territory {
     @Override
     public int getNumUnit() {
         int sum = 0;
-        for (int i = 0; i < armies.size();i ++) {
-            sum += armies.get(i).getArmyUnits();
+        for (Army army : armies) {
+            sum += army.getArmyUnits();
         }
         return sum;
     }

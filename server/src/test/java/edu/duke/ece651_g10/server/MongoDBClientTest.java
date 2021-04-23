@@ -4,10 +4,12 @@ import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class MongoDBClientTest {
 
+  @Disabled
   @Test
   public void test_add_game2DB() throws IOException {
     V2GameFactory gameFactory = new V2GameFactory(null);

@@ -25,28 +25,28 @@ public class Game implements Runnable {
      * Then the final player join the game, it may have the player id 3.
      * Therefore, the player id for this game is 1 and 3.
      */
-    private HashMap<Integer, Player> players;
+    final private HashMap<Integer, Player> players;
 
     static int gameIdentifier = 0;
 
     private boolean gameRunning;
 
     //This is the unique game identification of the game.
-    private int gameId;
+    final private int gameId;
 
-    private int numPlayers;
+    final private int numPlayers;
     // The game map of the game.
-    private GameMap playMap;
+    final private GameMap playMap;
 
-    private RuleChecker moveRuleChecker;
+    final private RuleChecker moveRuleChecker;
 
-    private RuleChecker attackRuleChecker;
+    final private RuleChecker attackRuleChecker;
 
-    private RuleChecker upgradeTechChecker;
+    final private RuleChecker upgradeTechChecker;
 
-    private RuleChecker upgradeUnitChecker;
+    final private RuleChecker upgradeUnitChecker;
 
-    private OrderProcessor orderProcessor;
+    final private OrderProcessor orderProcessor;
 
     private volatile WaitGroup currentWaitGroup;
 
@@ -108,10 +108,9 @@ public class Game implements Runnable {
      * @param moveRuleChecker   The rule checker used to check whether the move order is valid or not.
      * @param attackRuleChecker The attack checker used to check whether the attack order is valid or not.
      * @param orderProcessor    An order processor used to process the orders.
-     * @param view              The text board view used to represent this game.
      * @param numUnitPerPlayer  The number of units belong to a player in this game.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
         this.playMap = map;
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
@@ -160,7 +159,7 @@ public class Game implements Runnable {
         this.unitsDistributionDone = unitsDistributionDone;
         initialColorSet();
 
-        for (Player p: players.values()) {
+        for (Player p : players.values()) {
             if (!playerColor.containsKey(p.getPlayerID())) {
                 playerColor.put(p.getPlayerID(), colorSet.remove(0));
             }
@@ -177,15 +176,15 @@ public class Game implements Runnable {
         this.serverTaskPool = serverTaskPool;
     }
 
-    /**
-     * Set the game identifier for the Game class.
-     * Only used when resumed the game class from the database.
-     *
-     * @param identifier The identifier used to reset the game.
-     */
-    public static void setGameIdentifier(int identifier) {
-        Game.gameIdentifier = identifier;
-    }
+//    /**
+//     * Set the game identifier for the Game class.
+//     * Only used when resumed the game class from the database.
+//     *
+//     * @param identifier The identifier used to reset the game.
+//     */
+//    public static void setGameIdentifier(int identifier) {
+//        Game.gameIdentifier = identifier;
+//    }
 
 
     /**
@@ -193,7 +192,7 @@ public class Game implements Runnable {
      * Only used when resume the game from the database.
      * After the new server is initialized, use this method to set the server.
      *
-     * @param refServer
+     * @param refServer The server which should host this game.
      */
     public void setRefServer(Server refServer) {
         this.refServer = refServer;
@@ -204,14 +203,14 @@ public class Game implements Runnable {
      * Create a test game, not for real use.
      * This cannot support real use.
      *
-     * @param map
-     * @param moveRuleChecker
-     * @param attackRuleChecker
-     * @param orderProcessor
-     * @param numUnitPerPlayer
-     * @param numPlayers
-     * @param upgradeTechChecker
-     * @param upgradeUnitChecker
+     * @param map                The map
+     * @param moveRuleChecker    Move rule checker
+     * @param attackRuleChecker  Attack rule checker
+     * @param orderProcessor     The used order processor
+     * @param numUnitPerPlayer   Number of units per player has.
+     * @param numPlayers         Number of players
+     * @param upgradeTechChecker Upgrade rule checker
+     * @param upgradeUnitChecker Upgrade unit rule checker.
      */
     public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
         this.playMap = map;
@@ -244,9 +243,9 @@ public class Game implements Runnable {
         return this.gameBegins;
     }
 
-    public void setGameBegins(boolean begin) {
-        this.gameBegins = begin;
-    }
+//    public void setGameBegins(boolean begin) {
+//        this.gameBegins = begin;
+//    }
 
     public GameMap getGameMap() {
         return this.playMap;
@@ -301,8 +300,7 @@ public class Game implements Runnable {
     }
 
     private JSONObject receiveJSONObject(int playerId) throws IOException {
-        JSONObject obj = players.get(playerId).getJCommunicator().receive();
-        return obj;
+        return players.get(playerId).getJCommunicator().receive();
     }
 
     /**
@@ -313,8 +311,7 @@ public class Game implements Runnable {
      * @throws IOException
      */
     private JSONObject tryReceiveJSONObject(int playerId) throws IOException {
-        JSONObject obj = players.get(playerId).getJCommunicator().nonBlockingRead();
-        return obj;
+        return players.get(playerId).getJCommunicator().nonBlockingRead();
     }
 
     /**
@@ -325,10 +322,7 @@ public class Game implements Runnable {
      */
     private boolean isCommitMessage(JSONObject obj) {
         String type = getMessageType(obj);
-        if (type.equals("commit")) {
-            return true;
-        }
-        return false;
+        return type.equals("commit");
     }
 
     /**
@@ -340,8 +334,7 @@ public class Game implements Runnable {
      */
     public String getMessageType(JSONObject obj) {
         try {
-            String ans = obj.getString("type");
-            return ans;
+            return obj.getString("type");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -380,58 +373,59 @@ public class Game implements Runnable {
     public Order toOrder(int playerId, JSONObject obj) {
         try {
             String orderType = obj.getString("orderType");
-            if (orderType.equals("move")) {
-                String sourceT = obj.getString("sourceTerritory"),
-                        destT = obj.getString("destTerritory");
-                int uLevel = obj.getInt("unitLevel");
-                int unitNum = obj.getInt("unitNumber");
-                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
-                return order;
-            } else if (orderType.equals("attack")) {
-                String sourceT = obj.getString("sourceTerritory"),
-                        destT = obj.getString("destTerritory");
-                int uLevel = obj.getInt("unitLevel");
-                int unitNum = obj.getInt("unitNumber");
-                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
-                return order;
-            } else if (orderType.equals("upgradeUnit")) {
-                String sourceT = obj.getString("sourceTerritory");
-                int uLevel = obj.getInt("unitLevel");
-                int unitNum = obj.getInt("unitNumber");
-                Order order = new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));
-                return order;
-            } else if (orderType.equals("upgradeTech")) {
-                Order order = new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("bombOrder")) {
-                Order order = new BombOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("cloakOrder")) {
-                Order order = new CloakOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("upgradeSpyOrder")) {
-                Order order = new UpgradeSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("researchClockOrder")) {
-                Order order = new ResearchCloakOrder(playerId, playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("moveSpyOrder")) {
-                Order order = new MoveSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getString("destTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("virusOrder")){
-                Order order = new VirusOrder(playerId, playMap, players.get(playerId), obj.getString("sourceTerritory"), obj.getInt("unitLevel"));
-                return order;
-            } else if (orderType.equals("vaccineOrder")) {
-                Order order = new VaccineOrder(playerId, playMap, players.get(playerId), obj.getInt("unitLevel"));
-                return order;
-            } else if (orderType.equals("upgradeVirusMaxLevelOrder")) {
-                Order order = new UpgradeVirusMaxLevelOrder(playerId, playMap, players.get(playerId));
-                return order;
-            } else if (orderType.equals("upgradeVaccineMaxLevelOrder")) {
-                Order order = new UpgradeVaccineMaxLevelOrder(playerId, playMap, players.get(playerId));
-                return order;
-            } else {
-                return null;
+            switch (orderType) {
+                case "move": {
+                    String sourceT = obj.getString("sourceTerritory"),
+                            destT = obj.getString("destTerritory");
+                    int uLevel = obj.getInt("unitLevel");
+                    int unitNum = obj.getInt("unitNumber");
+                    return new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
+                }
+                case "attack": {
+                    String sourceT = obj.getString("sourceTerritory"),
+                            destT = obj.getString("destTerritory");
+                    int uLevel = obj.getInt("unitLevel");
+                    int unitNum = obj.getInt("unitNumber");
+                    return new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
+                }
+                case "upgradeUnit": {
+                    String sourceT = obj.getString("sourceTerritory");
+                    int uLevel = obj.getInt("unitLevel");
+                    int unitNum = obj.getInt("unitNumber");
+                    return new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));
+                }
+                case "upgradeTech": {
+                    return new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
+                }
+                case "bombOrder": {
+                    return new BombOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                }
+                case "cloakOrder": {
+                    return new CloakOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                }
+                case "upgradeSpyOrder": {
+                    return new UpgradeSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                }
+                case "researchClockOrder": {
+                    return new ResearchCloakOrder(playerId, playMap, players.get(playerId));
+                }
+                case "moveSpyOrder": {
+                    return new MoveSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getString("destTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                }
+                case "virusOrder": {
+                    return new VirusOrder(playerId, playMap, players.get(playerId), obj.getString("sourceTerritory"), obj.getInt("unitLevel"));
+                }
+                case "vaccineOrder": {
+                    return new VaccineOrder(playerId, playMap, players.get(playerId), obj.getInt("unitLevel"));
+                }
+                case "upgradeVirusMaxLevelOrder": {
+                    return new UpgradeVirusMaxLevelOrder(playerId, playMap, players.get(playerId));
+                }
+                case "upgradeVaccineMaxLevelOrder": {
+                    return new UpgradeVaccineMaxLevelOrder(playerId, playMap, players.get(playerId));
+                }
+                default:
+                    return null;
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -556,7 +550,7 @@ public class Game implements Runnable {
      * The key is the territories' name, the value is the territories' information.
      *
      * @param territories The territories needed.
-     * @return
+     * @return The JSON object describe the territory information.
      */
     public JSONObject generateTerritoriesInfo(Set<Territory> territories, Player player) {
         JSONObject result = new JSONObject();
@@ -782,21 +776,11 @@ public class Game implements Runnable {
     }
 
     private Function<Integer, Runnable> getUnitsDistributionTask() {
-        return new Function<Integer, Runnable>() {
-            @Override
-            public Runnable apply(Integer integer) {
-                return new UnitsDistributionTask(integer);
-            }
-        };
+        return integer -> new UnitsDistributionTask(integer);
     }
 
     private Function<Integer, Runnable> getPlayOneTurnTask() {
-        return new Function<Integer, Runnable>() {
-            @Override
-            public Runnable apply(Integer integer) {
-                return new PlayOneTurnTask(integer);
-            }
-        };
+        return integer -> new PlayOneTurnTask(integer);
     }
 
 
@@ -814,41 +798,32 @@ public class Game implements Runnable {
             currentPlayer.setWaitGroup(waitGroup);
             int currentPlayerId = currentPlayer.getPlayerID();
             Runnable task = toDo.apply(currentPlayerId);
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        task.run();
-                        /**
-                         * At this point, player commit in this round.
-                         * ie. Commit after initial units distribution
-                         * or Done in round operations.
-                         */
-                        waitGroup.decrease();
+            Thread t = new Thread(() -> {
+                try {
+                    task.run();
+                    /**
+                     * At this point, player commit in this round.
+                     * ie. Commit after initial units distribution
+                     * or Done in round operations.
+                     */
+                    waitGroup.decrease();
 
-                        /**
-                         * Add version 2, LogOut phase.
-                         * The player is free to logout after they commit.
-                         */
-                        logOutPhase(currentPlayerId, waitGroup);
-                        barrier.await();
-                        unitsDistributionDone = true;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (BrokenBarrierException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    /**
+                     * Add version 2, LogOut phase.
+                     * The player is free to logout after they commit.
+                     */
+                    logOutPhase(currentPlayerId, waitGroup);
+                    barrier.await();
+                    unitsDistributionDone = true;
+                } catch (InterruptedException | BrokenBarrierException | IOException e) {
+                    e.printStackTrace();
                 }
             });
             t.start();
         }
         try {
             barrier.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
         }
     }
@@ -902,7 +877,6 @@ public class Game implements Runnable {
     void runFromStart() {
         gameBegins = true;
         assignInitialTerritories();
-        //MongoDBClient.addGame2DB(this);
         runFromUnitsDistributionPhase();
     }
 
@@ -916,7 +890,7 @@ public class Game implements Runnable {
     }
 
     void runFromAttackPhase() {
-        Player winner = null;
+        Player winner;
         while ((winner = checkGameEnds()) == null) {
             // We create multiple threads to tell the user what to do.
             //System.out.println("Ready to play the turn");
@@ -932,7 +906,7 @@ public class Game implements Runnable {
                 p.setCanUpgradeInThisTurn(true);
             }
             updatePlayerView();
-            MongoDBClient.addGame2DB(this);
+            //MongoDBClient.addGame2DB(this);
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -948,7 +922,7 @@ public class Game implements Runnable {
                 exception.printStackTrace();
             }
         }
-        MongoDBClient.addGame2DB(this);
+        //MongoDBClient.addGame2DB(this);
     }
 
     /**
@@ -969,53 +943,6 @@ public class Game implements Runnable {
         runFromStart();
 
     }
-
-//    /**
-//     * Run this game, this should be the only method posted to the outer world.
-//     * ie. Server newServer(port)
-//     * newServer.run() will automatically start the game until the game is over.
-//     */
-//    @Override
-//    public void run() {
-//        // Create the map used in this game.
-//        gameBegins = true;
-//        assignInitialTerritories();
-//        runTasksForAllPlayer(getUnitsDistributionTask());
-//        System.out.println("Initial units distribution done.");
-//        updatePlayerView();
-//        Player winner = null;
-//        // All threads has finished the execution of the units distribution.
-//        while ((winner = checkGameEnds()) == null) {
-//            // We create multiple threads to tell the user what to do.
-//            //System.out.println("Ready to play the turn");
-//            runTasksForAllPlayer(getPlayOneTurnTask());
-//            //When this is done.
-//            orderProcessor.executeEndTurnOrders();
-//            playMap.addUnitToEachTerritory();
-//            updatePlayerInfo();
-//            //Update player's food resource and technology resource.
-//            playMap.decreaseCloakLastTime();
-//            playMap.updatePlayerResource();
-//            for (Player p : players.values()) {
-//                p.setCanUpgradeInThisTurn(true);
-//            }
-//            updatePlayerView();
-//        }
-//        gameEnds = true;
-//        String message = "Game ends, the winner is player " + winner.getPlayerID();
-//        logOutForAllPlayers();
-//        for (Player p : players.values()) {
-//            Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
-//            Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
-//            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, p);
-//            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories, p));
-//            try {
-//                p.getJCommunicator().send(object);
-//            } catch (IOException exception) {
-//                exception.printStackTrace();
-//            }
-//        }
-//    }
 
 
     /**
@@ -1053,10 +980,6 @@ public class Game implements Runnable {
      * Otherwise, return false.
      */
     public boolean containsPlayer(Player p) {
-        if (players.containsValue(p)) {
-            return true;
-        } else {
-            return false;
-        }
+        return players.containsValue(p);
     }
 }

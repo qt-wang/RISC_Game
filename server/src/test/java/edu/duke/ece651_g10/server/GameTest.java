@@ -19,7 +19,7 @@ class GameTest {
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = new FixedGameMapFactory().createGameMap(3);
         Server mockServer = mock(Server.class);
-        Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), new GameBoardTextView(map), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
+        Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
         return game;
     }
 
@@ -69,7 +69,7 @@ class GameTest {
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         Server mockServer = mock(Server.class);
-        Game game = new Game(mockMap, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), mockView, 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
+        Game game = new Game(mockMap, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
 
         game.addPlayer(mockPlayer1);
         game.addPlayer(mockPlayer2);
@@ -79,42 +79,6 @@ class GameTest {
         when(mockPlayer2.getIsLost()).thenReturn(false);
         when(mockPlayer3.getIsLost()).thenReturn(true);
 
-//        String expected = "First phase, soldiers distribution\n" +
-//                //"Player 1:\n" + "A\n" + "-----------------------\n" +
-//                "10 units in Narnia (next to: Elantris, Midkemia)\n";
-//        JSONObject test = game.firstPhaseInformation(mockPlayer1.getPlayerID());
-//        assertEquals(test.getString("prompt"), expected);
-//
-//        expected = "Player 2:\n" +
-//                "-----------------------\n" +
-//                "12 units in Test (next to: Eltris, Mida)\n";
-//        assertEquals(game.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()), expected);
-//
-//        String secondPhaseBeginMessage = "Second phase, attack territories\n" +
-//                "Player 1:\n" + "-----------------------\n" +
-//                "10 units in Narnia (next to: Elantris, Midkemia)\n" + expected;
-//
-//        test = game.secondPhaseInformation(mockPlayer1.getPlayerID(), game.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()));
-//        assertEquals(secondPhaseBeginMessage, test.get("prompt"));
-//
-//
-//        when(mockPlayer3.getIsLost()).thenReturn(false);
-//
-//        when(mockView.territoryForUser(mockPlayer3)).thenReturn("4 units in Test (next to: Eltris, Mida)\n");
-//
-//        String expectedPlayer3 = "Player 3:\n" +
-//                "-----------------------\n" +
-//                "4 units in Test (next to: Eltris, Mida)\n";
-//
-//        secondPhaseBeginMessage += expectedPlayer3;
-//        test = game.secondPhaseInformation(mockPlayer1.getPlayerID(), game.getEnemyTerritoryInformation(mockPlayer1.getPlayerID()));
-//        assertEquals(secondPhaseBeginMessage, test.get("prompt"));
-//
-//
-//        JSONObject receivedJson = game.generateServerResponse("valid\n", "", "connection");
-//        assertEquals(receivedJson.getString("prompt"), "valid\n");
-//        assertEquals(receivedJson.getString("reason"), "");
-//        assertEquals(receivedJson.getString("type"), "connection");
     }
 
 
