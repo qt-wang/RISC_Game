@@ -1,12 +1,26 @@
 package edu.duke.ece651_g10.server;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MoveSpyOrder extends TerritoryToTerritoryOrder{
     public MoveSpyOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p) {
         super(playerID, source, dest, unitNum, gMap, p, 0);
     }
 
     public void execute(){
-        for(Spy spy : source.getOwnedSpies()){
+        Set<Spy> spySet = new HashSet<>();
+        for(Spy s : source.getOwnedSpies()){
+            if(s.getOwner().getPlayerID() == playerID){
+                spySet.add(s);
+            }
+        }
+        for(Spy s : source.getEnemySpies()){
+            if(s.getOwner().getPlayerID() == playerID){
+                spySet.add(s);
+            }
+        }
+        for(Spy spy : spySet){
             spy.moveTo(dest);
             unitNum--;
             if(unitNum <= 0){
