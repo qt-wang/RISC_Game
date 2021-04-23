@@ -16,9 +16,9 @@ public class MongoDBClientTest {
     game.addPlayerFromDb(new Player(null, null));
     game.assignInitialTerritories();
     MongoDBClient mongoClient = new MongoDBClient(
-        "mongodb+srv://g10:ece651@cluster0.jjos5.mongodb.net/ece651_risk?retryWrites=true&w=majority");
+        "mongodb+srv://g10:ece651@risk.3iprc.mongodb.net/ece651_risk?retryWrites=true&w=majority");
     MongoDBClient.addGame2DB(game);
-    mongoClient.reconstructServerFromDatabase();
+    //mongoClient.reconstructServerFromDatabase();
   }
 }
 

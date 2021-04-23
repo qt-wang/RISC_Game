@@ -29,6 +29,8 @@ public class Game implements Runnable {
 
     static int gameIdentifier = 0;
 
+    private boolean gameRunning;
+
     //This is the unique game identification of the game.
     private int gameId;
 
@@ -129,6 +131,7 @@ public class Game implements Runnable {
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
         unitsDistributionDone = false;
         initialColorSet();
+        gameRunning = false;
     }
 
 
@@ -138,7 +141,7 @@ public class Game implements Runnable {
      */
     public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
                 boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone, HashMap<Integer, Player> playerInfo) {
-        this.players = new HashMap<>();
+        this.players = playerInfo;
         this.gameId = gameId;
         this.numPlayers = numPlayers;
         this.playMap = map;
@@ -147,7 +150,7 @@ public class Game implements Runnable {
         this.upgradeTechChecker = upgradeTechChecker;
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.orderProcessor = new V1OrderProcessor();
-        this.currentWaitGroup = null;
+        this.currentWaitGroup = new WaitGroup(numPlayers);
         this.gameEnds = gameEnds;
         this.gameBegins = gameBegins;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -156,6 +159,14 @@ public class Game implements Runnable {
         playerColor = new HashMap<>();
         this.unitsDistributionDone = unitsDistributionDone;
         initialColorSet();
+
+        for (Player p: players.values()) {
+            if (!playerColor.containsKey(p.getPlayerID())) {
+                playerColor.put(p.getPlayerID(), colorSet.remove(0));
+            }
+        }
+
+        gameRunning = false;
     }
 
     /**
@@ -218,6 +229,7 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         initialColorSet();
+        gameRunning = false;
     }
 
     public int getGameId() {
@@ -876,11 +888,11 @@ public class Game implements Runnable {
     }
 
     public int getNumPlayers() {
-        return players.size();
+        return playMap.getTotalPlayers();
     }
 
     public boolean canGameStart() {
-        return players.size() == numPlayers && !gameBegins && currentWaitGroup.getState();
+        return players.size() == numPlayers && !gameRunning && currentWaitGroup.getState();
     }
 
     public WaitGroup getCurrentWaitGroup() {
@@ -890,7 +902,7 @@ public class Game implements Runnable {
     void runFromStart() {
         gameBegins = true;
         assignInitialTerritories();
-        MongoDBClient.addGame2DB(this);
+        //MongoDBClient.addGame2DB(this);
         runFromUnitsDistributionPhase();
     }
 
@@ -898,7 +910,7 @@ public class Game implements Runnable {
         runTasksForAllPlayer(getUnitsDistributionTask());
         System.out.println("Initial units distribution done.");
         updatePlayerView();
-        MongoDBClient.addGame2DB(this);
+        //MongoDBClient.addGame2DB(this);
         // Game has record that some fields has changed.
         runFromAttackPhase();
     }
@@ -946,6 +958,7 @@ public class Game implements Runnable {
      */
     @Override
     public void run() {
+        gameRunning = true;
         if (gameEnds) {
             return;
         }

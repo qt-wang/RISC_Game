@@ -28,6 +28,10 @@ public class GameInfo {
         return playerStatus;
     }
 
+    public String getMyOwnColor(){
+        return playerColor.get(currPlayerID);
+    }
+
     public void setPlayerInfoLose(JSONObject obj) {
         try {
             List<String> info = new LinkedList<>();
@@ -92,7 +96,7 @@ public class GameInfo {
             info.add("Tech Lv: "+technologyLevel);
             info.add("Tech resource: "+technologyResource);
             info.add("Food resource: "+foodResource);
-            String researchedCloak = obj.getBoolean("researchedClock") ? "yes" : "no";
+            String researchedCloak = obj.getBoolean("researchedCloak") ? "yes" : "no";
             info.add("Can upgrade tech: "+upgradable);
             info.add("Cloak ability: "+researchedCloak);
             info.add("Current vaccine Lv: "+vaccineLvl);
@@ -123,7 +127,12 @@ public class GameInfo {
                 JSONObject singleT = tInfos.getJSONObject(key);
                 JSONObject armies = singleT.getJSONObject("armies");
                 JSONObject spyInfo = singleT.getJSONObject("spyInfo");
-                int spyNum = spyInfo.getInt(Integer.toString(currPlayerID));
+                int spyNum;
+                if (spyInfo.has(Integer.toString(currPlayerID))) {
+                    spyNum = spyInfo.getInt(Integer.toString(currPlayerID));
+                } else {
+                    spyNum = 0;
+                }
                 boolean visible = singleT.getBoolean("visible"),isNew = singleT.getBoolean("isNew");
                 int ownerId = singleT.getInt("owner");
                 List<String> currOwners = ownerShip.getOrDefault(ownerId,new LinkedList<String>());

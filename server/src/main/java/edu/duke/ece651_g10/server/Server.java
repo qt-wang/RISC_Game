@@ -145,6 +145,7 @@ public class Server {
         }
     }
 
+
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
      * One client connection use one thread to handle it?
@@ -328,8 +329,11 @@ public class Server {
         clientGames = new HashMap<>();
         waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
-            games.put(i, gameFactory.createFixedGame(2));
+            Game newGame = gameFactory.createFixedGame(2);
+            games.put(i, newGame);
+            MongoDBClient.addGame2DB(newGame);
         }
+        MongoDBClient.addServer2DB(this);
     }
 
     /**
@@ -349,6 +353,7 @@ public class Server {
                   HashMap<String, List<Integer>> clientGamesInfo) throws IOException {
         setServerSocket(port);
         games = new HashMap<>();
+        this.threadPool = Executors.newCachedThreadPool();
         for (Game game : gameList) {
             game.setRefServer(this);
             game.setServerTaskPool(this.threadPool);
@@ -375,7 +380,6 @@ public class Server {
             clientGames.put(entry.getKey(), tempGameList);
         }
         this.serverPasswordGenerator = serverPasswordGenerator;
-        this.threadPool = Executors.newCachedThreadPool();
         waitClients = new HashMap<>();
     }
 
