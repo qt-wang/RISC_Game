@@ -8,8 +8,8 @@ public class VirusLevelChecker extends RuleChecker<OneTerritoryOrder>{
 
     @Override
     protected String checkMyRule(OneTerritoryOrder order, GameMap gameMap) {
-        if (!order.getPlayer().equals(order.getSourceTerritory().getOwner())) {
-            return "The target player cannot be the order starter";
+        if (order.getLevel() > order.getPlayer().getVirusMaxLevel()) {
+            return "This virus order's level cannot be higher than virus max level";
         }
         return null;
     }
