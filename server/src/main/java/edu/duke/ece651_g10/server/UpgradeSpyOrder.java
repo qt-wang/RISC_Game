@@ -11,6 +11,7 @@ public class UpgradeSpyOrder extends OneTerritoryOrder{
             if(source.getArmyWithLevel(i).getArmyUnits() >= unitNum) {
                 Army fromArmy = source.getArmyWithLevel(level);
                 fromArmy.decreaseUnits(unitNum);
+                break;
             } else{
                 Army fromArmy = source.getArmyWithLevel(level);
                 fromArmy.decreaseUnits(fromArmy.getArmyUnits());
