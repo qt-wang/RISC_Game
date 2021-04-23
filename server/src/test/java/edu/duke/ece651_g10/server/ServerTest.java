@@ -1,14 +1,11 @@
 package edu.duke.ece651_g10.server;
 
-import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.text.View;
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 class ServerTest {
 
 
@@ -46,4 +43,17 @@ class ServerTest {
             assertEquals(t2.getOwner(), p1);
         }
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
