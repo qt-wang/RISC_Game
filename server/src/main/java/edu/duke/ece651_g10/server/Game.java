@@ -138,7 +138,7 @@ public class Game implements Runnable {
      */
     public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
                 boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone, HashMap<Integer, Player> playerInfo) {
-        this.players = new HashMap<>();
+        this.players = playerInfo;
         this.gameId = gameId;
         this.numPlayers = numPlayers;
         this.playMap = map;
@@ -147,7 +147,7 @@ public class Game implements Runnable {
         this.upgradeTechChecker = upgradeTechChecker;
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.orderProcessor = new V1OrderProcessor();
-        this.currentWaitGroup = null;
+        this.currentWaitGroup = new WaitGroup(numPlayers);
         this.gameEnds = gameEnds;
         this.gameBegins = gameBegins;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -876,7 +876,7 @@ public class Game implements Runnable {
     }
 
     public int getNumPlayers() {
-        return players.size();
+        return playMap.getTotalPlayers();
     }
 
     public boolean canGameStart() {
@@ -920,7 +920,7 @@ public class Game implements Runnable {
                 p.setCanUpgradeInThisTurn(true);
             }
             updatePlayerView();
-            //MongoDBClient.addGame2DB(this);
+            MongoDBClient.addGame2DB(this);
         }
         gameEnds = true;
         String message = "Game ends, the winner is player " + winner.getPlayerID();
@@ -936,7 +936,7 @@ public class Game implements Runnable {
                 exception.printStackTrace();
             }
         }
-        //MongoDBClient.addGame2DB(this);
+        MongoDBClient.addGame2DB(this);
     }
 
     /**

@@ -25,7 +25,7 @@ import org.json.JSONObject;
  * The class to update the game and user information into database
  */
 public class MongoDBClient {
-    static String connectionString = "mongodb+srv://g10:ece651@cluster0.jjos5.mongodb.net/ece651_risk?retryWrites=true&w=majority";
+    static String connectionString = "mongodb+srv://g10:ece651@risk.3iprc.mongodb.net/ece651_risk?retryWrites=true&w=majority";
 
     /**
      * The constructor of the MongoDBClient
@@ -190,7 +190,7 @@ public class MongoDBClient {
      *
      * @return the arraylist of the game objects
      */
-    public ArrayList<Game> reconstructGameFromDatabase() {
+    public static ArrayList<Game> reconstructGameFromDatabase() {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> gameCollection = riskDB.getCollection("games");
@@ -231,7 +231,7 @@ public class MongoDBClient {
      *            collection
      * @return the players reconstructed game
      */
-    private HashMap<Integer, Player> reconstructPlayers(Document doc) {
+    private static HashMap<Integer, Player> reconstructPlayers(Document doc) {
         HashMap<Integer, Player> playerInfo = new HashMap<>();
         List<Document> playerList = (List<Document>) doc.get("players");
         for (Document p : playerList) {
@@ -263,7 +263,7 @@ public class MongoDBClient {
      *                     database collection
      * @return the territories reconstructed game
      */
-    private GameMap reconstructTerritories(int numOfPlayers, Document doc, HashMap<Integer, Player> playerInfo) {
+    private static GameMap reconstructTerritories(int numOfPlayers, Document doc, HashMap<Integer, Player> playerInfo) {
         List<Document> territoryList = (List<Document>) doc.get("territories");
         GameMap gameMap = new FixedGameMapFactory().createGameMap(numOfPlayers);
         for (Document t : territoryList) {
@@ -311,10 +311,10 @@ public class MongoDBClient {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> serverCollection = riskDB.getCollection("server");
-            Bson filter = gte("static_passowrd", -1);
+            Bson filter = gte("static_password", -1);
             serverCollection.deleteMany(filter);
             Document serverDoc = new Document("_id", new ObjectId());
-            serverDoc.append("static_password", Server.password)
+            serverDoc.append("static_password", V2ServerPasswordGenerator.password)
                     .append("client_info", generateClientInfoDoc(server.getClientInfo()))
                     .append("client_games", generateClientGamesDoc(server.getClientGames()));
 
@@ -363,7 +363,7 @@ public class MongoDBClient {
      *
      * @return The reconstructed server
      */
-    public Server reconstructServerFromDatabase() throws IOException {
+    public static Server reconstructServerFromDatabase() throws IOException {
         try (MongoClient mongoClient = MongoClients.create(connectionString)) {
             MongoDatabase riskDB = mongoClient.getDatabase("ece651_risk");
             MongoCollection<Document> serverCollection = riskDB.getCollection("server");
@@ -377,7 +377,7 @@ public class MongoDBClient {
             ArrayList<Game> gameList = reconstructGameFromDatabase();
             HashMap<Integer, Player> playerList = new HashMap<Integer, Player>();
             gameList.forEach(game -> game.getAllPlayers().forEach((k, v) -> playerList.put(k, v)));
-            Server server = new Server(1234, passwordGenerator, gameList, clientInfo, playerList, clientGames);
+            Server server = new Server(12345, passwordGenerator, gameList, clientInfo, playerList, clientGames);
             return server;
         }
     }
