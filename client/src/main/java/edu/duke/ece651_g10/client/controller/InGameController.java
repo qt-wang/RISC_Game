@@ -23,12 +23,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import org.checkerframework.checker.units.qual.C;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -61,6 +65,12 @@ public class InGameController{
 
     TerritoryButtonStyleController buttonStyleController;
 
+    @FXML
+    Text ownColorDesc;
+
+    @FXML
+    Rectangle ownColor;
+
     /**
      * initiate the game controller with given parameters
      * @param gameInfo the model contains game info
@@ -84,6 +94,11 @@ public class InGameController{
         prompt.setText(str);
     }
 
+    public void setPlayerColor(){
+        ColorStrategy cs = new ColorStrategy();
+        ownColorDesc.setFill(Color.WHITE);
+        ownColor.setFill(Color.web(cs.getPureColor(gameInfo.getMyOwnColor())));
+    }
     /**
      * update player info listview according to the model gameinfo
      * and refresh to show the new info
@@ -132,12 +147,7 @@ public class InGameController{
     @FXML
     public void onEnterStage(MouseEvent ae) {
         updatePlayerAndTerritory();
-//        boolean res = buttonStyleController.setButtonStyle("A",cs.getRegularStyle("red"));
-//        if(res){
-//            System.out.println("true");
-//        }else{
-//            System.out.println("false");
-//        }
+        setPlayerColor();
     }
 
     /**
