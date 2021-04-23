@@ -29,6 +29,8 @@ public class Game implements Runnable {
 
     static int gameIdentifier = 0;
 
+    private boolean gameRunning;
+
     //This is the unique game identification of the game.
     private int gameId;
 
@@ -129,6 +131,7 @@ public class Game implements Runnable {
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
         unitsDistributionDone = false;
         initialColorSet();
+        gameRunning = false;
     }
 
 
@@ -156,6 +159,7 @@ public class Game implements Runnable {
         playerColor = new HashMap<>();
         this.unitsDistributionDone = unitsDistributionDone;
         initialColorSet();
+        gameRunning = false;
     }
 
     /**
@@ -218,6 +222,7 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         initialColorSet();
+        gameRunning = false;
     }
 
     public int getGameId() {
@@ -880,7 +885,7 @@ public class Game implements Runnable {
     }
 
     public boolean canGameStart() {
-        return players.size() == numPlayers && !gameBegins && currentWaitGroup.getState();
+        return players.size() == numPlayers && !gameRunning && currentWaitGroup.getState();
     }
 
     public WaitGroup getCurrentWaitGroup() {
@@ -946,6 +951,7 @@ public class Game implements Runnable {
      */
     @Override
     public void run() {
+        gameRunning = true;
         if (gameEnds) {
             return;
         }

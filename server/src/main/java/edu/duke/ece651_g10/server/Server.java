@@ -146,7 +146,6 @@ public class Server {
     }
 
 
-
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
      * One client connection use one thread to handle it?
