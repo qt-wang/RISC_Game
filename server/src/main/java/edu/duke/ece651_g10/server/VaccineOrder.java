@@ -14,6 +14,6 @@ public class VaccineOrder extends ZeroTerritoryOrder{
     }
 
     public int getVaccineLevel(){
-        return getVaccineLevel();
+        return vaccineLevel;
     }
 }

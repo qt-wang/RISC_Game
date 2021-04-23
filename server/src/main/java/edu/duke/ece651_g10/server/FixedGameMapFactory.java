@@ -1,8 +1,6 @@
 package edu.duke.ece651_g10.server;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class FixedGameMapFactory implements GameMapFactory {
 
@@ -10,9 +8,13 @@ public class FixedGameMapFactory implements GameMapFactory {
         HashMap<Integer, HashSet<Territory>> groups = map.getInitialGroups();
         for (Map.Entry<Integer, HashSet<Territory>> entry : groups.entrySet()) {
             HashSet<Territory> territories = entry.getValue();
-            int[] foodDistribution = new V2SetNumGenerator(territories.size(), 1, totalFoodResourceGenerationRate, totalFoodResourceGenerationRate).get();
-            int[] technologyDistribution = new V2SetNumGenerator(territories.size(), 1, technologyResourceGenerationRate, technologyResourceGenerationRate).get();
-            int[] sizeDistribution = new V2SetNumGenerator(territories.size(), 1, totalSize, totalSize).get();
+            int length = territories.size();
+//            int[] foodDistribution = new V2SetNumGenerator(territories.size(), 1, totalFoodResourceGenerationRate, totalFoodResourceGenerationRate).get();
+//            int[] technologyDistribution = new V2SetNumGenerator(territories.size(), 1, technologyResourceGenerationRate, technologyResourceGenerationRate).get();
+//            int[] sizeDistribution = new V2SetNumGenerator(territories.size(), 1, totalSize, totalSize).get();
+            int [] foodDistribution = getRandomDistributedSum(length, totalFoodResourceGenerationRate);
+            int [] technologyDistribution = getRandomDistributedSum(length, technologyResourceGenerationRate);
+            int [] sizeDistribution = getRandomDistributedSum(length, totalSize);
             int count = 0;
             for (Territory t : territories) {
                 t.setFoodResourceGenerationRate(foodDistribution[count]);
@@ -21,6 +23,38 @@ public class FixedGameMapFactory implements GameMapFactory {
                 count += 1;
             }
         }
+    }
+
+    static int[] getRandomDistributedSum(int n, int total) {
+        if (n <= 0 || total <= 0) {
+            return null;
+        }
+        List<Integer> temp = new LinkedList<>();
+        List<Integer> result = new LinkedList<>();
+        temp.add(0);
+        while (temp.size() < n) {
+            int newNumber = new Random().nextInt(total - 1) + 1;
+            boolean found = false;
+            for (int i = 0; i < temp.size(); i ++) {
+                if (temp.get(i) == newNumber) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                temp.add(newNumber);
+            }
+        }
+        Collections.sort(temp);
+        temp.add(total);
+        for (int i = 1; i < temp.size(); i ++) {
+            result.add(temp.get(i) - temp.get(i - 1));
+        }
+        int [] test = new int[result.size()];
+        for (int i = 0; i < test.length; i ++) {
+            test[i] = result.get(i);
+        }
+        return test;
     }
 
     GameMap createNewThreePeopleMap() {
@@ -124,7 +158,7 @@ public class FixedGameMapFactory implements GameMapFactory {
         groups.put(2, group2);
 
         GameMap map = new V1GameMap(new HashSet<>(territoryHashMap.values()), groups);
-        setupTerritoryAttributes(map, 120, 45, 120);
+        setupTerritoryAttributes(map, 120, 45, 90);
         return map;
     }
 

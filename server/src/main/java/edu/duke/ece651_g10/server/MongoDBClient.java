@@ -204,9 +204,9 @@ public class MongoDBClient {
             Player.availableId = playerIdDoc.getInteger("static_player_id");
 
             for (Document d : gameListDoc) {
-                if ((boolean) (d.get("end_game")) == true) {
-                    continue;
-                }
+//                if ((boolean) (d.get("end_game")) == true) {
+//                    continue;
+//                }
                 HashMap<Integer, Player> playerInfo = reconstructPlayers(d);
                 int number_of_players = d.getInteger("num_players");
                 GameMap map = reconstructTerritories(number_of_players, d, playerInfo);
@@ -217,7 +217,8 @@ public class MongoDBClient {
                 boolean unitsDD = d.getBoolean("units_distribution_done");
                 Game newGame = new Game(map, GameFactory.getMoveRuleChecker(), GameFactory.getAttackRuleChecker(), numUPP,
                         number_of_players, GameFactory.getUpgradeTechChecker(), GameFactory.getUpgradeUnitChecker(), gameId,
-                        gameEnds, gameBegins, unitsDD, playerInfo);
+                        gameEnds, gameBegins, unitsDD, playerInfo, GameFactory.getResearchCloakChecker(), GameFactory.getCloakChecker(), GameFactory.getBombChecker(), GameFactory.getVirusChecker(),
+                        GameFactory.getUpgradeVirusMaxChecker(), GameFactory.getVaccineChecker(), GameFactory.getUpgradeVaccineMaxChecker(), GameFactory.getUpgradeSpyChecker(), GameFactory.getMoveSpyChecker());
                 gameList.add(newGame);
             }
             return gameList;
@@ -271,6 +272,8 @@ public class MongoDBClient {
             territory.setFoodResourceGenerationRate(t.getInteger("food_rate"));
             territory.setTechnologyResourceGenerationRate(t.getInteger("tech_rate"));
             territory.setSize(t.getInteger("size"));
+            territory.setHiddenFromOthers(t.getInteger("hidden_from_others"));
+            //territor
             int ownerId = t.getInteger("owner");
             if (ownerId == -1) {
                 territory.setOwner(null);

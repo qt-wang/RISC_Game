@@ -271,4 +271,11 @@ public interface Territory {
      * @return The number of spies owned by the player within this territory.
      */
     public int getSpyNumForPlayer(Player p);
+
+
+    /**
+     * Set hidden from others from database.
+     * @param hiddenFromOthers The value of the old value.
+     */
+    public void setHiddenFromOthers(int hiddenFromOthers);
 }

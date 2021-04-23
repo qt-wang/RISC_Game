@@ -504,7 +504,8 @@ public class InGameController{
                     if (newValue != null) {
                         // Received the next turn json object.
                         //Handle game ends.
-                        if (gameInfo.getPlayerStatus().equals("E")) {
+                        String playerStatus = newValue.getString("playerStatus");
+                        if (playerStatus.equals("E")) {
                             // Create a message box.
                             //Create a wait box.
                             Stage stage = App.createChildStage(primaryStage, "Game ends");
@@ -518,7 +519,7 @@ public class InGameController{
                             dialogBox.getChildren().add(button);
                             Scene dialogScene = new Scene(dialogBox, 300, 200);
                             stage.setScene(dialogScene);
-
+                            stage.show();
                             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                                 @Override
                                 public void handle(WindowEvent event) {
@@ -569,7 +570,7 @@ public class InGameController{
                                     primaryStage.setScene(loginScene);
                                 }
                             });
-                        } else if (gameInfo.getPlayerStatus().equals("L")) {
+                        } else if (playerStatus.equals("L")) {
                             gameInfo = new GameInfo(newValue);
                             updatePlayerAndTerritory();
                             try {
