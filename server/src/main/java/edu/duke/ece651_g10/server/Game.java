@@ -581,6 +581,24 @@ public class Game implements Runnable {
                     message = upgradeTechChecker.checkOrder(order, playMap);
                 } else if (order instanceof UpgradeUnitOrder) {
                     message = upgradeUnitChecker.checkOrder(order, playMap);
+                } else if (order instanceof ResearchCloakOrder) {
+                    message = researchCloakChecker.checkOrder(order, playMap);
+                } else if (order instanceof CloakOrder) {
+                    message = cloakChecker.checkOrder(order, playMap);
+                } else if (order instanceof VirusOrder) {
+                    message = virusChecker.checkOrder(order, playMap);
+                } else if (order instanceof VaccineOrder) {
+                    message = vaccineChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeVirusMaxLevelOrder) {
+                    message = upgradeVirusMaxChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeVaccineMaxLevelOrder) {
+                    message = upgradeVaccineMaxChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeSpyOrder) {
+                    message = upgradeSpyChecker.checkOrder(order, playMap);
+                } else if (order instanceof MoveSpyOrder) {
+                    message = moveSpyChecker.checkOrder(order, playMap);
+                } else if (order instanceof BombOrder) {
+                    message = bombChecker.checkOrder(order, playMap);
                 }
                 if (message == null) {
                     orderProcessor.acceptOrder(order);
@@ -951,7 +969,7 @@ public class Game implements Runnable {
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
-            playMap.addUnitToEachTerritory();
+            //playMap.addUnitToEachTerritory();
             updatePlayerInfo();
             //Update player's food resource and technology resource.
             playMap.decreaseCloakLastTime();

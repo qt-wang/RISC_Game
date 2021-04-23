@@ -317,6 +317,14 @@ public class V1Territory implements Territory {
                 spyInfo.put(owner.getPlayerID(), spyInfo.get(owner.getPlayerID()) + 1);
             }
         }
+        for (Spy spy : enemySpies) {
+            Player owner = spy.getOwner();
+            if (!spyInfo.containsKey(owner.getPlayerID())) {
+                spyInfo.put(owner.getPlayerID(), 1);
+            } else {
+                spyInfo.put(owner.getPlayerID(), spyInfo.get(owner.getPlayerID()) + 1);
+            }
+        }
         for (Map.Entry<Integer, Integer> entry : spyInfo.entrySet()) {
             object.put(Integer.toString(entry.getKey()), entry.getValue());
         }
@@ -336,5 +344,10 @@ public class V1Territory implements Territory {
             }
             return count;
         }
+    }
+
+    @Override
+    public void setHiddenFromOthers(int hiddenFromOthers) {
+        this.hiddenFromOthers = hiddenFromOthers;
     }
 }

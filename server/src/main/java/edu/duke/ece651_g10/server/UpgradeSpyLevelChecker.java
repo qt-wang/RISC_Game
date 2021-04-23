@@ -8,7 +8,7 @@ public class UpgradeSpyLevelChecker extends RuleChecker<OneTerritoryOrder>{
 
     @Override
     protected String checkMyRule(OneTerritoryOrder order, GameMap gameMap) {
-        if (order.getPlayer().getTechnologyLevel() <= 1) {
+        if (order.getPlayer().getTechnologyLevel() < 1) {
             return "The player's technology level is not high enough to upgrade spy";
         }
         return null;

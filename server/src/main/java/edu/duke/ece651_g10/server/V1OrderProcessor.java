@@ -99,6 +99,9 @@ public class V1OrderProcessor implements OrderProcessor {
         ((UpgradeTechOrder) order).getPlayer().setCanUpgradeInThisTurn(false);
         ((UpgradeTechOrder) order).getPlayer().setTechnologyResourceTotal(newTechResource);
         upgradeTechInOneTurn.addElement((UpgradeTechOrder) order);
+    } else if (order instanceof MoveSpyOrder) {
+        // TODO: Handle moveSpyOrder
+        order.execute();
     }
   }
 

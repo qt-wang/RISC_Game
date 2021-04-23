@@ -56,7 +56,7 @@ public interface GameFactory {
         return new VaccineLevelChecker(new VaccineResourceChecker(null));
     }
 
-    public static RuleChecker getUpgradeVaccineChecker(){
+    public static RuleChecker getUpgradeVaccineMaxChecker(){
         return new UpgradeVaccineMaxLevelChecker(new UpgradeVirusMaxResourceChecker(null));
     }
 

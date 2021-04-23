@@ -19,7 +19,8 @@ class GameTest {
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         GameMap map = new FixedGameMapFactory().createGameMap(3);
         Server mockServer = mock(Server.class);
-        Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
+        Game game = new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null, GameFactory.getResearchCloakChecker(), GameFactory.getCloakChecker(), GameFactory.getBombChecker(), GameFactory.getVirusChecker(),
+                GameFactory.getUpgradeVirusMaxChecker(), GameFactory.getVaccineChecker(), GameFactory.getUpgradeVaccineMaxChecker(), GameFactory.getUpgradeSpyChecker(), GameFactory.getMoveSpyChecker());
         return game;
     }
 
@@ -69,7 +70,8 @@ class GameTest {
         RuleChecker moveRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new SelfTerritoryChecker(new ConnectedTerritoryChecker(new SufficientUnitChecker(null)))));
         RuleChecker attackRuleChecker = new TerritoryExistChecker(new PlayerSelfOrderChecker(new EnemyTerritoryChecker(new AdjacentTerritoryChecker(new SufficientUnitChecker(null)))));
         Server mockServer = mock(Server.class);
-        Game game = new Game(mockMap, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null);
+        Game game = new Game(mockMap, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), 20, 3, Executors.newCachedThreadPool(), mockServer, null, null, GameFactory.getResearchCloakChecker(), GameFactory.getCloakChecker(), GameFactory.getBombChecker(), GameFactory.getVirusChecker(),
+                GameFactory.getUpgradeVirusMaxChecker(), GameFactory.getVaccineChecker(), GameFactory.getUpgradeVaccineMaxChecker(), GameFactory.getUpgradeSpyChecker(), GameFactory.getMoveSpyChecker());
 
         game.addPlayer(mockPlayer1);
         game.addPlayer(mockPlayer2);

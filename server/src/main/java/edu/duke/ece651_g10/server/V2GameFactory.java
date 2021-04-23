@@ -16,7 +16,9 @@ public class V2GameFactory implements GameFactory {
         GameMapFactory fixedGameMapFactory = new FixedGameMapFactory();
         int randomUnits = ThreadLocalRandom.current().nextInt(25, 51);
         GameMap map = fixedGameMapFactory.V2CreateGameMap(people);
-        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), randomUnits, people, this.runServer.threadPool, this.runServer, upgradeTechChecker, upgradeUnitChecker, );
+        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), randomUnits, people, this.runServer.threadPool, this.runServer, upgradeTechChecker, upgradeUnitChecker,
+                GameFactory.getResearchCloakChecker(), GameFactory.getCloakChecker(), GameFactory.getBombChecker(), GameFactory.getVirusChecker(),
+                GameFactory.getUpgradeVirusMaxChecker(), GameFactory.getVaccineChecker(), GameFactory.getUpgradeVaccineMaxChecker(), GameFactory.getUpgradeSpyChecker(), GameFactory.getMoveSpyChecker());
     }
 
 
@@ -26,7 +28,9 @@ public class V2GameFactory implements GameFactory {
         GameMapFactory fixedGameMapFactory = new FixedGameMapFactory();
         int randomUnits = ThreadLocalRandom.current().nextInt(25, 51);
         GameMap map = fixedGameMapFactory.V2CreateGameMap(people);
-        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), randomUnits, people, upgradeTechChecker, upgradeUnitChecker);
+        return new Game(map, moveRuleChecker, attackRuleChecker, new V1OrderProcessor(), randomUnits, people, upgradeTechChecker, upgradeUnitChecker,
+                GameFactory.getResearchCloakChecker(), GameFactory.getCloakChecker(), GameFactory.getBombChecker(), GameFactory.getVirusChecker(),
+                GameFactory.getUpgradeVirusMaxChecker(), GameFactory.getVaccineChecker(), GameFactory.getUpgradeVaccineMaxChecker(), GameFactory.getUpgradeSpyChecker(), GameFactory.getMoveSpyChecker());
     }
 
     /**

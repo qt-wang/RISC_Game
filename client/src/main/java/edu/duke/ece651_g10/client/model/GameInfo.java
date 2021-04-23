@@ -47,7 +47,7 @@ public class GameInfo {
     public GameInfo(JSONObject received) {
         //JSONObject
         //received = generateTestJSON();
-        //System.out.println(received);
+        System.out.println(received);
         sub = received.getString("sub");
         canUpgrade = received.getBoolean("canUpgrade");
         playerStatus = received.getString("playerStatus");
@@ -147,6 +147,9 @@ public class GameInfo {
                 terrInfo.add("Territory name: "+key);
                 if(visible){
                     terrColors.put(key,getPlayerColor(ownerId));
+                    if (!isNew) {
+                        terrInfo.add("This view is from past!");
+                    }
                     terrInfo.add("Owner: " + ownerId);
                     int foodRate = singleT.getInt("foodResourceGenerationRate");
                     int techRate = singleT.getInt("technologyResourceGenerationRate");
