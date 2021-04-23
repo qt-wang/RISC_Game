@@ -2,17 +2,15 @@ package edu.duke.ece651_g10.server;
 
 public class VirusOrder extends OneTerritoryOrder{
     Player targetPlayer;
-    int virusLevel;
     public VirusOrder(int playerID, GameMap gMap, Player player, String territory, int vLevel){
-        super(playerID, territory, 0, gMap, 0, player);
+        super(playerID, territory, 0, gMap, vLevel, player);
         this.targetPlayer = gMap.getTerritory(territory).getOwner();
-        this.virusLevel = vLevel;
     }
 
     public void execute(){
-        int techAttack = 100 * virusLevel;
-        int foodAttack = 200 * virusLevel;
-        if(virusLevel > targetPlayer.getVaccineLevel()) {
+        int techAttack = 100 * level;
+        int foodAttack = 200 * level;
+        if(level > targetPlayer.getVaccineLevel()) {
             if (targetPlayer.getTechnologyResourceTotal() <= techAttack) {
                 targetPlayer.setTechnologyResourceTotal(0);
             } else{
