@@ -46,6 +46,25 @@ public class Game implements Runnable {
 
     final private RuleChecker upgradeUnitChecker;
 
+    // Version 3 checker:
+    final private RuleChecker researchCloakChecker;
+
+    final private RuleChecker cloakChecker;
+
+    final private RuleChecker bombChecker;
+
+    final private RuleChecker virusChecker;
+
+    final private RuleChecker upgradeVirusMaxChecker;
+
+    final private RuleChecker vaccineChecker;
+
+    final private RuleChecker upgradeVaccineMaxChecker;
+
+    final private RuleChecker upgradeSpyChecker;
+
+    final private RuleChecker moveSpyChecker;
+
     final private OrderProcessor orderProcessor;
 
     private volatile WaitGroup currentWaitGroup;
@@ -110,7 +129,10 @@ public class Game implements Runnable {
      * @param orderProcessor    An order processor used to process the orders.
      * @param numUnitPerPlayer  The number of units belong to a player in this game.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker,
+                RuleChecker researchCloakChecker, RuleChecker cloakChecker, RuleChecker bombChecker, RuleChecker virusChecker,
+                RuleChecker upgradeVirusMaxChecker, RuleChecker vaccineChecker, RuleChecker upgradeVaccineMaxChecker, RuleChecker upgradeSpyChecker,
+                RuleChecker moveSpyChecker) {
         this.playMap = map;
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
@@ -131,6 +153,15 @@ public class Game implements Runnable {
         unitsDistributionDone = false;
         initialColorSet();
         gameRunning = false;
+        this.researchCloakChecker = researchCloakChecker;
+        this.cloakChecker = cloakChecker;
+        this.bombChecker = bombChecker;
+        this.virusChecker = virusChecker;
+        this.upgradeVirusMaxChecker = upgradeVirusMaxChecker;
+        this.vaccineChecker = vaccineChecker;
+        this.upgradeVaccineMaxChecker = upgradeVaccineMaxChecker;
+        this.upgradeSpyChecker = upgradeSpyChecker;
+        this.moveSpyChecker = moveSpyChecker;
     }
 
 
@@ -139,7 +170,10 @@ public class Game implements Runnable {
      * Constructor which is used to reconstruct the game from the database.
      */
     public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
-                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone, HashMap<Integer, Player> playerInfo) {
+                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone, HashMap<Integer, Player> playerInfo,
+                RuleChecker researchCloakChecker, RuleChecker cloakChecker, RuleChecker bombChecker, RuleChecker virusChecker,
+                RuleChecker upgradeVirusMaxChecker, RuleChecker vaccineChecker, RuleChecker upgradeVaccineMaxChecker, RuleChecker upgradeSpyChecker,
+                RuleChecker moveSpyChecker) {
         this.players = playerInfo;
         this.gameId = gameId;
         this.numPlayers = numPlayers;
@@ -164,8 +198,16 @@ public class Game implements Runnable {
                 playerColor.put(p.getPlayerID(), colorSet.remove(0));
             }
         }
-
         gameRunning = false;
+        this.researchCloakChecker = researchCloakChecker;
+        this.cloakChecker = cloakChecker;
+        this.bombChecker = bombChecker;
+        this.virusChecker = virusChecker;
+        this.upgradeVirusMaxChecker = upgradeVirusMaxChecker;
+        this.vaccineChecker = vaccineChecker;
+        this.upgradeVaccineMaxChecker = upgradeVaccineMaxChecker;
+        this.upgradeSpyChecker = upgradeSpyChecker;
+        this.moveSpyChecker = moveSpyChecker;
     }
 
     /**
@@ -212,7 +254,10 @@ public class Game implements Runnable {
      * @param upgradeTechChecker Upgrade rule checker
      * @param upgradeUnitChecker Upgrade unit rule checker.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker,
+                RuleChecker researchCloakChecker, RuleChecker cloakChecker, RuleChecker bombChecker, RuleChecker virusChecker,
+                RuleChecker upgradeVirusMaxChecker, RuleChecker vaccineChecker, RuleChecker upgradeVaccineMaxChecker, RuleChecker upgradeSpyChecker,
+                RuleChecker moveSpyChecker) {
         this.playMap = map;
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
@@ -229,6 +274,15 @@ public class Game implements Runnable {
         this.upgradeTechChecker = upgradeTechChecker;
         initialColorSet();
         gameRunning = false;
+        this.researchCloakChecker = researchCloakChecker;
+        this.cloakChecker = cloakChecker;
+        this.bombChecker = bombChecker;
+        this.virusChecker = virusChecker;
+        this.upgradeVirusMaxChecker = upgradeVirusMaxChecker;
+        this.vaccineChecker = vaccineChecker;
+        this.upgradeVaccineMaxChecker = upgradeVaccineMaxChecker;
+        this.upgradeSpyChecker = upgradeSpyChecker;
+        this.moveSpyChecker = moveSpyChecker;
     }
 
     public int getGameId() {
