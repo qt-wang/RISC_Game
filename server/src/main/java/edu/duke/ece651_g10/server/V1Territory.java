@@ -326,4 +326,19 @@ public class V1Territory implements Territory {
         }
         return object;
     }
+
+    @Override
+    public int getSpyNumForPlayer(Player p) {
+        if (p == owner) {
+            return ownedSpies.size();
+        } else {
+            int count = 0;
+            for (Spy spy: this.enemySpies) {
+                if (spy.getOwner() == p) {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+    }
 }
