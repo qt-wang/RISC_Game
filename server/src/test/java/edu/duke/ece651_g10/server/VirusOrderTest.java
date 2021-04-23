@@ -35,5 +35,8 @@ class VirusOrderTest {
         assertEquals(0, player2.getFoodResourceTotal());
         assertEquals(800, player1.getTechnologyResourceTotal());
         assertEquals(2000, player1.getFoodResourceTotal());
+        vOrder2.getSourceTerritory();
+        vOrder2.getNumUnit();
+        vOrder2.getTechnologyCost();
     }
 }
