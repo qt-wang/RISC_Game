@@ -47,4 +47,20 @@ class V1TerritoryTest {
         t.setTechnologyResourceGenerationRate(120);
         assertEquals(120, t.getTechnologyResourceGenerationRate());
     }
+
+    @Test
+    public void test_cloak() {
+        Territory t = new V1Territory("test");
+        //User issue the command.
+        t.getCloaked();
+        assertEquals(true, t.isHidden());
+        // Execute the end-turn command.
+        t.decreaseCloakLastTime();
+
+        t.decreaseCloakLastTime();
+        t.decreaseCloakLastTime();
+        assertEquals(true, t.isHidden());
+        t.decreaseCloakLastTime();
+        assertEquals(false, t.isHidden());
+    }
 }

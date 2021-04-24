@@ -6,13 +6,11 @@ import java.io.IOException;
 
 public class App {
 
-    public String getGreetings() {
-        return "Hello world.";
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
-        Server server = new Server(12345, passwordGenerator);
+//        PasswordGenerator passwordGenerator = new V2ServerPasswordGenerator();
+//        Server server = new Server(12345, passwordGenerator);
+//        server.run();
+        Server server = MongoDBClient.reconstructServerFromDatabase();
         server.run();
     }
 }

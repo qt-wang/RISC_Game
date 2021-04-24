@@ -10,12 +10,7 @@ public class MoveOrder extends TerritoryToTerritoryOrder {
   // // HashSet<Unit> units;
   private ShortestPath sp;
 
-  public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p, int level) { // need
-                                                                                                               // to
-                                                                                                               // change
-                                                                                                               // Territory
-                                                                                                               // to
-                                                                                                               // string
+  public MoveOrder(int playerID, String source, String dest, int unitNum, GameMap gMap, Player p, int level) { // need     // string
     super(playerID, source, dest, unitNum, gMap, p, level);
     this.sp = new ShortestPath(gMap);
   }
@@ -43,10 +38,18 @@ public class MoveOrder extends TerritoryToTerritoryOrder {
     player.setFoodResourceTotal(player.getFoodResourceTotal() - foodCost);
   }
 
+  /**
+   *
+   * @return the unit number.
+   */
   public int getNumUnit() {
     return unitNum;
   }
 
+  /**
+   *
+   * @return the destination territory
+   */
   public Territory getTargetTerritory() {
     return dest;
   }
@@ -55,11 +58,23 @@ public class MoveOrder extends TerritoryToTerritoryOrder {
     unitNum += number;
   }
 
+  /**
+   *
+   * @return the source territory
+   */
   public Territory getSourceTerritory() {
     return source;
   }
 
+  /**
+   *
+   * @return the level that a player want to move.
+   */
   public int getLevel() {
     return level;
+  }
+
+  public Player getPlayer(){
+    return player;
   }
 }

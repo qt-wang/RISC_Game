@@ -90,4 +90,20 @@ class FixedGameMapFactoryTest {
         group = map.getInitialGroups().get(1);
         assertEquals(3, group.size());
     }
+
+
+    @Test
+    public void test_num_generator() {
+        int[] test = FixedGameMapFactory.getRandomDistributedSum(4, 100);
+        int totalC = 0;
+        for (int i = 0; i < test.length; i ++) {
+            System.out.println(test[i]);
+            totalC += test[i];
+        }
+        assertEquals(4, test.length);
+        assertEquals(100, totalC);
+    }
+
+
+
 }

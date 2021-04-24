@@ -12,9 +12,18 @@ public class V2ServerPasswordGenerator implements  PasswordGenerator{
 
     }
 
+    /**
+     * Use this to initialize the passwordGenerator after resume it from the database.
+     * @param initialPassword
+     */
+    public V2ServerPasswordGenerator(int initialPassword) {
+        V2ServerPasswordGenerator.password = initialPassword;
+    }
+
     @Override
-    //TODO: Implementation.
     public String generate() {
-        return Integer.toString(password++);
+       synchronized (V2ServerPasswordGenerator.class) {
+           return Integer.toString(password++);
+       }
     }
 }

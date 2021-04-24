@@ -23,19 +23,21 @@ import java.util.concurrent.Executors;
 public class Server {
 
     static int password = 0;
-    // The server socket the server is listening to.
+    // The server socket the server is listening to, no need to be stored in the database.
     private ServerSocket serverSocket;
 
+    // No need to be stored in db.
     private GameFactory gameFactory;
 
     // Each game has a specific identification.
-    Game game;
+    // This need to be stored in the database.
     HashMap<Integer, Game> games;
 
     // Add a map from client to multiple players.
     // Add a map from client to multiple games.
-    HashMap<String, List<Player>> clientInfo;
+    HashMap<String, List<Player>> clientPlayerInfo;
 
+    // Do not store.
     HashMap<String, Socket> clientSocket;
 
     /**
@@ -47,7 +49,26 @@ public class Server {
 
     ExecutorService threadPool;
 
+    // Not stored.
     volatile HashMap<Game, List<RequestHandleTask>> waitClients;
+
+    /**
+     * Get the hash map of client information
+     *
+     * @return hash map of the client information
+     */
+    public HashMap<String, List<Player>> getClientInfo() {
+        return clientPlayerInfo;
+    }
+
+    /**
+     * Get the hash map of clientGames
+     *
+     * @return hash map of the client games
+     */
+    public HashMap<String, List<Game>> getClientGames() {
+        return clientGames;
+    }
 
     /**
      * Setup the server socket.
@@ -124,6 +145,7 @@ public class Server {
         }
     }
 
+
     /**
      * An inner class which is used to handle the multiple connection request from multiple clients.
      * One client connection use one thread to handle it?
@@ -134,7 +156,6 @@ public class Server {
         Boolean running;
         Game currentGame;
 
-        //TODO: later abstract out this as a method?
         private void handleJSONObject(JSONObject obj) throws IOException {
             String str = obj.getString("type");
 
@@ -149,8 +170,12 @@ public class Server {
                     // The user needs a password.
                     // Generate the password.
                     String password = serverPasswordGenerator.generate();
-                    clientGames.put(password, new LinkedList<>());
-                    clientInfo.put(password, new LinkedList<>());
+                    synchronized (Server.class) {
+                        clientGames.put(password, new LinkedList<>());
+                        clientPlayerInfo.put(password, new LinkedList<>());
+                        // Store the server information.
+                        MongoDBClient.addServer2DB(Server.this);
+                    }
                     JSONObject response = JSONCommunicator.generateServerResponse("valid", "", "connection");
                     response.put("password", password);
                     jc.send(response);
@@ -161,93 +186,47 @@ public class Server {
                     // Get its password.
                     String providedPassword = obj.getString("password");
                     // Check whether the password is stored in it.
-                    if (clientGames.containsKey(providedPassword)) {
-                        // Valid, generate the response JSON object.
-                        JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
-                        appendGameInformation(providedPassword, response);
-                        jc.send(response);
-                    } else {
-                        // Send invalid response back to it.
-                        jc.sendServerInvalidResponse("Invalid password\n");
+                    synchronized (Server.class) {
+                        if (clientGames.containsKey(providedPassword)) {
+                            // Valid, generate the response JSON object.
+                            JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                            appendGameInformation(providedPassword, response);
+                            jc.send(response);
+                        } else {
+                            // Send invalid response back to it.
+                            jc.sendServerInvalidResponse("Invalid password\n");
+                        }
+                        break;
                     }
-                    break;
                 }
                 case "listOpenGame": {
                     String providedPassword = obj.getString("password");
                     // Check whether the password is stored in it.
-                    if (clientGames.containsKey(providedPassword)) {
-                        JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
-                        // Then append open games to the response, we need to exclude all the games the players in.
-                        appendOpenGameInformation(providedPassword, response);
-                        jc.send(response);
-                    } else {
-                        jc.sendServerInvalidResponse("Invalid password\n");
+                    synchronized (Server.class) {
+                        if (clientGames.containsKey(providedPassword)) {
+                            JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                            // Then append open games to the response, we need to exclude all the games the players in.
+                            appendOpenGameInformation(providedPassword, response);
+                            jc.send(response);
+                        } else {
+                            jc.sendServerInvalidResponse("Invalid password\n");
+                        }
+                        break;
                     }
-                    break;
                 }
                 case "joinGame": {
-                    // TODO: Change this logic for other phases.
                     String providedPassword = obj.getString("password");
                     int gameId = obj.getInt("gameId");
-                    String reason = null; //addPlayerToGame(providedPassword, gameId, socket, jc);
+                    String reason = null;
+                    // Check whether the game is a valid game for the client.
                     String success = checkValidOpenGame(providedPassword, gameId);
                     if (success != null) {
                         reason = success;
                         jc.sendServerInvalidResponse(reason);
                         break;
                     }
-                    Game game = games.get(gameId);
-                    if (isPlayerInGame(providedPassword, gameId)) {
-                        // Mark the player as enter the game.
-                        Player p = getPlayerWithPassword(providedPassword, gameId);
-                        assert (p != null);
-                        p.joinGame();
-                    } else {
-                        Player newPlayer = new Player(socket, jc);
-                        newPlayer.setTechnologyResourceTotal(20);
-                        newPlayer.setFoodResourceTotal(500);
-                        clientInfo.get(providedPassword).add(newPlayer);
-                        Game joinedGame = games.get(gameId);
-                        joinedGame.addPlayer(newPlayer);
-                        List<Game> gameList = clientGames.get(providedPassword);
-                        gameList.add(joinedGame);
-                    }
-                    // Player in game. need to check it.
-
-                    synchronized (game) {
-                        game.getCurrentWaitGroup().decrease();
-                        // If the game is not started yet!
-                        if (game.canGameStart()) {
-                            startGame(game);
-                        }
-                        // If game already starts, just disconnect from the server.
-                        if (game.getCurrentWaitGroup().getState()) {
-                            // Disconnect from the thread.
-                            // We should also free the previous waiting player.
-                            this.running = false;
-                            for (RequestHandleTask t : waitClients.get(game)) {
-                                t.running = false;
-                            }
-                            waitClients.put(game, new LinkedList<>());
-                        } else {
-                            // Add it to the wait group.
-                            currentGame = game;
-                            synchronized (this) {
-                                if (!waitClients.containsKey(game)) {
-                                    waitClients.put(game, new LinkedList<>());
-                                }
-                                waitClients.get(game).add(this);
-                            }
-                        }
-                        if (reason == null) {
-                            // We should not monitor on this port anymore.
-                            JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
-                            jc.send(response);
-                        } else {
-                            jc.sendServerInvalidResponse(reason);
-                        }
-                        break;
-                    }
+                    joinClientToGame(providedPassword, gameId, socket, jc, this);
+                    break;
                 }
                 case "cancelLogIn": {
                     String providedPassword = obj.getString("password");
@@ -263,13 +242,16 @@ public class Server {
                     Player newPlayer = new Player(socket, jc);
                     newPlayer.setTechnologyResourceTotal(20);
                     newPlayer.setFoodResourceTotal(500);
-                    clientInfo.get(providedPassword).add(newPlayer);
+                    clientPlayerInfo.get(providedPassword).add(newPlayer);
                     newGame.addPlayer(newPlayer);
+                    MongoDBClient.addGame2DB(newGame);
                     clientGames.get(providedPassword).add(newGame);
                     newPlayer.leaveGame();
                     JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
                     jc.send(response);
                     games.put(newGame.getGameId(), newGame);
+                    MongoDBClient.addServer2DB(Server.this);
+                    MongoDBClient.addGame2DB(newGame);
                     break;
                 }
             }
@@ -289,20 +271,29 @@ public class Server {
                         handleJSONObject(obj);
                     }
                     // Check if the wait game can be done.
-                    if (currentGame != null) {
-                        // check if it is ready.
-                        synchronized (currentGame) {
-                            if (currentGame.getCurrentWaitGroup().getState()) {
-                                // it is done.
-                                // Add all the players into the game.
-                                this.running = false;
-                                synchronized (this) {
-                                    for (RequestHandleTask t : waitClients.get(game)) {
-                                        t.running = false;
+                    synchronized (RequestHandleTask.class) {
+                        if (!this.running) {
+                            break;
+                        }
+                        if (currentGame != null) {
+                            // check if it is ready.
+                            synchronized (currentGame) {
+                                synchronized (Server.class) {
+                                    if (currentGame.getCurrentWaitGroup() == null) {
+                                        break;
+                                    } else {
+                                        if (currentGame.getCurrentWaitGroup().getState()) {
+                                            // it is done.
+                                            // Add all the players into the game.
+                                            this.running = false;
+                                            for (RequestHandleTask t : waitClients.get(currentGame)) {
+                                                t.running = false;
+                                            }
+                                            waitClients.put(currentGame, new LinkedList<>());
+                                            currentGame = null;
+                                        }
                                     }
-                                    waitClients.put(game, new LinkedList<>());
                                 }
-                                currentGame = null;
                             }
                         }
                     }
@@ -324,23 +315,72 @@ public class Server {
     /**
      * Construct a server.
      *
-     * @param port    The port the server is listening for.
+     * @param port The port the server is listening for.
      * @throws IOException
      */
     public Server(int port, PasswordGenerator serverPasswordGenerator) throws IOException {
         setServerSocket(port);
         games = new HashMap<>();
         gameFactory = new V2GameFactory(this);
-        this.threadPool = Executors.newCachedThreadPool();
         this.serverPasswordGenerator = serverPasswordGenerator;
         clientSocket = new HashMap<>();
         this.threadPool = Executors.newCachedThreadPool();
-        clientInfo = new HashMap<>();
+        clientPlayerInfo = new HashMap<>();
         clientGames = new HashMap<>();
         waitClients = new HashMap<>();
         for (int i = 0; i < 5; i++) {
-            games.put(i, gameFactory.createFixedGame(2));
+            Game newGame = gameFactory.createFixedGame(2);
+            games.put(i, newGame);
+            MongoDBClient.addGame2DB(newGame);
         }
+        MongoDBClient.addServer2DB(this);
+    }
+
+    /**
+     * Construct the server back from the database.
+     *
+     * @param port                    The port the server is listening for.
+     * @param serverPasswordGenerator The server password generator, this should also be resumed from the server.
+     * @param gameList                A list of games the server previously owned.
+     * @param clientInfoList          The client info list.
+     *                                The key is the password, the value is a list of player id that the client use.
+     * @param playerList              A list of players that are previously in the server.
+     *                                The key is the player id, the value is the player.
+     * @param clientGamesInfo         The client games list.
+     *                                The key is the password, the value is a list of game id that the client in.
+     */
+    public Server(int port, PasswordGenerator serverPasswordGenerator, ArrayList<Game> gameList, HashMap<String, List<Integer>> clientInfoList, HashMap<Integer, Player> playerList,
+                  HashMap<String, List<Integer>> clientGamesInfo) throws IOException {
+        setServerSocket(port);
+        games = new HashMap<>();
+        this.threadPool = Executors.newCachedThreadPool();
+        for (Game game : gameList) {
+            game.setRefServer(this);
+            game.setServerTaskPool(this.threadPool);
+            games.put(game.getGameId(), game);
+        }
+        gameFactory = new V2GameFactory(this);
+        clientPlayerInfo = new HashMap<>();
+        // We need to iterate through the clientInfoList to fit the values back into clientInfo.
+        for (Map.Entry<String, List<Integer>> entry : clientInfoList.entrySet()) {
+            List<Player> players = new LinkedList<>();
+            for (Integer i : entry.getValue()) {
+                players.add(playerList.get(i));
+            }
+            clientPlayerInfo.put(entry.getKey(), players);
+        }
+        clientSocket = new HashMap<>();
+        clientGames = new HashMap<>();
+        // We need to iterate through the clientGamesInfo to set it up.
+        for (Map.Entry<String, List<Integer>> entry : clientGamesInfo.entrySet()) {
+            List<Game> tempGameList = new LinkedList<>();
+            for (Integer i : entry.getValue()) {
+                tempGameList.add(this.games.get(i));
+            }
+            clientGames.put(entry.getKey(), tempGameList);
+        }
+        this.serverPasswordGenerator = serverPasswordGenerator;
+        waitClients = new HashMap<>();
     }
 
 
@@ -382,9 +422,11 @@ public class Server {
 
     private Player getPlayerWithPassword(String password, int GameId) {
         Game game = games.get(GameId);
-        for (Player p : clientInfo.get(password)) {
-            if (game.containsPlayer(p)) {
-                return p;
+        synchronized (Server.class) {
+            for (Player p : clientPlayerInfo.get(password)) {
+                if (game.containsPlayer(p)) {
+                    return p;
+                }
             }
         }
         return null;
@@ -395,46 +437,65 @@ public class Server {
         newThread.start();
     }
 
-//    /**
-//     * Add the player to game with gameId "gameId"
-//     * Decrease the current game's wait group.
-//     * If wait group becomes 0, then make the thread not running anymore.
-//     * @param password The password provided by the user.
-//     * @param gameId   The game id which represents a open game.
-//     */
-//    private synchronized String addPlayerToGame(String password, int gameId, Socket socket, JSONCommunicator jc) {
-//        String success = checkValidOpenGame(password, gameId);
-//        if (success != null) {
-//            return success;
-//        }
-//        Game game = games.get(gameId);
-//        if (isPlayerInGame(password, gameId)) {
-//            // Mark the player as enter the game.
-//            Player p = getPlayerWithPassword(password, gameId);
-//            assert (p != null);
-//            p.joinGame();
-//        } else {
-//            Player newPlayer = new Player(socket, jc);
-//            clientInfo.get(password).add(newPlayer);
-//            Game joinedGame = games.get(gameId);
-//            joinedGame.addPlayer(newPlayer);
-//            List<Game> gameList = clientGames.get(password);
-//            gameList.add(joinedGame);
-//        }
-//
-//        synchronized (game) {
-//            game.getCurrentWaitGroup().decrease();
-//            // If the game is not started yet!
-//            if (game.canGameStart()) {
-//                startGame(game);
-//            }
-//            // If game already starts, just disconnect from the server.
-//            if (game.getCurrentWaitGroup().getState()) {
-//                // Disconnect from the thread.
-//            }
-//        }
-//        return null;
-//    }
+    /**
+     * Add the client to the game.
+     *
+     * @param providedPassword Client provide this password to the server.
+     * @param gameId           The game id.
+     * @param task             The request handle task.
+     * @param socket           The socket of the related client.
+     */
+    public void joinClientToGame(String providedPassword, int gameId, Socket socket, JSONCommunicator jc, RequestHandleTask task) throws IOException {
+        Game joinedGame = games.get(gameId);
+        // Player already in the game, do not need to generate the new player.
+        if (isPlayerInGame(providedPassword, gameId)) {
+            Player p = getPlayerWithPassword(providedPassword, gameId);
+            p.setJCommunicate(jc);
+            p.joinGame();
+        } else {
+            Player newPlayer = new Player(socket, jc);
+            newPlayer.setTechnologyResourceTotal(20);
+            newPlayer.setFoodResourceTotal(500);
+            synchronized (Server.class) {
+                clientPlayerInfo.get(providedPassword).add(newPlayer);
+                clientGames.get(providedPassword).add(joinedGame);
+                MongoDBClient.addServer2DB(this);
+            }
+            joinedGame.addPlayer(newPlayer);
+            synchronized (joinedGame) {
+                MongoDBClient.addGame2DB(joinedGame);
+            }
+        }
+        synchronized (RequestHandleTask.class) {
+            synchronized (joinedGame) {
+                joinedGame.getCurrentWaitGroup().decrease();
+                if (joinedGame.getCurrentWaitGroup().getState()) {
+                    synchronized (Server.class) {
+                        task.running = false;
+                        for (RequestHandleTask t : waitClients.get(joinedGame)) {
+                            t.currentGame = null;
+                            t.running = false;
+                        }
+                        waitClients.put(joinedGame, new LinkedList<>());
+                    }
+                } else {
+                    task.currentGame = joinedGame;
+                    synchronized (Server.class) {
+                        if (!waitClients.containsKey(joinedGame)) {
+                            waitClients.put(joinedGame, new LinkedList<>());
+                        }
+                        waitClients.get(joinedGame).add(task);
+                    }
+                }
+                if (joinedGame.canGameStart()) {
+                    startGame(joinedGame);
+                }
+                JSONObject response = JSONCommunicator.generateServerResponse("valid\n", "", "connection");
+                jc.send(response);
+            }
+        }
+    }
+
 
     /**
      * Keep receive new orders, handle these orders.

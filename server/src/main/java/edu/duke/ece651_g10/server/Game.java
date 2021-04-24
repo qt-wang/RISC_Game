@@ -4,9 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -18,32 +16,58 @@ import java.util.function.Function;
  */
 public class Game implements Runnable {
 
-    // Indicates the players in this game.
     // Each player has a unique integer represent its identity.
-    private HashMap<Integer, Player> players;
+    /**
+     * Clarify, the player id is not continuous.
+     * It can be random values.
+     * For instance, if first player join the game, he will have the player id 1.
+     * If another player join another game, he will have the player id 2.
+     * Then the final player join the game, it may have the player id 3.
+     * Therefore, the player id for this game is 1 and 3.
+     */
+    final private HashMap<Integer, Player> players;
 
     static int gameIdentifier = 0;
 
+    private boolean gameRunning;
+
     //This is the unique game identification of the game.
-    private int gameId;
+    final private int gameId;
 
-    private int numPlayers;
+    final private int numPlayers;
     // The game map of the game.
-    private GameMap playMap;
+    final private GameMap playMap;
 
-    private RuleChecker moveRuleChecker;
+    final private RuleChecker moveRuleChecker;
 
-    private RuleChecker attackRuleChecker;
+    final private RuleChecker attackRuleChecker;
 
-    private RuleChecker upgradeTechChecker;
+    final private RuleChecker upgradeTechChecker;
 
-    private RuleChecker upgradeUnitChecker;
+    final private RuleChecker upgradeUnitChecker;
 
-    private GameBoardView view;
+    // Version 3 checker:
+    final private RuleChecker researchCloakChecker;
 
-    private OrderProcessor orderProcessor;
+    final private RuleChecker cloakChecker;
 
-    private WaitGroup currentWaitGroup;
+    final private RuleChecker bombChecker;
+
+    final private RuleChecker virusChecker;
+
+    final private RuleChecker upgradeVirusMaxChecker;
+
+    final private RuleChecker vaccineChecker;
+
+    final private RuleChecker upgradeVaccineMaxChecker;
+
+    final private RuleChecker upgradeSpyChecker;
+
+    final private RuleChecker moveSpyChecker;
+
+    final private OrderProcessor orderProcessor;
+
+    private volatile WaitGroup currentWaitGroup;
 
     /**
      * These two variables keep the game states.
@@ -62,9 +86,39 @@ public class Game implements Runnable {
 
     Server refServer;
 
+    // Do not need to be stored.
+    private HashMap<Integer, String> playerColor;
 
-    //TODO: may need to add State, so that the server can detect ended game.
-    //public enum State {Waiting, Running, Ending};
+    private List<String> colorSet;
+
+    private boolean unitsDistributionDone;
+
+    /**
+     * Set up the initial colors used in this game.
+     */
+    private void initialColorSet() {
+        playerColor = new HashMap<>();
+        colorSet = new LinkedList<>();
+        colorSet.add("red");
+        colorSet.add("yellow");
+        colorSet.add("green");
+        colorSet.add("blue");
+        colorSet.add("purple");
+    }
+
+    /**
+     * Generate the color json used by the client to setup the color.
+     *
+     * @return A json object, which contains the key value pair such that:
+     * player_id (int) : color (string)
+     */
+    JSONObject generateColorJson() {
+        JSONObject object = new JSONObject();
+        for (Map.Entry<Integer, String> entry : playerColor.entrySet()) {
+            object.put(Integer.toString(entry.getKey()), entry.getValue());
+        }
+        return object;
+    }
 
     /**
      * Construct a game based on the arguments given in the argument list.
@@ -73,15 +127,16 @@ public class Game implements Runnable {
      * @param moveRuleChecker   The rule checker used to check whether the move order is valid or not.
      * @param attackRuleChecker The attack checker used to check whether the attack order is valid or not.
      * @param orderProcessor    An order processor used to process the orders.
-     * @param view              The text board view used to represent this game.
      * @param numUnitPerPlayer  The number of units belong to a player in this game.
      */
-    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, GameBoardView view, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker) {
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, ExecutorService serverTaskPool, Server refServer, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker,
+                RuleChecker researchCloakChecker, RuleChecker cloakChecker, RuleChecker bombChecker, RuleChecker virusChecker,
+                RuleChecker upgradeVirusMaxChecker, RuleChecker vaccineChecker, RuleChecker upgradeVaccineMaxChecker, RuleChecker upgradeSpyChecker,
+                RuleChecker moveSpyChecker) {
         this.playMap = map;
         this.players = new HashMap<>();
         this.moveRuleChecker = moveRuleChecker;
         this.attackRuleChecker = attackRuleChecker;
-        this.view = view;
         this.orderProcessor = orderProcessor;
         this.gameEnds = false;
         this.numUnitPerPlayer = numUnitPerPlayer;
@@ -95,10 +150,159 @@ public class Game implements Runnable {
         this.upgradeUnitChecker = upgradeUnitChecker;
         this.upgradeTechChecker = upgradeTechChecker;
         currentWaitGroup = new WaitGroup(map.getTotalPlayers());
+        unitsDistributionDone = false;
+        initialColorSet();
+        gameRunning = false;
+        this.researchCloakChecker = researchCloakChecker;
+        this.cloakChecker = cloakChecker;
+        this.bombChecker = bombChecker;
+        this.virusChecker = virusChecker;
+        this.upgradeVirusMaxChecker = upgradeVirusMaxChecker;
+        this.vaccineChecker = vaccineChecker;
+        this.upgradeVaccineMaxChecker = upgradeVaccineMaxChecker;
+        this.upgradeSpyChecker = upgradeSpyChecker;
+        this.moveSpyChecker = moveSpyChecker;
+    }
+
+
+    /**
+     * TODO: Add new rule checkers for new features.
+     * Constructor which is used to reconstruct the game from the database.
+     */
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker, int gameId,
+                boolean gameEnds, boolean gameBegins, boolean unitsDistributionDone, HashMap<Integer, Player> playerInfo,
+                RuleChecker researchCloakChecker, RuleChecker cloakChecker, RuleChecker bombChecker, RuleChecker virusChecker,
+                RuleChecker upgradeVirusMaxChecker, RuleChecker vaccineChecker, RuleChecker upgradeVaccineMaxChecker, RuleChecker upgradeSpyChecker,
+                RuleChecker moveSpyChecker) {
+        this.players = playerInfo;
+        this.gameId = gameId;
+        this.numPlayers = numPlayers;
+        this.playMap = map;
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.orderProcessor = new V1OrderProcessor();
+        this.currentWaitGroup = new WaitGroup(numPlayers);
+        this.gameEnds = gameEnds;
+        this.gameBegins = gameBegins;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        this.serverTaskPool = null;
+        this.refServer = null;
+        playerColor = new HashMap<>();
+        this.unitsDistributionDone = unitsDistributionDone;
+        initialColorSet();
+
+        for (Player p : players.values()) {
+            if (!playerColor.containsKey(p.getPlayerID())) {
+                playerColor.put(p.getPlayerID(), colorSet.remove(0));
+            }
+        }
+        gameRunning = false;
+        this.researchCloakChecker = researchCloakChecker;
+        this.cloakChecker = cloakChecker;
+        this.bombChecker = bombChecker;
+        this.virusChecker = virusChecker;
+        this.upgradeVirusMaxChecker = upgradeVirusMaxChecker;
+        this.vaccineChecker = vaccineChecker;
+        this.upgradeVaccineMaxChecker = upgradeVaccineMaxChecker;
+        this.upgradeSpyChecker = upgradeSpyChecker;
+        this.moveSpyChecker = moveSpyChecker;
+    }
+
+    /**
+     * Set the serverTaskPool for the game.
+     * Only used when the new server is resumed.
+     */
+    public void setServerTaskPool(ExecutorService serverTaskPool) {
+        this.serverTaskPool = serverTaskPool;
+    }
+
+//    /**
+//     * Set the game identifier for the Game class.
+//     * Only used when resumed the game class from the database.
+//     *
+//     * @param identifier The identifier used to reset the game.
+//     */
+//    public static void setGameIdentifier(int identifier) {
+//        Game.gameIdentifier = identifier;
+//    }
+
+
+    /**
+     * Set the refServer for this game.
+     * Only used when resume the game from the database.
+     * After the new server is initialized, use this method to set the server.
+     *
+     * @param refServer The server which should host this game.
+     */
+    public void setRefServer(Server refServer) {
+        this.refServer = refServer;
+    }
+
+
+    /**
+     * Create a test game, not for real use.
+     * This cannot support real use.
+     *
+     * @param map                The map
+     * @param moveRuleChecker    Move rule checker
+     * @param attackRuleChecker  Attack rule checker
+     * @param orderProcessor     The used order processor
+     * @param numUnitPerPlayer   Number of units per player has.
+     * @param numPlayers         Number of players
+     * @param upgradeTechChecker Upgrade rule checker
+     * @param upgradeUnitChecker Upgrade unit rule checker.
+     */
+    public Game(GameMap map, RuleChecker moveRuleChecker, RuleChecker attackRuleChecker, OrderProcessor orderProcessor, int numUnitPerPlayer, int numPlayers, RuleChecker upgradeTechChecker, RuleChecker upgradeUnitChecker,
+                RuleChecker researchCloakChecker, RuleChecker cloakChecker, RuleChecker bombChecker, RuleChecker virusChecker,
+                RuleChecker upgradeVirusMaxChecker, RuleChecker vaccineChecker, RuleChecker upgradeVaccineMaxChecker, RuleChecker upgradeSpyChecker,
+                RuleChecker moveSpyChecker) {
+        this.playMap = map;
+        this.players = new HashMap<>();
+        this.moveRuleChecker = moveRuleChecker;
+        this.attackRuleChecker = attackRuleChecker;
+        this.orderProcessor = orderProcessor;
+        this.gameEnds = false;
+        this.numUnitPerPlayer = numUnitPerPlayer;
+        this.numPlayers = numPlayers;
+        synchronized (Game.class) {
+            this.gameId = gameIdentifier++;
+        }
+        this.gameBegins = false;
+        this.upgradeUnitChecker = upgradeUnitChecker;
+        this.upgradeTechChecker = upgradeTechChecker;
+        initialColorSet();
+        gameRunning = false;
+        this.researchCloakChecker = researchCloakChecker;
+        this.cloakChecker = cloakChecker;
+        this.bombChecker = bombChecker;
+        this.virusChecker = virusChecker;
+        this.upgradeVirusMaxChecker = upgradeVirusMaxChecker;
+        this.vaccineChecker = vaccineChecker;
+        this.upgradeVaccineMaxChecker = upgradeVaccineMaxChecker;
+        this.upgradeSpyChecker = upgradeSpyChecker;
+        this.moveSpyChecker = moveSpyChecker;
     }
 
     public int getGameId() {
         return this.gameId;
+    }
+
+    public boolean getGameEnd() {
+        return this.gameEnds;
+    }
+
+    public boolean getGameBegins() {
+        return this.gameBegins;
+    }
+
+//    public void setGameBegins(boolean begin) {
+//        this.gameBegins = begin;
+//    }
+
+    public GameMap getGameMap() {
+        return this.playMap;
     }
 
     /**
@@ -109,84 +313,39 @@ public class Game implements Runnable {
     public void addPlayer(Player p) {
         int playerNums = players.size();
         p.joinGame();
+        System.out.println(p.getPlayerID());
         if (!players.containsValue(p) && playerNums < numPlayers) {
             System.out.println("Player added successfully");
-            players.put(playerNums + 1, p);
-        }
-    }
-
-    /**
-     * Get all the territory information for all other players (alive player).
-     *
-     * @param playerId The current player Id
-     * @return A String representation of the player information.
-     */
-    String getEnemyTerritoryInformation(int playerId) {
-        // We need to iterate through all the players.
-        StringBuilder sb = new StringBuilder();
-        for (Player p : players.values()) {
-            if (p.getPlayerID() == playerId || p.getIsLost()) {
-                continue;
-            } else {
-                sb.append("Player ");
-                sb.append(p.getPlayerID());
-                sb.append(":\n");
-                sb.append("-----------------------\n");
-                sb.append(view.territoryForUser(p));
+            players.put(p.getPlayerID(), p);
+            if (!playerColor.containsKey(p.getPlayerID())) {
+                playerColor.put(p.getPlayerID(), colorSet.remove(0));
             }
         }
-        return sb.toString();
     }
 
     /**
-     * generate a JSONObject of type: inform
+     * Use this method to add player to the game.
      *
-     * @param playerId the player's id
-     * @param prompt   the information
-     * @return the constructed JSONObject
+     * @param player The player to be added.
      */
-    public JSONObject generateInfoJSON(int playerId, String prompt, String type) {
-        JSONObject info = new JSONObject().put("type", type);
-        info = info.put("prompt", prompt).put("playerID", playerId);
-        boolean isLost = players.get(playerId).getIsLost();
-        info = isLost ? info.put("playerStatus", "L") : info.put("playerStatus", "A");
-        info = gameEnds ? info.put("playerStatus", "E") : info.put("playerStatus", info.get("playerStatus"));
-        return info;
+    public void addPlayerFromDb(Player player) {
+        int playerNums = players.size();
+        if (players.containsValue(player)) {
+            System.out.println("Error: duplicate player were added for game");
+            return;
+        }
+        if (playerNums >= numPlayers) {
+            System.out.println("Error: too much players were added for this game.");
+            return;
+        }
+        players.put(player.getPlayerID(), player);
+        if (!playerColor.containsKey(player.getPlayerID())) {
+            playerColor.put(player.getPlayerID(), colorSet.remove(0));
+        }
     }
 
-    public JSONObject generateServerResponse(String prompt, String reason, String type) {
-        JSONObject response = new JSONObject().put("type", type);
-        response = response.put("prompt", prompt);
-        response = response.put("reason", reason);
-        return response;
-    }
-
-
-    /**
-     * Provide the phase information used to send to the users.
-     *
-     * @param phaseInfo The phase info indicates which phase the player in.
-     * @param playerId  The player's id number.
-     * @return The string representation of the message.
-     */
-    String phaseInformation(String phaseInfo, int playerId) {
-        StringBuilder sb = new StringBuilder(phaseInfo);
-        //sb.append(getPlayerInfo(playerId));
-        sb.append("Player ");
-        sb.append(playerId);
-        sb.append(":\n");
-        sb.append("-----------------------\n");
-        sb.append(view.territoryForUser(players.get(playerId)));
-        return sb.toString();
-    }
-
-    public JSONObject secondPhaseInformation(int playerId, String otherTerritoryMessage) {
-        //StringBuilder sb = new StringBuilder("Second phase, attack territories\n");
-        String str = "Second phase, attack territories\n";
-        str = phaseInformation(str, playerId);
-        //sb.append(phaseInformation(sb.toString()))
-        str += otherTerritoryMessage;
-        return generateInfoJSON(playerId, str, "play");
+    public HashMap<Integer, Player> getAllPlayers() {
+        return this.players;
     }
 
     private void sendToPlayer(int playerId, JSONObject obj) throws IOException {
@@ -195,8 +354,7 @@ public class Game implements Runnable {
     }
 
     private JSONObject receiveJSONObject(int playerId) throws IOException {
-        JSONObject obj = players.get(playerId).getJCommunicator().receive();
-        return obj;
+        return players.get(playerId).getJCommunicator().receive();
     }
 
     /**
@@ -207,8 +365,7 @@ public class Game implements Runnable {
      * @throws IOException
      */
     private JSONObject tryReceiveJSONObject(int playerId) throws IOException {
-        JSONObject obj = players.get(playerId).getJCommunicator().nonBlockingRead();
-        return obj;
+        return players.get(playerId).getJCommunicator().nonBlockingRead();
     }
 
     /**
@@ -219,10 +376,7 @@ public class Game implements Runnable {
      */
     private boolean isCommitMessage(JSONObject obj) {
         String type = getMessageType(obj);
-        if (type.equals("commit")) {
-            return true;
-        }
-        return false;
+        return type.equals("commit");
     }
 
     /**
@@ -234,8 +388,7 @@ public class Game implements Runnable {
      */
     public String getMessageType(JSONObject obj) {
         try {
-            String ans = obj.getString("type");
-            return ans;
+            return obj.getString("type");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -243,17 +396,25 @@ public class Game implements Runnable {
     }
 
 
+    /**
+     * Send valid response to the client.
+     *
+     * @param playerId Which player to send back the information.
+     * @throws IOException
+     */
     private void sendServerValidResponse(int playerId) throws IOException {
         players.get(playerId).getJCommunicator().sendServerValidResponse();
     }
 
+    /**
+     * Send back the invalid response back to the server.
+     *
+     * @param playerId Which player to send back the invalid response.
+     * @param reason   The reason why it is invalid.
+     * @throws IOException
+     */
     private void sendServerInvalidResponse(int playerId, String reason) throws IOException {
-        //sendToPlayer(playerId, generateServerResponse("invalid\n", reason, "connection"));
         players.get(playerId).getJCommunicator().sendServerInvalidResponse(reason);
-    }
-
-    private void sendValidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "valid\n", "connection"));
     }
 
     /**
@@ -266,40 +427,64 @@ public class Game implements Runnable {
     public Order toOrder(int playerId, JSONObject obj) {
         try {
             String orderType = obj.getString("orderType");
-            if (orderType.equals("move")) {
-                String sourceT = obj.getString("sourceTerritory"),
-                        destT = obj.getString("destTerritory");
-                int uLevel = obj.getInt("unitLevel");
-                int unitNum = obj.getInt("unitNumber");
-                Order order = new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
-                return order;
-            } else if (orderType.equals("attack")) {
-                String sourceT = obj.getString("sourceTerritory"),
-                        destT = obj.getString("destTerritory");
-                int uLevel = obj.getInt("unitLevel");
-                int unitNum = obj.getInt("unitNumber");
-                Order order = new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
-                return order;
-            } else if (orderType.equals("upgradeUnit")){
-                String sourceT = obj.getString("sourceTerritory");
-                int uLevel = obj.getInt("unitLevel");
-                int unitNum = obj.getInt("unitNumber");
-                Order order = new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));
-                return order;
-            } else if (orderType.equals("upgradeTech")){
-                Order order = new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
-                return order;
-            } else {
-                return null;
+            switch (orderType) {
+                case "move": {
+                    String sourceT = obj.getString("sourceTerritory"),
+                            destT = obj.getString("destTerritory");
+                    int uLevel = obj.getInt("unitLevel");
+                    int unitNum = obj.getInt("unitNumber");
+                    return new MoveOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
+                }
+                case "attack": {
+                    String sourceT = obj.getString("sourceTerritory"),
+                            destT = obj.getString("destTerritory");
+                    int uLevel = obj.getInt("unitLevel");
+                    int unitNum = obj.getInt("unitNumber");
+                    return new AttackOrder(playerId, sourceT, destT, unitNum, this.playMap, players.get(playerId), uLevel);
+                }
+                case "upgradeUnit": {
+                    String sourceT = obj.getString("sourceTerritory");
+                    int uLevel = obj.getInt("unitLevel");
+                    int unitNum = obj.getInt("unitNumber");
+                    return new UpgradeUnitOrder(playerId, sourceT, unitNum, this.playMap, uLevel, players.get(playerId));
+                }
+                case "upgradeTech": {
+                    return new UpgradeTechOrder(playerId, this.playMap, players.get(playerId));
+                }
+                case "bombOrder": {
+                    return new BombOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                }
+                case "cloakOrder": {
+                    return new CloakOrder(playerId, obj.getString("sourceTerritory"), playMap, players.get(playerId));
+                }
+                case "upgradeSpyOrder": {
+                    return new UpgradeSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                }
+                case "researchClockOrder": {
+                    return new ResearchCloakOrder(playerId, playMap, players.get(playerId));
+                }
+                case "moveSpyOrder": {
+                    return new MoveSpyOrder(playerId, obj.getString("sourceTerritory"), obj.getString("destTerritory"), obj.getInt("unitNumber"), playMap, players.get(playerId));
+                }
+                case "virusOrder": {
+                    return new VirusOrder(playerId, playMap, players.get(playerId), obj.getString("sourceTerritory"), obj.getInt("unitLevel"));
+                }
+                case "vaccineOrder": {
+                    return new VaccineOrder(playerId, playMap, players.get(playerId), obj.getInt("unitLevel"));
+                }
+                case "upgradeVirusMaxLevelOrder": {
+                    return new UpgradeVirusMaxLevelOrder(playerId, playMap, players.get(playerId));
+                }
+                case "upgradeVaccineMaxLevelOrder": {
+                    return new UpgradeVaccineMaxLevelOrder(playerId, playMap, players.get(playerId));
+                }
+                default:
+                    return null;
             }
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private void sendInvalidResponse(int playerId) throws IOException {
-        sendToPlayer(playerId, generateInfoJSON(playerId, "invalid\n", "test"));
     }
 
 
@@ -340,6 +525,9 @@ public class Game implements Runnable {
 
     /**
      * Log out for all players.
+     * Which should do:
+     * 1. Disconnect client from the game server.
+     * 2. Make server reconnect to the client.
      */
     private void logOutForAllPlayers() {
         for (Player p : players.values()) {
@@ -347,6 +535,7 @@ public class Game implements Runnable {
             this.serverTaskPool.execute(this.refServer.new RequestHandleTask(p.getJCommunicator(), p.getSocket()));
         }
     }
+
 
     /**
      * Play one turn of the game.
@@ -368,8 +557,8 @@ public class Game implements Runnable {
         Player currentPlayer = players.get(playerId);
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
-        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, currentPlayer);
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
         boolean receiveCommit = false;
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
@@ -392,11 +581,28 @@ public class Game implements Runnable {
                     message = upgradeTechChecker.checkOrder(order, playMap);
                 } else if (order instanceof UpgradeUnitOrder) {
                     message = upgradeUnitChecker.checkOrder(order, playMap);
+                } else if (order instanceof ResearchCloakOrder) {
+                    message = researchCloakChecker.checkOrder(order, playMap);
+                } else if (order instanceof CloakOrder) {
+                    message = cloakChecker.checkOrder(order, playMap);
+                } else if (order instanceof VirusOrder) {
+                    message = virusChecker.checkOrder(order, playMap);
+                } else if (order instanceof VaccineOrder) {
+                    message = vaccineChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeVirusMaxLevelOrder) {
+                    message = upgradeVirusMaxChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeVaccineMaxLevelOrder) {
+                    message = upgradeVaccineMaxChecker.checkOrder(order, playMap);
+                } else if (order instanceof UpgradeSpyOrder) {
+                    message = upgradeSpyChecker.checkOrder(order, playMap);
+                } else if (order instanceof MoveSpyOrder) {
+                    message = moveSpyChecker.checkOrder(order, playMap);
+                } else if (order instanceof BombOrder) {
+                    message = bombChecker.checkOrder(order, playMap);
                 }
                 if (message == null) {
                     orderProcessor.acceptOrder(order);
-                    //sendToPlayer(playerId, secondPhaseInformation(playerId, otherTerritoriesInformation));
-                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
+                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Attack", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
                 } else {
                     sendServerInvalidResponse(playerId, message);
                 }
@@ -404,37 +610,47 @@ public class Game implements Runnable {
         }
     }
 
+    public int getNumUnitPerPlayer() {
+        return this.numUnitPerPlayer;
+    }
+
+
+    //TODO: test new views.
+
     /**
      * generate the json object which describe the territories information about it.
      * The key is the territories' name, the value is the territories' information.
      *
      * @param territories The territories needed.
-     * @return
+     * @return The JSON object describe the territory information.
      */
-    public static JSONObject generateTerritoriesInfo(Set<Territory> territories) {
+    public JSONObject generateTerritoriesInfo(Set<Territory> territories, Player player) {
         JSONObject result = new JSONObject();
-        for (Territory t: territories) {
-            result.put(t.getName(), t.presentTerritoryInformation());
+        for (Territory t : territories) {
+            result.put(t.getName(), playMap.getTerritoryInformation(player, t));
         }
         return result;
     }
 
     /**
      * Generate the JSON object needed to update the information about the server.
-     * @param playerId  The player id of the player.
-     * @param sub       Can be "Placement" / "Attack"
-     * @param prompt    Whether the previous command send from client is valid or not.
-     * @param reason    The reason if invalid.
-     * @param fixedJSON The fixed part of the territories' info.
-     * @param variableJSON  The variable part of the territories' info.
-     * @return  The json object sent to the server.
+     *
+     * @param playerId     The player id of the player.
+     * @param sub          Can be "Placement" / "Attack"
+     * @param prompt       Whether the previous command send from client is valid or not.
+     * @param reason       The reason if invalid.
+     * @param fixedJSON    The fixed part of the territories' info.
+     * @param variableJSON The variable part of the territories' info.
+     * @return The json object sent to the server.
      */
     public JSONObject generateClientNeededInformation(int playerId, String sub, String prompt, String reason,
                                                       JSONObject fixedJSON, JSONObject variableJSON) {
         JSONObject object = new JSONObject();
+        object.put("colorStrategy", generateColorJson());
         object.put("type", "Game").put("sub", sub).put("playerId", playerId).put("prompt", prompt).put("reason", reason);
         // Append the playerStatus
-        boolean isLost = players.get(playerId).getIsLost();
+        Player currentPlayer = players.get(playerId);
+        boolean isLost = currentPlayer.getIsLost();
         object = isLost ? object.put("playerStatus", "L") : object.put("playerStatus", "A");
         object = gameEnds ? object.put("playerStatus", "E") : object.put("playerStatus", object.get("playerStatus"));
         Player p = players.get(playerId);
@@ -444,13 +660,11 @@ public class Game implements Runnable {
         object.put("canUpgrade", p.getCanUpgradeInThisTurn());
         object.put("TerritoriesInformation", mergeJSONObject(fixedJSON, variableJSON));
         object.put("playerNumber", playMap.getTotalPlayers());
+        object.put("vaccineLevel", currentPlayer.getVaccineLevel());
+        object.put("vaccineMaxLevel", currentPlayer.getVaccineMaxLevel());
+        object.put("virusMaxLevel", currentPlayer.getVirusMaxLevel());
+        object.put("researchedCloak", !currentPlayer.getCanResearchCloak());
         return object;
-    }
-
-    public JSONObject firstPhaseInformation(int playerId) {
-        StringBuilder sb = new StringBuilder("First phase, soldiers distribution\n");
-        sb.append(view.territoryForUser(players.get(playerId)));
-        return generateInfoJSON(playerId, sb.toString(), "placement");
     }
 
 
@@ -464,13 +678,19 @@ public class Game implements Runnable {
      */
     private boolean handleInvalidLogOutMessage(JSONObject object, int playerId) throws IOException {
         if (object.getString("type").equals("logout")) {
-            // Send invalid message back.
             sendServerInvalidResponse(playerId, "You can only logout after you commit!");
             return true;
         }
         return false;
     }
 
+    /**
+     * Merge two json object into one, with all the keys and values from Obj1 and Obj2
+     *
+     * @param Obj1 The first JSON object to be merged.
+     * @param Obj2 The second JSON object to be merged.
+     * @return The merged JSON object.
+     */
     static JSONObject mergeJSONObject(JSONObject Obj1, JSONObject Obj2) {
         if (JSONObject.getNames(Obj1) == null) {
             return new JSONObject(Obj2, JSONObject.getNames(Obj2));
@@ -478,31 +698,30 @@ public class Game implements Runnable {
             return new JSONObject(Obj1, JSONObject.getNames(Obj1));
         } else {
             JSONObject merged = new JSONObject(Obj1, JSONObject.getNames(Obj1));
-            for(String key : JSONObject.getNames(Obj2))
-            {
+            for (String key : JSONObject.getNames(Obj2)) {
                 merged.put(key, Obj2.get(key));
             }
             return merged;
         }
     }
 
+    public boolean getDistributionDone() {
+        return this.unitsDistributionDone;
+    }
+
     /**
      * Setup the units distribution of the territories for each player.
      * Each player shall have the same number of initial units, which she may place in her territories as she wishes.
      * This phase should occur simultaneously.
-     * Consider using a ThreadPool for this, and waiting all the threads to be done.
      */
     private void setupInitialUnitsDistribution(int playerId) throws IOException {
-        // Assume we can receive orders from the client.
-        // Send the view to the user.
-        // The player should not see the units distributions of other players.
         boolean receiveCommit = false;
         Player currentPlayer = players.get(playerId);
+        // Get fixed territories, and changeable territories.
         Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(currentPlayer);
         Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(currentPlayer);
-        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
-        // Get fixed territories, and changeable territories.
+        JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, players.get(playerId));
+        sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
         while (!receiveCommit) {
             JSONObject obj = receiveJSONObject(playerId);
             if (isCommitMessage(obj)) {
@@ -514,7 +733,6 @@ public class Game implements Runnable {
                 continue;
             }
             synchronized (this) {
-                System.out.println(obj);
                 Order order = toOrder(playerId, obj);
                 if (order == null) {
                     sendServerInvalidResponse(playerId, "Received null order!");
@@ -526,11 +744,9 @@ public class Game implements Runnable {
                 if (message == null) {
                     orderProcessor.acceptOrder(order);
                     // Send upgrade information back to the client.
-                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories)));
-                    System.out.println("Send back valid response");
+                    sendToPlayer(playerId, generateClientNeededInformation(playerId, "Placement", "valid\n", "", fixedJSON, generateTerritoriesInfo(ownedTerritories, currentPlayer)));
                 } else {
                     sendServerInvalidResponse(playerId, message);
-                    System.out.println("Send back invalid response");
                 }
             }
         }
@@ -540,17 +756,20 @@ public class Game implements Runnable {
      * Assign territories to each player, changed the attributes for the territories.
      * Each player shall pick (or be assigned) one such group as her starting territories.
      */
-    private void assignInitialTerritories() {
+    public void assignInitialTerritories() {
         HashMap<Integer, HashSet<Territory>> groups = playMap.getInitialGroups();
-        for (int i = 1; i <= players.size(); i++) {
+        int group = 1;
+        // Iterate through the players.
+        for (Map.Entry<Integer, Player> entry : players.entrySet()) {
             // Get the player.
-            Player p = players.get(i);
+            Player p = entry.getValue();
             Territory end = null;
-            for (Territory t : groups.get(i)) {
+            for (Territory t : groups.get(group)) {
                 t.setOwner(p);
                 end = t;
             }
             end.setUnitNumber(numUnitPerPlayer);
+            group += 1;
         }
     }
 
@@ -629,21 +848,11 @@ public class Game implements Runnable {
     }
 
     private Function<Integer, Runnable> getUnitsDistributionTask() {
-        return new Function<Integer, Runnable>() {
-            @Override
-            public Runnable apply(Integer integer) {
-                return new UnitsDistributionTask(integer);
-            }
-        };
+        return integer -> new UnitsDistributionTask(integer);
     }
 
     private Function<Integer, Runnable> getPlayOneTurnTask() {
-        return new Function<Integer, Runnable>() {
-            @Override
-            public Runnable apply(Integer integer) {
-                return new PlayOneTurnTask(integer);
-            }
-        };
+        return integer -> new PlayOneTurnTask(integer);
     }
 
 
@@ -652,48 +861,41 @@ public class Game implements Runnable {
         // Generate a waitGroup.
         WaitGroup waitGroup;
         synchronized (this) {
-             waitGroup = new WaitGroup(players.size());
+            waitGroup = new WaitGroup(players.size());
             this.currentWaitGroup = waitGroup;
         }
-        for (int i = 1; i <= players.size(); i++) {
+        for (Map.Entry<Integer, Player> entry : players.entrySet()) {
             // We create multiple tasks here.
-            players.get(i).setWaitGroup(waitGroup);
-            Runnable task = toDo.apply(i);
-            int currentPlayer = i;
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        task.run();
-                        /**
-                         * At this point, player commit in this round.
-                         * ie. Commit after initial units distribution
-                         * or Done in round operations.
-                         */
-                        waitGroup.decrease();
+            Player currentPlayer = entry.getValue();
+            currentPlayer.setWaitGroup(waitGroup);
+            int currentPlayerId = currentPlayer.getPlayerID();
+            Runnable task = toDo.apply(currentPlayerId);
+            Thread t = new Thread(() -> {
+                try {
+                    task.run();
+                    /**
+                     * At this point, player commit in this round.
+                     * ie. Commit after initial units distribution
+                     * or Done in round operations.
+                     */
+                    waitGroup.decrease();
 
-                        /**
-                         * Add version 2, LogOut phase.
-                         * The player is free to logout after they commit.
-                         */
-                        logOutPhase(currentPlayer, waitGroup);
-                        barrier.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (BrokenBarrierException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    /**
+                     * Add version 2, LogOut phase.
+                     * The player is free to logout after they commit.
+                     */
+                    logOutPhase(currentPlayerId, waitGroup);
+                    barrier.await();
+                    unitsDistributionDone = true;
+                } catch (InterruptedException | BrokenBarrierException | IOException e) {
+                    e.printStackTrace();
                 }
             });
             t.start();
         }
         try {
             barrier.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             e.printStackTrace();
         }
     }
@@ -721,22 +923,80 @@ public class Game implements Runnable {
         }
     }
 
-    private void sendToAllPlayer(String message, String type) throws IOException {
+    //TODO: Test
+
+    /**
+     * Update player's old view, change the default value in each territory.
+     */
+    void updatePlayerView() {
         for (Player p : players.values()) {
-            sendToPlayer(p.getPlayerID(), generateInfoJSON(p.getPlayerID(), message, type));
+            playMap.updatePlayerView(p);
         }
     }
 
     public int getNumPlayers() {
-        return players.size();
+        return playMap.getTotalPlayers();
     }
 
     public boolean canGameStart() {
-        return players.size() == numPlayers && !gameBegins && currentWaitGroup.getState();
+        return players.size() == numPlayers && !gameRunning && currentWaitGroup.getState();
     }
 
-    public WaitGroup getCurrentWaitGroup () {
+    public WaitGroup getCurrentWaitGroup() {
         return currentWaitGroup;
+    }
+
+    void runFromStart() {
+        gameBegins = true;
+        assignInitialTerritories();
+        runFromUnitsDistributionPhase();
+    }
+
+    void runFromUnitsDistributionPhase() {
+        runTasksForAllPlayer(getUnitsDistributionTask());
+        System.out.println("Initial units distribution done.");
+        updatePlayerView();
+        MongoDBClient.addGame2DB(this);
+        // Game has record that some fields has changed.
+        runFromAttackPhase();
+    }
+
+    void runFromAttackPhase() {
+        Player winner;
+        while ((winner = checkGameEnds()) == null) {
+            // We create multiple threads to tell the user what to do.
+            //System.out.println("Ready to play the turn");
+            runTasksForAllPlayer(getPlayOneTurnTask());
+            //When this is done.
+            orderProcessor.executeEndTurnOrders();
+            playMap.addUnitToEachTerritory();
+            updatePlayerInfo();
+
+            //Update player's food resource and technology resource.
+            playMap.decreaseCloakLastTime();
+            playMap.updatePlayerResource();
+            for (Player p : players.values()) {
+                p.setCanUpgradeInThisTurn(true);
+            }
+            playMap.resetCanMoveAttributes();
+            updatePlayerView();
+            MongoDBClient.addGame2DB(this);
+        }
+        gameEnds = true;
+        String message = "Game ends, the winner is player " + winner.getPlayerID();
+        logOutForAllPlayers();
+        for (Player p : players.values()) {
+            Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
+            Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
+            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories, p);
+            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n", message, fixedJSON, generateTerritoriesInfo(ownedTerritories, p));
+            try {
+                p.getJCommunicator().send(object);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+        MongoDBClient.addGame2DB(this);
     }
 
     /**
@@ -746,44 +1006,16 @@ public class Game implements Runnable {
      */
     @Override
     public void run() {
-        // Create the map used in this game.
-        gameBegins = true;
-        assignInitialTerritories();
-        runTasksForAllPlayer(getUnitsDistributionTask());
-        System.out.println("Initial units distribution done.");
-        Player winner = null;
-        // All threads has finished the execution of the units distribution.
-        while ((winner = checkGameEnds()) == null) {
-            // We create multiple threads to tell the user what to do.
-            System.out.println("Ready to play the turn");
-            runTasksForAllPlayer(getPlayOneTurnTask());
-            //When this is done.
-            orderProcessor.executeEndTurnOrders();
-            //TODO:change this back.
-            playMap.addUnitToEachTerritory();
-            updatePlayerInfo();
-            //Update player's food resource and technology resource.
-            playMap.updatePlayerResource();
-            for (Player p : players.values()) {
-                p.setCanUpgradeInThisTurn(true);
-            }
+        gameRunning = true;
+        if (gameEnds) {
+            return;
         }
-        gameEnds = true;
-        System.out.println("End game procedure begins!");
-        String message = "Game ends, the winner is player " + winner.getPlayerID();
-        logOutForAllPlayers();
-        for (Player p: players.values()) {
-            Set<Territory> ownedTerritories = playMap.getTerritoriesForPlayer(p);
-            Set<Territory> notOwnedTerritories = playMap.getTerritoriesNotBelongToPlayer(p);
-            JSONObject fixedJSON = generateTerritoriesInfo(notOwnedTerritories);
-            JSONObject object = generateClientNeededInformation(p.getPlayerID(), "GameEnd", "valid\n",message, fixedJSON, generateTerritoriesInfo(ownedTerritories));
-            System.out.println(object.getString("playerStatus"));
-            try {
-                p.getJCommunicator().send(object);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
+        if (unitsDistributionDone) {
+            runFromAttackPhase();
+            return;
         }
+        runFromStart();
+
     }
 
 
@@ -822,10 +1054,6 @@ public class Game implements Runnable {
      * Otherwise, return false.
      */
     public boolean containsPlayer(Player p) {
-        if (players.containsValue(p)) {
-            return true;
-        } else {
-            return false;
-        }
+        return players.containsValue(p);
     }
 }
