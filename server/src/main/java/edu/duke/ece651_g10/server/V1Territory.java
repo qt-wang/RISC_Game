@@ -328,7 +328,6 @@ public class V1Territory implements Territory {
         for (Map.Entry<Integer, Integer> entry : spyInfo.entrySet()) {
             object.put(Integer.toString(entry.getKey()), entry.getValue());
         }
-        System.out.println(object);
         return object;
     }
 
