@@ -110,6 +110,9 @@ public interface GameMap {
      * @param player The player requested.
      */
     public void updatePlayerView(Player player);
+
+
+    public void resetCanMoveAttributes();
 }
 
 

@@ -241,6 +241,13 @@ public class V1GameMap implements GameMap {
     }
 
     @Override
+    public void resetCanMoveAttributes() {
+        for (Territory territory: territories) {
+            territory.resetSpyMoveAttributes();
+        }
+    }
+
+    @Override
     public Set<Territory> getTerritoriesNotBelongToPlayer(Player p) {
         Set<Territory> result = new HashSet<>();
         for (Territory t: territories) {

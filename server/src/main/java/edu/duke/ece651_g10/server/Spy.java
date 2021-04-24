@@ -27,4 +27,6 @@ public interface Spy {
      * @param territory The target territory.
      */
     public void moveTo(Territory territory);
+
+    public void setCanMoveAttribute(boolean canMove);
 }

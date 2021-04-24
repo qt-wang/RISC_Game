@@ -9,24 +9,48 @@ public class MoveSpyOrder extends TerritoryToTerritoryOrder{
     }
 
     public void execute(){
-        Set<Spy> spySet = new HashSet<>();
-        for(Spy s : source.getOwnedSpies()){
-            if(s.getOwner().getPlayerID() == playerID){
-                spySet.add(s);
+
+        if (dest.getOwner() == source.getOwner()) {
+            Set<Spy> spySet = new HashSet<>();
+            for(Spy s : source.getOwnedSpies()){
+                if(s.getOwner().getPlayerID() == playerID){
+                    spySet.add(s);
+                }
+            }
+            for(Spy s : source.getEnemySpies()){
+                if(s.getOwner().getPlayerID() == playerID){
+                    spySet.add(s);
+                }
+            }
+            for(Spy spy : spySet){
+                spy.moveTo(dest);
+                unitNum--;
+                if(unitNum <= 0){
+                    break;
+                }
+            }
+        } else {
+            Set<Spy> spySet = new HashSet<>();
+            for(Spy s : source.getOwnedSpies()){
+                if(s.getOwner().getPlayerID() == playerID){
+                    spySet.add(s);
+                }
+            }
+            for(Spy s : source.getEnemySpies()){
+                if(s.getOwner().getPlayerID() == playerID){
+                    spySet.add(s);
+                }
+            }
+            for(Spy spy : spySet){
+                spy.moveTo(dest);
+                unitNum--;
+                if(unitNum <= 0){
+                    break;
+                }
             }
         }
-        for(Spy s : source.getEnemySpies()){
-            if(s.getOwner().getPlayerID() == playerID){
-                spySet.add(s);
-            }
-        }
-        for(Spy spy : spySet){
-            spy.moveTo(dest);
-            unitNum--;
-            if(unitNum <= 0){
-                break;
-            }
-        }
+
+
     }
 
     /**

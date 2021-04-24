@@ -328,6 +328,7 @@ public class V1Territory implements Territory {
         for (Map.Entry<Integer, Integer> entry : spyInfo.entrySet()) {
             object.put(Integer.toString(entry.getKey()), entry.getValue());
         }
+        System.out.println(object);
         return object;
     }
 
@@ -349,5 +350,12 @@ public class V1Territory implements Territory {
     @Override
     public void setHiddenFromOthers(int hiddenFromOthers) {
         this.hiddenFromOthers = hiddenFromOthers;
+    }
+
+    @Override
+    public void resetSpyMoveAttributes() {
+        for (Spy spy: ownedSpies) {
+            spy.setCanMoveAttribute(true);
+        }
     }
 }

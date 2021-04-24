@@ -278,4 +278,6 @@ public interface Territory {
      * @param hiddenFromOthers The value of the old value.
      */
     public void setHiddenFromOthers(int hiddenFromOthers);
+
+    public void resetSpyMoveAttributes();
 }

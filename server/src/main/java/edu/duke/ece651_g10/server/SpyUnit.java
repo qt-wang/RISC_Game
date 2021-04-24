@@ -1,12 +1,15 @@
 package edu.duke.ece651_g10.server;
+
 public class SpyUnit implements Spy{
 
     private Player owner;
     private Territory currentPosition;
+    private boolean canMove;
 
     public SpyUnit(Player owner, Territory currentPosition) {
         this.owner = owner;
         this.currentPosition = currentPosition;
+        canMove = true;
     }
 
     @Override
@@ -32,5 +35,10 @@ public class SpyUnit implements Spy{
             }
             this.currentPosition = territory;
         }
+    }
+
+    @Override
+    public void setCanMoveAttribute(boolean canMove) {
+        this.canMove = canMove;
     }
 }

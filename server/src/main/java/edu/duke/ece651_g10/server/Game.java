@@ -969,14 +969,16 @@ public class Game implements Runnable {
             runTasksForAllPlayer(getPlayOneTurnTask());
             //When this is done.
             orderProcessor.executeEndTurnOrders();
-            //playMap.addUnitToEachTerritory();
+            playMap.addUnitToEachTerritory();
             updatePlayerInfo();
+
             //Update player's food resource and technology resource.
             playMap.decreaseCloakLastTime();
             playMap.updatePlayerResource();
             for (Player p : players.values()) {
                 p.setCanUpgradeInThisTurn(true);
             }
+            playMap.resetCanMoveAttributes();
             updatePlayerView();
             //MongoDBClient.addGame2DB(this);
         }
