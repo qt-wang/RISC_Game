@@ -4,7 +4,7 @@ public class SpyUnit implements Spy{
 
     private Player owner;
     private Territory currentPosition;
-    private boolean canMove;
+    boolean canMove;
 
     public SpyUnit(Player owner, Territory currentPosition) {
         this.owner = owner;
